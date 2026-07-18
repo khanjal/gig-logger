@@ -99,7 +99,7 @@ export class TripComponent implements OnInit, OnDestroy {
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
 
-  trackByTrip(index: number, trip: any): any {
+  trackByTrip(index: number, trip: ITrip): string | number {
     return trip?.rowId ?? trip?.key ?? index;
   }
   ngOnDestroy(): void {

@@ -18,6 +18,7 @@ import type { IName } from '@interfaces/name.interface';
 import type { IPlace } from '@interfaces/place.interface';
 import type { IShift } from '@interfaces/shift.interface';
 import type { ITrip } from '@interfaces/trip.interface';
+import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
@@ -91,7 +92,7 @@ export class TripFormComponent implements OnInit {
   private _viewportScroller = inject(ViewportScroller);
   private cdr = inject(ChangeDetectorRef);
 
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<void>();
   @Output() editModeExit = new EventEmitter<string | undefined>();
   @Input() isInEditMode = false;
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
@@ -263,8 +264,9 @@ export class TripFormComponent implements OnInit {
   private setFormValues(values: Partial<TripFormValue>): void {
     Object.keys(values).forEach(key => {
       const controlKey = key as keyof typeof this.tripForm.controls;
-      if (this.tripForm.controls[controlKey]) {
-        (this.tripForm.controls[controlKey] as FormControl<any>).setValue((values as any)[key]);
+      const control = this.tripForm.controls[controlKey];
+      if (control) {
+        (control as FormControl<string | number | null>).setValue(values[key as keyof TripFormValue] as string | number | null);
       }
     });
   }
@@ -647,32 +649,33 @@ export class TripFormComponent implements OnInit {
   keyboardPadding = false;
 
   // --- Voice input result handler ---
-  async onVoiceResult(result: any) {
+  async onVoiceResult(result: IVoiceParseResult) {
     if (!result) return;
 
     // Mapping of voice fields to form controls and their handlers
-    const fieldMap: {key: string, handler: (val: any) => void | Promise<void>}[] = [
-      { key: 'service', handler: (v) => this.tripForm.controls.service.setValue(v) },
+    const fieldMap: { key: keyof IVoiceParseResult; handler: (val: string | number) => void | Promise<void> }[] = [
+      { key: 'service', handler: (v) => this.tripForm.controls.service.setValue(String(v)) },
       { key: 'pay', handler: (v) => this.tripForm.controls.pay.setValue(v) },
       { key: 'tip', handler: (v) => this.tripForm.controls.tip.setValue(v) },
       { key: 'distance', handler: (v) => this.tripForm.controls.distance.setValue(v) },
-      { key: 'type', handler: (v) => this.tripForm.controls.type.setValue(v) },
-      { key: 'place', handler: async (v) => { this.tripForm.controls.place.setValue(v); await this.selectPlace(); }},
-      { key: 'name', handler: (v) => this.setName(v) },
+      { key: 'type', handler: (v) => this.tripForm.controls.type.setValue(String(v)) },
+      { key: 'place', handler: async (v) => { this.tripForm.controls.place.setValue(String(v)); await this.selectPlace(); }},
+      { key: 'name', handler: (v) => this.setName(String(v)) },
       { key: 'bonus', handler: (v) => this.tripForm.controls.bonus.setValue(v) },
       { key: 'cash', handler: (v) => this.tripForm.controls.cash.setValue(v) },
-      { key: 'pickupAddress', handler: (v) => this.setPickupAddress(v) },
-      { key: 'dropoffAddress', handler: (v) => this.setDestinationAddress(v) },
+      { key: 'pickupAddress', handler: (v) => this.setPickupAddress(String(v)) },
+      { key: 'dropoffAddress', handler: (v) => this.setDestinationAddress(String(v)) },
       { key: 'startOdometer', handler: (v) => this.tripForm.controls.startOdometer.setValue(v) },
       { key: 'endOdometer', handler: (v) => this.tripForm.controls.endOdometer.setValue(v) },
-      { key: 'unitNumber', handler: (v) => this.tripForm.controls.endUnit.setValue(v) },
-      { key: 'orderNumber', handler: (v) => this.tripForm.controls.orderNumber.setValue(v) },
+      { key: 'unitNumber', handler: (v) => this.tripForm.controls.endUnit.setValue(String(v)) },
+      { key: 'orderNumber', handler: (v) => this.tripForm.controls.orderNumber.setValue(String(v)) },
     ];
 
     // Apply all fields from result that exist in the map
     for (const { key, handler } of fieldMap) {
-      if (result[key] !== undefined) {
-        await handler(result[key]);
+      const val = result[key];
+      if (val !== undefined) {
+        await handler(val);
       }
     }
 

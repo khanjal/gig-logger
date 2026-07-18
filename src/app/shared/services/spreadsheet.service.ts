@@ -81,13 +81,13 @@ export class SpreadsheetService {
     }
 
     public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet | null>{
-        const data: any = await this._gigLoggerService.getSheetData(spreadsheet.id);
+        const data = await this._gigLoggerService.getSheetData(spreadsheet.id);
         if (!data) {
             return null;
         }
 
         await this.updateSheetInfo(spreadsheet.id, data);
-        return data as ISheet;
+        return data;
     }
 
     public async loadSpreadsheetData(data: ISheet) {
@@ -103,7 +103,7 @@ export class SpreadsheetService {
             openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADED_SECONDARY_SPREADSHEET);
     }
 
-    private async updateSheetInfo(sheetId: string, data: any){
+    private async updateSheetInfo(sheetId: string, data: ISheet & { _source?: string }){
         const sheet = await this.findSheet(sheetId);
         if (!sheet) return;
         sheet.size = new TextEncoder().encode(JSON.stringify(data)).length;
@@ -114,8 +114,8 @@ export class SpreadsheetService {
         }
 
         // Persist source if provided by the API (tagged as `_source`)
-        if ((data as any)._source) {
-            sheet.source = (data as any)._source;
+        if (data._source) {
+            sheet.source = data._source;
         }
 
         await this.update(sheet);

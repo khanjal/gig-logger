@@ -586,7 +586,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
       this.googlePredictionsCache.set(cacheKey, results);
       
       return results;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.handleGoogleSearchError(error);
       return [];
     }
@@ -613,14 +613,14 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     }
   }
 
-  private handleGoogleSearchError(error: any): void {
+  private handleGoogleSearchError(error: unknown): void {
     if (this.isRateLimitError(error) && this.isGoogleSearchType()) {
       this.showGoogleMapsIcon.set(true);
     }
     this.logger.warn('Error getting Google predictions:', error);
   }
 
-  private isRateLimitError(error: any): boolean {
+  private isRateLimitError(error: unknown): boolean {
     return isRateLimitError(error);
   }
   // #endregion

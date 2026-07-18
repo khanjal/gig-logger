@@ -23,7 +23,7 @@ export class TripsTableBasicComponent implements OnInit {
     this.prefers24Hour = DateHelper.prefers24Hour();
   }
 
-  trackByTrip(index: number, trip: ITrip): any {
+  trackByTrip(index: number, trip: ITrip): number {
     return trip?.id ?? index;
   }
 

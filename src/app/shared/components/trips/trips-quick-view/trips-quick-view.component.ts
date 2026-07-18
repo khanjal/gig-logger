@@ -52,7 +52,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() inlineMode = false;
   @Input() index = 0;
   @Input() stripeEven?: boolean;
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<void>();
   @Output() pollingToggle = new EventEmitter<boolean>();
   @Output() scrollToTrip = new EventEmitter<string | undefined>();
   @Output() editClicked = new EventEmitter<ITrip>();

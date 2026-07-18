@@ -33,7 +33,7 @@ export class TripsModalComponent {
     this.dialogRef.close();
   }
 
-  trackByTrip(index: number, trip: ITrip): any {
+  trackByTrip(index: number, trip: ITrip): number {
     return trip?.rowId ?? trip?.id ?? index;
   }
 }

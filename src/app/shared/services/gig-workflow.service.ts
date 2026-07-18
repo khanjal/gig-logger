@@ -7,6 +7,8 @@ import type { ISheet } from "@interfaces/sheet.interface";
 import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
 import type { ISheetSavePayload } from "@interfaces/sheet-save-payload.interface";
 import type { IShift } from "@interfaces/shift.interface";
+import type { ITrip } from "@interfaces/trip.interface";
+import type { IMessage } from "@interfaces/message.interface";
 
 @Injectable({
     providedIn: 'root'
@@ -53,7 +55,7 @@ export class GigWorkflowService {
         return this._apiService.getSecondarySheetData(sheetId);
     }
 
-    public async saveSheetData(sheetData: ISheetSavePayload): Promise<any> {
+    public async saveSheetData(sheetData: ISheetSavePayload): Promise<IMessage[]> {
         return this._apiService.saveSheetData(sheetData);
     }
 
@@ -61,7 +63,7 @@ export class GigWorkflowService {
         return this._apiService.createSheet(sheetId);
     }
 
-    public async warmupLambda(sheetId: string): Promise<any> {
+    public async warmupLambda(sheetId: string): Promise<unknown> {
         return this._apiService.warmupLambda(sheetId);
     }
 
@@ -69,7 +71,7 @@ export class GigWorkflowService {
         return this._apiService.healthCheck(sheetId);
     }
 
-    public async insertDemoData(sheetId: string): Promise<any> {
+    public async insertDemoData(sheetId: string): Promise<unknown> {
         return this._apiService.insertDemoData(sheetId);
     }
 
@@ -99,7 +101,7 @@ export class GigWorkflowService {
         return this._calculator.calculateDurationsByKey(key);
     }
 
-    public async updateTripDuration(trip: any) {
+    public async updateTripDuration(trip: ITrip) {
         return this._calculator.updateTripDuration(trip);
     }
 
