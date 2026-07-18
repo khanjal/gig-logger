@@ -359,6 +359,11 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       return '-';
     }
 
+    // Auto-save is armed but the timer only runs while there are pending changes.
+    if (!this.hasUnsavedChanges()) {
+      return 'Idle';
+    }
+
     const next = this.syncState()?.nextSyncIn;
     if (!next || next <= 0) {
       return '-';

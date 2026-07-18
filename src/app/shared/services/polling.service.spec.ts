@@ -9,11 +9,14 @@ import { SyncStatusService } from './sync-status.service';
 import { AuthGoogleService } from './auth-google.service';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
+import { BehaviorSubject } from 'rxjs';
 
 describe('PollingService', () => {
   let service: PollingService;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
   let unsavedDataSpy: jasmine.SpyObj<UnsavedDataService>;
+  // Drives the event-driven timer: true = unsaved data present (timer runs).
+  let unsavedData$: BehaviorSubject<boolean>;
   let syncStatusSpy: jasmine.SpyObj<SyncStatusService>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let gigWorkflowSpy: jasmine.SpyObj<GigWorkflowService>;
@@ -24,6 +27,9 @@ describe('PollingService', () => {
     const unsaved = jasmine.createSpyObj('UnsavedDataService', [
       'getUnsavedCounts', 'collectUnsavedItems', 'commitSavedItems'
     ]);
+    // Default to "dirty" so arming activates the timer (matches most assertions).
+    unsavedData$ = new BehaviorSubject<boolean>(true);
+    (unsaved as { unsavedData$: unknown }).unsavedData$ = unsavedData$;
     const syncStatus = jasmine.createSpyObj('SyncStatusService', [
       'startCountdown',
       'stopCountdown',
@@ -149,6 +155,60 @@ describe('PollingService', () => {
 
       expect(service['lastPollTime']).toBeGreaterThanOrEqual(beforeTime);
       expect(service['lastPollTime']).toBeLessThanOrEqual(Date.now());
+    });
+  });
+
+  describe('Event-driven activation', () => {
+    it('arms but does not run the timer when there is no unsaved data', async () => {
+      unsavedData$.next(false);
+
+      await service.startPolling();
+
+      expect(service['armed']).toBe(true);
+      expect(service['enabled']).toBe(false);
+      expect(syncStatusSpy.startCountdown).not.toHaveBeenCalled();
+    });
+
+    it('activates the timer when unsaved data appears after arming', async () => {
+      unsavedData$.next(false);
+      await service.startPolling();
+      expect(service['enabled']).toBe(false);
+
+      unsavedData$.next(true);
+
+      expect(service['enabled']).toBe(true);
+      expect(syncStatusSpy.startCountdown).toHaveBeenCalled();
+    });
+
+    it('deactivates the timer when unsaved data is cleared but stays armed', async () => {
+      await service.startPolling(); // dirty by default -> active
+      expect(service['enabled']).toBe(true);
+
+      unsavedData$.next(false);
+
+      expect(service['enabled']).toBe(false);
+      expect(service['armed']).toBe(true);
+      expect(syncStatusSpy.stopCountdown).toHaveBeenCalled();
+    });
+
+    it('resumes the timer when data goes dirty -> clean -> dirty', async () => {
+      await service.startPolling();
+      unsavedData$.next(false);
+      expect(service['enabled']).toBe(false);
+
+      unsavedData$.next(true);
+
+      expect(service['enabled']).toBe(true);
+    });
+
+    it('ignores dirty-state changes once disarmed', async () => {
+      await service.startPolling();
+      service.stopPolling();
+      expect(service['enabled']).toBe(false);
+
+      unsavedData$.next(true);
+
+      expect(service['enabled']).toBe(false);
     });
   });
 
