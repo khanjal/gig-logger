@@ -20,8 +20,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Update npm to latest
-      run: npm install -g npm@latest
+    - name: Ensure npm v10 (compatible with Node 20)
+      run: npm install -g npm@10
 
     - name: Install dependencies
       run: npm ci --legacy-peer-deps
