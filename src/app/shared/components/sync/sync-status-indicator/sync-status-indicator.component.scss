@@ -27,7 +27,37 @@
   box-shadow: 0 1px 3px var(--shadow-medium);
 }
 
-// Layout, sizing, and surfaces moved to Tailwind classes in the template
+// Make the header sync trigger match the neighbouring toolbar nav icons:
+// a 40x40 rounded-lg hit area with an overlay background on hover, instead of
+// the base icon button's 44px transparent circle. Reaches into the base button
+// because it lives in a child component.
+:host ::ng-deep .sync-trigger .app-base-button.btn-icon {
+  width: 2.5rem;        // h-10 (40px)
+  height: 2.5rem;       // w-10
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: 0.5rem; // rounded-lg, matches nav links
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-overlay) !important;
+    opacity: 1; // cancel the no-background hover dimming so it reads like a nav link
+  }
+
+  &:active:not(:disabled) {
+    opacity: 1;
+  }
+}
+
+// Persist the overlay background while the sync panel is open, or while the
+// pending-changes page it links to is active, so the trigger stays highlighted
+// like an active page (mirrors `.mat-toolbar a.active`).
+:host ::ng-deep .sync-trigger.menu-open .app-base-button.btn-icon,
+:host ::ng-deep .sync-trigger.menu-open .app-base-button.btn-icon:hover,
+:host ::ng-deep .sync-trigger.route-active .app-base-button.btn-icon,
+:host ::ng-deep .sync-trigger.route-active .app-base-button.btn-icon:hover {
+  background-color: var(--color-overlay) !important;
+  opacity: 1 !important;
+}
 
 // Title icon variants
 .title-icon.status-syncing { animation: spin 2s linear infinite; color: var(--primary-600); }

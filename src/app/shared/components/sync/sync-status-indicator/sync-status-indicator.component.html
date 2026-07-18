@@ -121,7 +121,9 @@
   @if (mode === 'button') {
     <!-- Main status button with menu trigger -->
     <div
-      class="relative"
+      class="sync-trigger relative"
+      [class.menu-open]="menuOpen()"
+      [class.route-active]="isPendingRoute()"
       cdkOverlayOrigin
       #syncOverlayOrigin="cdkOverlayOrigin"
       [matTooltip]="getTooltipText()"

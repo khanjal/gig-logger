@@ -6,9 +6,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
-import { NavigationExtras, Router } from '@angular/router';
+import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, filter } from 'rxjs';
 import { SyncStatusService } from '@services/sync-status.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
@@ -58,6 +58,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   hasUnsavedChanges = signal(false);
   unsavedCounts = signal<{ trips: number; shifts: number; expenses: number; total: number }>({ trips: 0, shifts: 0, expenses: 0, total: 0 });
   menuOpen = signal(false);
+  isPendingRoute = signal(false);
   autoSaveEnabled = signal(false);
   isSignedIn = signal<boolean>(false);
   themePreference = signal<ThemePreference>('system');
@@ -67,6 +68,14 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
+    // Keep the trigger highlighted (active-page style) while the pending
+    // changes page it links to is open, mirroring routerLinkActive on nav links.
+    const updatePendingRoute = () => this.isPendingRoute.set(this.router.url.split('?')[0] === '/pending-changes');
+    updatePendingRoute();
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd), takeUntil(this.destroy$))
+      .subscribe(updatePendingRoute);
+
     // Subscribe to sync state changes
     this.syncStatusService.syncState$
       .pipe(takeUntil(this.destroy$))
