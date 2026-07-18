@@ -15,6 +15,23 @@ module.exports = defineConfig([
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          args: "after-used",
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/no-empty-function": [
+        "error",
+        {
+          // Allows ControlValueAccessor onChange/onTouched no-op defaults and
+          // intentional test/mock stubs; empty constructors stay disallowed.
+          allow: ["arrowFunctions", "functions", "methods", "asyncMethods"],
+        },
+      ],
       "@angular-eslint/directive-selector": [
         "error",
         {
