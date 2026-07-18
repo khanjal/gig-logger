@@ -5,10 +5,10 @@ import { BehaviorSubject } from "rxjs/internal/BehaviorSubject";
   providedIn: 'root'
 })
 export class CommonService {
-    private headerLinkUpdateSource = new BehaviorSubject<any>("");
+    private headerLinkUpdateSource = new BehaviorSubject<unknown>("");
     onHeaderLinkUpdate = this.headerLinkUpdateSource.asObservable();
 
-    updateHeaderLink(message: any) {
+    updateHeaderLink(message: unknown) {
         this.headerLinkUpdateSource.next(message);
     }
 }

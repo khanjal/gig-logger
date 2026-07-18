@@ -208,7 +208,7 @@ describe('DataSyncModalComponent', () => {
       unsavedExpenses: []
     });
     workflowSpy.calculateShiftTotals.and.resolveTo();
-    workflowSpy.saveSheetData.and.resolveTo([{ level: 'INFO', message: 'Changes saved' }]);
+    workflowSpy.saveSheetData.and.resolveTo([{ level: 'INFO', message: 'Changes saved', type: 'NETWORK', time: Date.now() }]);
 
     fixture = TestBed.createComponent(DataSyncModalComponent);
     component = fixture.componentInstance;
@@ -242,7 +242,7 @@ describe('DataSyncModalComponent', () => {
     });
     workflowSpy.saveSheetData.and.callFake(async () => {
       apiCallTime = Date.now();
-      return [{ level: 'INFO', message: 'Changes saved' }];
+      return [{ level: 'INFO', message: 'Changes saved', type: 'NETWORK', time: Date.now() }];
     });
 
     fixture = TestBed.createComponent(DataSyncModalComponent);

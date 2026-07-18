@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService } from '@services/sync-status.service';
@@ -165,7 +165,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
   openPendingChanges(section?: 'trips' | 'shifts'): void {
     this.closeMenu();
-    const extras: any = {};
+    const extras: NavigationExtras = {};
     if (section) extras.queryParams = { section };
     this.router.navigate(['/pending-changes'], extras);
   }
@@ -184,7 +184,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       data: 'save'
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
+    dialogRef.afterClosed().subscribe(async (result: boolean) => {
       if (result) {
         await this.checkUnsavedChanges();
       }
@@ -210,7 +210,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       data: 'load'
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
+    dialogRef.afterClosed().subscribe(async (result: boolean) => {
       if (result) {
         await this.checkUnsavedChanges();
       }

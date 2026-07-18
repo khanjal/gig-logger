@@ -9,6 +9,11 @@ import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 import { fromEvent } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base';
 
+interface IBeforeInstallPromptEvent extends Event {
+  readonly userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+  prompt(): Promise<void>;
+}
+
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -29,7 +34,7 @@ export class HomeComponent implements OnInit {
   showStartLoggingButton = signal(false);
   isUpdateAvailable = signal(false);
   showUpdateNotification = signal(false);
-  private deferredPrompt: any;
+  private deferredPrompt: IBeforeInstallPromptEvent | null = null;
 
   async ngOnInit() {
     // Subscribe to app update status
@@ -45,12 +50,11 @@ export class HomeComponent implements OnInit {
     await this.checkUserStatus();
     
     // Listen for the install prompt
-    fromEvent(window as any, 'beforeinstallprompt')
+    fromEvent<IBeforeInstallPromptEvent>(window, 'beforeinstallprompt')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
-      const e = event as any;
-      e.preventDefault();
-      this.deferredPrompt = e;
+      event.preventDefault();
+      this.deferredPrompt = event;
       this.showInstallButton.set(true);
     });
 

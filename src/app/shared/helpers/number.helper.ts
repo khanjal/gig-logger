@@ -50,7 +50,7 @@ export class NumberHelper {
      * @param value The form field value that could be a number, empty string, null, or undefined
      * @returns null if the value is empty/null/undefined, otherwise returns the original value
      */
-    static toNullableNumber(value: any): any {
+    static toNullableNumber<T>(value: T): T | null {
         return (value === '' || value === null || value === undefined) ? null : value;
     }
 
@@ -59,7 +59,7 @@ export class NumberHelper {
      * @param value The value to convert
      * @returns A number, or 0 if conversion fails
      */
-    static toNumber(value: any): number {
+    static toNumber(value: unknown): number {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
     }

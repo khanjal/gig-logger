@@ -13,6 +13,7 @@ import { TripService } from "@services/sheets/trip.service";
 import { TypeService } from "@services/sheets/type.service";
 import { DeliveryService } from "@services/delivery.service";
 import { LoggerService } from "@services/logger.service";
+import { GenericCrudService } from "@services/generic-crud.service";
 import { sort } from "@helpers/sort.helper";
 import { groupBy, uniquePush } from "@helpers/array.helper";
 
@@ -31,9 +32,10 @@ export class DataLinkingService {
     private _logger = inject(LoggerService);
 
 
-    private handleError(operation: string, error: any): void {
+    private handleError(operation: string, error: unknown): void {
+        const err = error as { message?: string } | null | undefined;
         this._logger.error(`${operation} failed`, {
-            message: error.message || 'Unknown error',
+            message: err?.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
         });
@@ -302,7 +304,7 @@ export class DataLinkingService {
         }
     }
 
-    private async addIfNotExists(field: string, value: any, service: any) {
+    private async addIfNotExists<T extends object>(field: string, value: string | undefined, service: GenericCrudService<T>) {
         if (!value) return;
 
         const fieldMap: Record<string, string> = {
@@ -317,9 +319,9 @@ export class DataLinkingService {
 
         const searchField = fieldMap[field];
         const existing = await service.find(searchField, value);
-        
+
         if (!existing) {
-            const newItem = { [searchField]: value };
+            const newItem = { [searchField]: value } as T;
             await service.add(newItem);
         }
     }

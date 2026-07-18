@@ -98,8 +98,9 @@ export class AuthGoogleService {
     this.oAuthService.initCodeFlow();
   }
 
-  private extractStatusCode(error: any): number | undefined {
-    return error?.status || error?.response?.status;
+  private extractStatusCode(error: unknown): number | undefined {
+    const err = error as { status?: number; response?: { status?: number } } | null | undefined;
+    return err?.status || err?.response?.status;
   }
 
   private clearAuthState(): void {
@@ -122,7 +123,7 @@ export class AuthGoogleService {
       this.storeUserId(profile);
       this.setAuthenticationState(true);
       this.logger.info('Access token refreshed and validated successfully');
-    } catch (error: any) {
+    } catch (error: unknown) {
       const status = this.extractStatusCode(error);
       if (status === 401 || status === 403) {
         this.logger.error('Refresh token invalid or expired, logging out', error);
@@ -185,7 +186,7 @@ export class AuthGoogleService {
       if (refreshedToken) return true;
       this.setAuthenticationState(false);
       return false;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const status = this.extractStatusCode(error);
       if (status === 401 || status === 403) {
         this.logger.info('Token refresh failed due to invalid/expired token, clearing authentication state');

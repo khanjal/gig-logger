@@ -8,6 +8,7 @@ import { map, Subscription, timer } from 'rxjs';
 // Application-specific imports - Helpers
 import { DateHelper } from '@helpers/date.helper';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
+import type { ApiMessage } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { SHEET_CONSTANTS } from '@constants/sheet.constants';
 
@@ -196,7 +197,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         const result = ApiMessageHelper.processSheetSaveResponse(messages);
         
         // Display only SAVE_DATA messages
-        result.filteredMessages.forEach((msg: any) => {
+        result.filteredMessages.forEach((msg: ApiMessage) => {
             const messageLevel = msg.level === 'ERROR' ? 'error' : 
                                msg.level === 'WARNING' ? 'warning' : 'info';
             this.appendToTerminal(msg.message, messageLevel);
@@ -369,7 +370,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
 
         // Subscribe to logger messages during load
-        const logSubscription = this._logger.onLog.subscribe((msg: any) => {
+        const logSubscription = this._logger.onLog.subscribe((msg: { level: string; message: string }) => {
             this.appendToTerminal(msg.message);
         });
 

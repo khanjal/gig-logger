@@ -84,11 +84,12 @@ export class DiagnosticService {
     }
   }
 
-  public reportLoadingIssue(component: string, error: any): void {
+  public reportLoadingIssue(component: string, error: unknown): void {
+    const err = error as { message?: string; stack?: string } | null | undefined;
     this.logger.error(`Loading issue in ${component}`, {
       component,
-      error: error?.message || 'Unknown error',
-      stack: error?.stack,
+      error: err?.message || 'Unknown error',
+      stack: err?.stack,
       userAgent: navigator.userAgent,
       url: window.location.href,
       timestamp: new Date().toISOString()

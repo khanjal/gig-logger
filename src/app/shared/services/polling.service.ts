@@ -27,7 +27,7 @@ export class PollingService implements OnDestroy {
   private _logger = inject(LoggerService);
   protected authService = inject(AuthGoogleService);
 
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<void>();
 
   private worker: Worker | null = null;
   private fallbackTimer: number | null = null;
@@ -47,11 +47,11 @@ export class PollingService implements OnDestroy {
   }
 
   // Use safe logging in case tests provide a partial/mock logger without all methods
-  private safeLog(level: 'info' | 'warn' | 'error' | 'debug', ...args: any[]) {
+  private safeLog(level: 'info' | 'warn' | 'error' | 'debug', ...args: unknown[]) {
     try {
-      const fn = (this._logger as any)?.[level];
+      const fn = this._logger[level];
       if (typeof fn === 'function') {
-        fn.apply(this._logger, args);
+        fn.apply(this._logger, args as [message: string, ...optionalParams: unknown[]]);
         return;
       }
     } catch {

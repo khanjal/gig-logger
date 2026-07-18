@@ -320,8 +320,8 @@ export class SearchService {
     // Sort groups by monthKey (newest first) and sort results within each group
     return Array.from(groupMap.values())
       .sort((a, b) => {
-        const monthKeyA = (a as any).monthKey || '';
-        const monthKeyB = (b as any).monthKey || '';
+        const monthKeyA = a.monthKey || '';
+        const monthKeyB = b.monthKey || '';
         return monthKeyB.localeCompare(monthKeyA); // Descending order (newest first)
       })
       .map(group => ({
