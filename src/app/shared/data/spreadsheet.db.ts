@@ -108,6 +108,13 @@ export class AppDB extends Dexie {
         this.version(1).stores(SCHEMA_V1);
         this.version(2).stores(SCHEMA_V2);
         this.version(3).stores(SCHEMA_V3);
+
+        // Fires when db.delete() can't complete because another connection
+        // (typically another open tab of this app) is still holding the
+        // database open. The delete stays pending until that connection closes.
+        this.on('blocked', () => {
+            console.warn('spreadsheetDB delete is blocked by another open connection - close other tabs of this app to let it complete.');
+        });
     }
 }
 

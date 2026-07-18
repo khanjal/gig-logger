@@ -32,7 +32,6 @@ import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.
 import { openSnackbar } from '@utils/snackbar.util';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -68,7 +67,6 @@ export class SetupComponent implements OnInit {
   private _spreadsheetService = inject(SpreadsheetService);
   private _shiftService = inject(ShiftService);
   private _tripService = inject(TripService);
-  private _timerService = inject(TimerService);
   protected authService = inject(AuthGoogleService);
   private versionService = inject(VersionService);
 
@@ -198,9 +196,7 @@ export class SetupComponent implements OnInit {
   public async deleteAllData() {
     this.deletingState.setLoading();
     try {
-      this._spreadsheetService.deleteData();
-
-      await this._timerService.delay(1000);
+      await this._spreadsheetService.deleteData();
 
       this.spreadsheets.set([]);
       await this.load();
@@ -219,10 +215,7 @@ export class SetupComponent implements OnInit {
     try {
       // Store current spreadsheets.
       this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
-      this._spreadsheetService.deleteData();
-
-      // Need a delay to delete DBs and reopen them.
-      await this._timerService.delay(2000);
+      await this._spreadsheetService.deleteData();
 
       // Add spreadsheets back to DB
       for (const spreadsheet of this.spreadsheets() ?? []) {
@@ -256,7 +249,7 @@ export class SetupComponent implements OnInit {
   public async deleteLocalData() {
     this.deletingState.setLoading();
     try {
-      this._spreadsheetService.deleteLocalData();
+      await this._spreadsheetService.deleteLocalData();
       localStorage.clear();
 
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);

@@ -46,34 +46,39 @@ export class SpreadsheetService {
 
     public async deleteSpreadsheet(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.delete(spreadsheet.id);
-    }    public deleteLocalData(): boolean {
-        localDB.delete().then(() => {
+    }
+
+    public async deleteLocalData(): Promise<void> {
+        // db.delete() closes the connection (disabling auto-open) before calling
+        // indexedDB.deleteDatabase(), which drops every object store and its
+        // auto-increment counters - open() below then re-runs the full version().stores()
+        // chain against a nonexistent DB, recreating every table empty from scratch.
+        try {
+            await localDB.delete();
             this._logger.info("Local Database successfully deleted");
-        }).catch((err) => {
+        } catch (err) {
             this._logger.error("Could not delete local database", err);
-        }).finally(async () => {
-            localDB.open();
-        });
-
-        return true;
+        } finally {
+            await localDB.open();
+        }
     }
 
-    public deleteRemoteData() {
-        spreadsheetDB.delete().then(() => {
+    public async deleteRemoteData(): Promise<void> {
+        try {
+            await spreadsheetDB.delete();
             this._logger.info("Spreadsheet Database successfully deleted");
-        }).catch((err) => {
+        } catch (err) {
             this._logger.error("Could not delete spreadsheet database", err);
-        }).finally(async () => {
-            spreadsheetDB.open();
-        });
-
-        return true;
+        } finally {
+            await spreadsheetDB.open();
+        }
     }
 
-    public deleteData() {
-        this.deleteLocalData();
-        this.deleteRemoteData();
-    }    public async warmUpLambda() {
+    public async deleteData(): Promise<void> {
+        await Promise.all([this.deleteLocalData(), this.deleteRemoteData()]);
+    }
+
+    public async warmUpLambda() {
         // Wake up lambda
         this._logger.debug("Warming up lambda");
         const defaultSheet = await this.getDefaultSheet();

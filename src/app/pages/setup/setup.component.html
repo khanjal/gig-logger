@@ -31,7 +31,7 @@
 
     @if (spreadsheets()?.length) {
       <app-base-card title="Current Spreadsheets" variant="default" padding="md" class="mb-6">
-        @for (spreadsheet of spreadsheets(); track spreadsheet) {
+        @for (spreadsheet of spreadsheets(); track spreadsheet.id) {
           <div class="mb-4">
             <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
             <div class="flex flex-row justify-between items-center gap-2 mt-2">

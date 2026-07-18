@@ -9,7 +9,7 @@
         <span class="text-success whitespace-nowrap w-10">00:00</span>
         <span class="ml-2 text-success flex-1 break-words">Modal will close when complete.</span>
       </div>
-      @for (message of terminalMessages(); track message) {
+      @for (message of terminalMessages(); track $index) {
         <div class="flex mb-1 items-start">
           <span class="text-success whitespace-nowrap w-10">{{ message.time }}</span>
                     <span [ngClass]="{

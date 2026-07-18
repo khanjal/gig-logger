@@ -5,7 +5,7 @@
     </app-base-rect-button>
   </div>
   <div class="diagnostics-list space-y-6">
-    @for (item of dataDiagnostics(); track item) {
+    @for (item of dataDiagnostics(); track item.name) {
       <div class="mb-6">
         <div class="flex items-center gap-4 border-b pb-2 mb-2">
           <mat-icon [color]="getSeverityColor(item.severity)" class="text-2xl">
