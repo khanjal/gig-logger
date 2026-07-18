@@ -6,6 +6,7 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActionEnum } from '@enums/action.enum';
 import { BehaviorSubject, of } from 'rxjs';
@@ -66,6 +67,7 @@ describe('ExpensesComponent', () => {
         { provide: AuthGoogleService, useValue: authGoogleServiceMock },
         { provide: MatDialog, useValue: dialogSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } },
         CurrencyPipe,
         DatePipe
       ]
