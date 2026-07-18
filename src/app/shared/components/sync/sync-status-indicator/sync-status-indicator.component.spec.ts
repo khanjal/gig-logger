@@ -24,6 +24,7 @@ describe('SyncStatusIndicatorComponent', () => {
   let syncState$: BehaviorSubject<any>;
   let messages$: BehaviorSubject<any[]>;
   let preference$: BehaviorSubject<ThemePreference>;
+  let profile$: BehaviorSubject<any>;
   let authSpy: jasmine.SpyObj<any>;
 
   beforeEach(async () => {
@@ -51,9 +52,12 @@ describe('SyncStatusIndicatorComponent', () => {
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     themeSpy = jasmine.createSpyObj('ThemeService', ['setTheme'], { currentPreference: 'system', preferenceChanges: preference$.asObservable() });
-
-    authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync']);
+    // Auth mock - start signed-in by default
+    profile$ = new BehaviorSubject<any>({ sub: 'test-user' });
+    authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync', 'isAuthenticated', 'isAuthenticatedSync'], { profile$: profile$.asObservable() });
     authSpy.canSync.and.returnValue(Promise.resolve(true));
+    authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
+    authSpy.isAuthenticatedSync.and.returnValue(true);
     await TestBed.configureTestingModule({
       imports: [SyncStatusIndicatorComponent],
       providers: [
@@ -346,6 +350,34 @@ describe('SyncStatusIndicatorComponent', () => {
       const result = component.formatTimestamp(date);
       
       expect(result).toContain(':30');
+    });
+  });
+
+  describe('signed out behavior', () => {
+    it('reflects signed out state when profile cleared', async () => {
+      // Simulate sign out
+      profile$.next(null);
+      // allow subscription to propagate
+      await Promise.resolve();
+
+      expect(component.isSignedIn()).toBeFalse();
+      expect(component.getStatusIcon()).toBe('cloud_off');
+      expect(component.getStatusText()).toBe('Signed out');
+      expect(component.getTooltipText()).toBe('Sign in to enable sync');
+      expect(component.getNextCheckText()).toBe('Sign in to sync');
+    });
+
+    it('blocks enabling autosave when not signed in', async () => {
+      // Simulate no remote sync capability
+      authSpy.canSync.and.returnValue(Promise.resolve(false));
+      profile$.next(null);
+
+      // Attempt to enable auto-save
+      await component.toggleAutoSave(true);
+
+      expect(snackBarSpy.open).toHaveBeenCalled();
+      expect(uiPreferencesSpy.setPolling).toHaveBeenCalledWith(false);
+      expect(component.autoSaveEnabled()).toBeFalse();
     });
   });
 });
