@@ -1,4 +1,12 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { of } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 import { UpdatesComponent } from './updates.component';
+import { UpdatesService } from '@services/updates.service';
+import type { IUpdateDetail } from '@interfaces/update.interface';
 
 describe('UpdatesComponent trackBy helpers', () => {
   it('trackByEntryDate returns date when present', () => {
@@ -49,15 +57,6 @@ describe('UpdatesComponent trackBy helpers', () => {
     expect(res).toBe(9);
   });
 });
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UpdatesService } from '@services/updates.service';
-
-import type { IUpdateDetail } from '@interfaces/update.interface';
-import { of } from 'rxjs';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('UpdatesComponent', () => {
   let component: UpdatesComponent;

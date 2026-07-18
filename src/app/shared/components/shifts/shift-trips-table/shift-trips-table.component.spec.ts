@@ -1,3 +1,6 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ShiftTripsTableComponent } from './shift-trips-table.component';
+
 describe('ShiftTripsTableComponent trackByTrip', () => {
   it('returns id when present', () => {
     const t = { id: 'xyz', rowId: 1 } as any;
@@ -17,9 +20,6 @@ describe('ShiftTripsTableComponent trackByTrip', () => {
     expect(res).toBe(3);
   });
 });
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ShiftTripsTableComponent } from './shift-trips-table.component';
 
 describe('ShiftTripsTableComponent', () => {
   let component: ShiftTripsTableComponent;

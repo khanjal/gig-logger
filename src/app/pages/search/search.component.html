@@ -68,15 +68,17 @@
               <app-base-rect-button
                 (clicked)="selectAllCategories()"
                 [noBackground]="true"
+                [icon]="'check_box'"
+                [iconColor]="'var(--color-text-primary)'"
                 class="text-xs font-semibold all-btn px-1">
-                <mat-icon class="text-sm text-primary">check_box</mat-icon>
                 <span class="ml-1">All</span>
               </app-base-rect-button>
               <app-base-rect-button
                 (clicked)="deselectAllCategories()"
                 [noBackground]="true"
+                [icon]="'check_box_outline_blank'"
+                [iconColor]="'var(--color-text-secondary)'"
                 class="text-xs font-semibold none-btn px-1 text-secondary">
-                <mat-icon class="text-sm text-secondary">check_box_outline_blank</mat-icon>
                 <span class="ml-1">None</span>
               </app-base-rect-button>
             </div>

@@ -1,3 +1,14 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
+import { ShiftsComponent } from './shifts.component';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+import { ExpensesService } from '@services/sheets/expenses.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { BehaviorSubject, of } from 'rxjs';
+
 describe('ShiftsComponent trackByShift', () => {
   it('returns rowId when present', () => {
     const s = { rowId: 10 } as any;
@@ -17,16 +28,6 @@ describe('ShiftsComponent trackByShift', () => {
     expect(res).toBe(5);
   });
 });
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { commonTestingImports, commonTestingProviders } from '@test-harness';
-import { ShiftsComponent } from './shifts.component';
-import { ShiftService } from '@services/sheets/shift.service';
-import { TripService } from '@services/sheets/trip.service';
-import { ExpensesService } from '@services/sheets/expenses.service';
-import { UnsavedDataService } from '@services/unsaved-data.service';
-import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
 
 describe('ShiftsComponent', () => {
   let component: ShiftsComponent;

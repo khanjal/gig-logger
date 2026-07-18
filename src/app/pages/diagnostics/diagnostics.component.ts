@@ -70,9 +70,9 @@ export class DiagnosticsComponent implements OnInit {
     return item.name ?? index;
   }
 
-  trackByGroup(index: number, group: any[]): string {
-    // Groups are arrays of items; use a stable composite key if available
-    return `${index}-${group.length}`;
+  trackByGroup(_index: number, group: any[]): string | number {
+    const first = group?.[0];
+    return first?.rowId ?? first?.id ?? first?.key ?? first?.name ?? group.length;
   }
 
   trackByProblemItem(index: number, item: any): any {
