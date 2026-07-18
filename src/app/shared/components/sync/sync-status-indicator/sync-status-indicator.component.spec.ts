@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { SyncStatusIndicatorComponent } from './sync-status-indicator.component';
 import { SyncStatusService } from '@services/sync-status.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
@@ -167,6 +168,45 @@ describe('SyncStatusIndicatorComponent', () => {
 
     it('sets up interval for periodic updates', () => {
       expect(component['intervalId']).toBeDefined();
+    });
+  });
+
+  describe('pendingSections', () => {
+    it('returns only non-empty sections, pluralized by count', () => {
+      component.unsavedCounts.set({ trips: 1, shifts: 0, expenses: 3, total: 4 });
+
+      expect(component.pendingSections()).toEqual([
+        { key: 'trips', count: 1, label: 'trip' },
+        { key: 'expenses', count: 3, label: 'expenses' }
+      ]);
+    });
+
+    it('returns an empty list when nothing is pending', () => {
+      component.unsavedCounts.set({ trips: 0, shifts: 0, expenses: 0, total: 0 });
+
+      expect(component.pendingSections()).toEqual([]);
+    });
+  });
+
+  describe('openPendingChanges', () => {
+    it('closes the menu and navigates without query params when no section given', () => {
+      const router = TestBed.inject(Router);
+      spyOn(router, 'navigate');
+      component.menuOpen.set(true);
+
+      component.openPendingChanges();
+
+      expect(component.menuOpen()).toBeFalse();
+      expect(router.navigate).toHaveBeenCalledWith(['/pending-changes'], {});
+    });
+
+    it('navigates with the section as a query param when given', () => {
+      const router = TestBed.inject(Router);
+      spyOn(router, 'navigate');
+
+      component.openPendingChanges('shifts');
+
+      expect(router.navigate).toHaveBeenCalledWith(['/pending-changes'], { queryParams: { section: 'shifts' } });
     });
   });
 

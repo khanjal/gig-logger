@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { TripsQuickViewComponent } from './trips-quick-view.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
@@ -8,12 +9,14 @@ import { GigWorkflowService } from '@services/gig-workflow.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 
 describe('TripsQuickViewComponent', () => {
   let component: TripsQuickViewComponent;
   let fixture: ComponentFixture<TripsQuickViewComponent>;
-  const mockGig = jasmine.createSpyObj('GigWorkflowService', ['updateTripDuration','calculateShiftTotals']);
+  const mockGig = jasmine.createSpyObj('GigWorkflowService', ['updateTripDuration', 'calculateShiftTotals', 'calculateShiftTotalsByKey']);
   const mockTrip = jasmine.createSpyObj('TripService', ['update','clone','addNext','deleteItem','getByRowId']);
   const mockShift = jasmine.createSpyObj('ShiftService', ['query','queryShiftByKey','update']);
   const mockRouter = jasmine.createSpyObj('Router', ['navigate']);
@@ -69,5 +72,86 @@ describe('TripsQuickViewComponent', () => {
     const texts = Array.from(el.querySelectorAll('.app-base-button .btn-text')).map(n => n.textContent?.trim());
     expect(texts).toContain('Edit');
     expect(texts).toContain('Pickup');
+  });
+
+  describe('confirmDeleteTripDialog', () => {
+    it('deletes the trip and recalculates shift totals when confirmed', async () => {
+      component.trip = { rowId: 1, key: 'trip-key' } as unknown as ITrip;
+      mockTrip.deleteItem.and.returnValue(Promise.resolve());
+      mockGig.calculateShiftTotalsByKey.and.returnValue(Promise.resolve());
+      spyOn(component.dialog, 'open').and.returnValue({ afterClosed: () => of(true) } as unknown as ReturnType<MatDialog['open']>);
+      const reloadSpy = spyOn(component.parentReload, 'emit');
+
+      component.confirmDeleteTripDialog();
+      // afterClosed().subscribe(async ...) resolves on the microtask queue.
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(component.dialog.open).toHaveBeenCalled();
+      expect(mockTrip.deleteItem).toHaveBeenCalledWith(component.trip);
+      expect(mockGig.calculateShiftTotalsByKey).toHaveBeenCalledWith('trip-key');
+      expect(reloadSpy).toHaveBeenCalled();
+    });
+
+    it('does not delete when the user cancels', () => {
+      component.trip = { rowId: 1, key: 'trip-key' } as unknown as ITrip;
+      mockTrip.deleteItem.calls.reset();
+      spyOn(component.dialog, 'open').and.returnValue({ afterClosed: () => of(false) } as unknown as ReturnType<MatDialog['open']>);
+
+      component.confirmDeleteTripDialog();
+
+      expect(mockTrip.deleteItem).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setDropoffTime', () => {
+    it('updates the matching shift finish time and the trip dropoff time', async () => {
+      component.trip = { rowId: 1, key: 'trip-key' } as unknown as ITrip;
+      const shift = { id: 1, key: 'trip-key' } as unknown as IShift;
+      mockShift.query.and.returnValue(Promise.resolve([shift]));
+      mockShift.update.and.returnValue(Promise.resolve());
+      mockGig.updateTripDuration.and.returnValue(Promise.resolve());
+      const reloadSpy = spyOn(component.parentReload, 'emit');
+      const scrollSpy = spyOn(component.scrollToTrip, 'emit');
+
+      await component.setDropoffTime();
+
+      expect(mockShift.query).toHaveBeenCalledWith('key', 'trip-key');
+      expect(mockShift.update).toHaveBeenCalledWith([shift]);
+      expect(component.trip.dropoffTime).toBeTruthy();
+      expect(mockGig.updateTripDuration).toHaveBeenCalledWith(component.trip);
+      expect(scrollSpy).toHaveBeenCalledWith('1');
+      expect(reloadSpy).toHaveBeenCalled();
+    });
+
+    it('skips the shift update when no matching shift is found', async () => {
+      component.trip = { rowId: 2, key: 'no-shift' } as unknown as ITrip;
+      mockShift.query.and.returnValue(Promise.resolve([]));
+      mockShift.update.calls.reset();
+      mockGig.updateTripDuration.and.returnValue(Promise.resolve());
+
+      await component.setDropoffTime();
+
+      expect(mockShift.update).not.toHaveBeenCalled();
+      expect(component.trip.dropoffTime).toBeTruthy();
+    });
+  });
+
+  describe('setPickupTime', () => {
+    it('updates the matching shift finish time and the trip pickup time', async () => {
+      component.trip = { rowId: 1, key: 'trip-key' } as unknown as ITrip;
+      const shift = { id: 1, key: 'trip-key' } as unknown as IShift;
+      mockShift.query.and.returnValue(Promise.resolve([shift]));
+      mockShift.update.and.returnValue(Promise.resolve());
+      mockTrip.update.and.returnValue(Promise.resolve());
+
+      await component.setPickupTime();
+
+      expect(mockShift.query).toHaveBeenCalledWith('key', 'trip-key');
+      expect(mockShift.update).toHaveBeenCalledWith([shift]);
+      expect(component.trip.pickupTime).toBeTruthy();
+      expect(mockTrip.update).toHaveBeenCalledWith([component.trip]);
+    });
   });
 });

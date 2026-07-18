@@ -13,6 +13,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import type { IExpense } from '@interfaces/entities/expense.interface';
 import type { UserProfile } from '@interfaces/auth/user-profile.interface';
 import { MatDialogRef } from '@angular/material/dialog';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;
@@ -520,6 +521,64 @@ describe('ExpensesComponent', () => {
       await component.saveSheetDialog('save');
 
       expect(snackBarSpy.open).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deep-link edit query param', () => {
+    async function createComponentWithEditParam(editParam: string): Promise<ExpensesComponent> {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [ExpensesComponent, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          { provide: ExpensesService, useValue: expensesServiceSpy },
+          { provide: UnsavedDataService, useValue: unsavedDataServiceSpy },
+          { provide: AuthGoogleService, useValue: authGoogleServiceMock },
+          { provide: MatDialog, useValue: dialogSpy },
+          { provide: MatSnackBar, useValue: snackBarSpy },
+          { provide: ActivatedRoute, useValue: { snapshot: { queryParams: { edit: editParam } } } },
+          CurrencyPipe,
+          DatePipe,
+          provideNativeDateAdapter()
+        ]
+      }).compileComponents();
+
+      const editFixture = TestBed.createComponent(ExpensesComponent);
+      return editFixture.componentInstance;
+    }
+
+    it('opens the matching expense for edit once it appears in the stream', async () => {
+      const comp = await createComponentWithEditParam('2');
+      await comp.ngOnInit();
+      const editSpy = spyOn(comp, 'editExpense');
+
+      expensesStream$.next([makeExpense({ rowId: 2 })]);
+      await Promise.resolve();
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      expect(editSpy).toHaveBeenCalledWith(jasmine.objectContaining({ rowId: 2 }));
+    });
+
+    it('does nothing when no expense matches the requested rowId', async () => {
+      const comp = await createComponentWithEditParam('999');
+      await comp.ngOnInit();
+      const editSpy = spyOn(comp, 'editExpense');
+
+      expensesStream$.next([makeExpense({ rowId: 2 })]);
+      await Promise.resolve();
+
+      expect(editSpy).not.toHaveBeenCalled();
+    });
+
+    it('ignores a non-numeric edit param', async () => {
+      const comp = await createComponentWithEditParam('not-a-number');
+      const editSpy = spyOn(comp, 'editExpense');
+
+      await comp.ngOnInit();
+      expensesStream$.next([makeExpense({ rowId: 2 })]);
+      await Promise.resolve();
+
+      expect(editSpy).not.toHaveBeenCalled();
     });
   });
 });

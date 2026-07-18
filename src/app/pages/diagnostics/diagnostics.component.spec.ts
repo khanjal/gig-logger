@@ -154,6 +154,75 @@ describe('DiagnosticsComponent', () => {
     expect(other.trips).toBe(0);
   });
 
+  it('mergeDuplicates should update trip.place for place duplicates', async () => {
+    const trips: ITrip[] = [{ place: 'Old Place', key: '1' } as ITrip];
+    tripService.list.and.returnValue(Promise.resolve(trips));
+    shiftService.list.and.returnValue(Promise.resolve([]));
+
+    const selected: IDiagnosticRecord = { place: 'New Place', trips: 1 };
+    const other: IDiagnosticRecord = { place: 'Old Place', trips: 1 };
+
+    await component.mergeDuplicates([selected, other], selected, 'place');
+
+    expect(tripService.update).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.objectContaining({ place: 'New Place' })]));
+  });
+
+  it('mergeDuplicates should update trip.name for name duplicates', async () => {
+    const trips: ITrip[] = [{ name: 'Old Name', key: '1' } as ITrip];
+    tripService.list.and.returnValue(Promise.resolve(trips));
+    shiftService.list.and.returnValue(Promise.resolve([]));
+
+    const selected: IDiagnosticRecord = { name: 'New Name', trips: 1 };
+    const other: IDiagnosticRecord = { name: 'Old Name', trips: 1 };
+
+    await component.mergeDuplicates([selected, other], selected, 'name');
+
+    expect(tripService.update).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.objectContaining({ name: 'New Name' })]));
+  });
+
+  it('mergeDuplicates should update trip start/end address for address duplicates', async () => {
+    const trips: ITrip[] = [{ startAddress: 'Old Address', endAddress: 'Old Address', key: '1' } as ITrip];
+    tripService.list.and.returnValue(Promise.resolve(trips));
+    shiftService.list.and.returnValue(Promise.resolve([]));
+
+    const selected: IDiagnosticRecord = { address: 'New Address', trips: 1 };
+    const other: IDiagnosticRecord = { address: 'Old Address', trips: 1 };
+
+    await component.mergeDuplicates([selected, other], selected, 'address');
+
+    expect(tripService.update).toHaveBeenCalledWith(jasmine.arrayContaining([
+      jasmine.objectContaining({ startAddress: 'New Address', endAddress: 'New Address' })
+    ]));
+  });
+
+  it('mergeDuplicates should update trip.type for type duplicates', async () => {
+    const trips: ITrip[] = [{ type: 'Old Type', key: '1' } as ITrip];
+    tripService.list.and.returnValue(Promise.resolve(trips));
+    shiftService.list.and.returnValue(Promise.resolve([]));
+
+    const selected: IDiagnosticRecord = { type: 'New Type', trips: 1 };
+    const other: IDiagnosticRecord = { type: 'Old Type', trips: 1 };
+
+    await component.mergeDuplicates([selected, other], selected, 'type');
+
+    expect(tripService.update).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.objectContaining({ type: 'New Type' })]));
+  });
+
+  it('mergeDuplicates should update trip.region and shift.region for region duplicates', async () => {
+    const trips: ITrip[] = [{ region: 'Old Region', key: '1' } as ITrip];
+    const shifts: IShift[] = [{ region: 'Old Region' } as IShift];
+    tripService.list.and.returnValue(Promise.resolve(trips));
+    shiftService.list.and.returnValue(Promise.resolve(shifts));
+
+    const selected: IDiagnosticRecord = { region: 'New Region', trips: 1, shifts: 1 };
+    const other: IDiagnosticRecord = { region: 'Old Region', trips: 1, shifts: 1 };
+
+    await component.mergeDuplicates([selected, other], selected, 'region');
+
+    expect(tripService.update).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.objectContaining({ region: 'New Region' })]));
+    expect(shiftService.update).toHaveBeenCalledWith(jasmine.arrayContaining([jasmine.objectContaining({ region: 'New Region' })]));
+  });
+
   it('fixShiftDuration should compute duration, mark fixed, and decrement count', async () => {
     component.dataDiagnostics.set([{ name: 'Shifts Missing Time Duration', count: 1, severity: 'warning', description: '', itemType: 'shift', items: [] }]);
     const shift: IShift = { start: '2024-01-01T00:00:00Z', finish: '2024-01-01T00:30:00Z' } as IShift;
