@@ -71,7 +71,7 @@ describe('BaseInputComponent (integration)', () => {
     const formDbg = fixture.debugElement.query(By.css('form'));
     try {
       const fg = formDbg.injector.get<FormGroupDirective>(FormGroupDirective);
-      (fg as any).submitted = true;
+      (fg as unknown as { submitted: boolean }).submitted = true;
     } catch {
       // ignore if FormGroupDirective not available in this test harness
     }

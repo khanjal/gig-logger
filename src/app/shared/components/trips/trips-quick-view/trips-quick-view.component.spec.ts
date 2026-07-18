@@ -8,6 +8,7 @@ import { GigWorkflowService } from '@services/gig-workflow.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { Router } from '@angular/router';
+import { ITrip } from '@interfaces/entities/trip.interface';
 
 describe('TripsQuickViewComponent', () => {
   let component: TripsQuickViewComponent;
@@ -53,14 +54,14 @@ describe('TripsQuickViewComponent', () => {
   });
 
   it('navigates on editTrip', async () => {
-    component.trip = { rowId: 123 } as any;
+    component.trip = { rowId: 123 } as ITrip;
     fixture.detectChanges();
     await component.editTrip();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/trips/edit', component.trip.rowId]);
   });
 
   it('renders action buttons with labels using label input', () => {
-    component.trip = { rowId: 1, pickupTime: undefined, dropoffTime: undefined, exclude: false } as any;
+    component.trip = { rowId: 1, pickupTime: undefined, dropoffTime: undefined, exclude: false } as ITrip;
     component.showActions = true;
     fixture.detectChanges();
 

@@ -6,19 +6,23 @@ import { MonthlyService } from '@services/sheets/monthly.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { WeekdayService } from '@services/sheets/weekday.service';
 import { WeeklyService } from '@services/sheets/weekly.service';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IWeekday } from '@interfaces/sheets/weekday.interface';
+import type { IWeekly } from '@interfaces/sheets/weekly.interface';
+import type { IMonthly } from '@interfaces/sheets/monthly.interface';
 
 describe('CurrentAverageStateService', () => {
   let service: CurrentAverageStateService;
 
-  const shifts$ = new BehaviorSubject<any[]>([]);
-  const weekdays$ = new BehaviorSubject<any[]>([]);
-  const weekly$ = new BehaviorSubject<any[]>([]);
-  const monthly$ = new BehaviorSubject<any[]>([]);
+  const shifts$ = new BehaviorSubject<IShift[]>([]);
+  const weekdays$ = new BehaviorSubject<IWeekday[]>([]);
+  const weekly$ = new BehaviorSubject<IWeekly[]>([]);
+  const monthly$ = new BehaviorSubject<IMonthly[]>([]);
 
-  const mockShiftService: any = { shifts$: shifts$.asObservable() };
-  const mockWeekdayService: any = { weekdays$: weekdays$.asObservable() };
-  const mockWeeklyService: any = { weekly$: weekly$.asObservable() };
-  const mockMonthlyService: any = { monthly$: monthly$.asObservable() };
+  const mockShiftService: Partial<ShiftService> = { shifts$: shifts$.asObservable() };
+  const mockWeekdayService: Partial<WeekdayService> = { weekdays$: weekdays$.asObservable() };
+  const mockWeeklyService: Partial<WeeklyService> = { weekly$: weekly$.asObservable() };
+  const mockMonthlyService: Partial<MonthlyService> = { monthly$: monthly$.asObservable() };
 
   beforeEach(() => {
     // ensure a stable "today" for tests
@@ -46,14 +50,14 @@ describe('CurrentAverageStateService', () => {
 
   it('calculates currentDayAmount from shifts matching selected date', () => {
     service.setDate('2024-01-02');
-    shifts$.next([{ date: '2024-01-02', grandTotal: '12.5' }, { date: '2024-01-03', grandTotal: 7 }]);
+    shifts$.next([{ date: '2024-01-02', grandTotal: '12.5' }, { date: '2024-01-03', grandTotal: 7 }] as unknown as IShift[]);
     expect(service.currentDayAmount()).toBeCloseTo(12.5);
   });
 
   it('calculates currentWeekAmount including shifts on or after monday', () => {
     service.setDate('2024-01-02');
     // based on the DateHelper stubs in this test, week inclusion can vary; assert a sensible range
-    shifts$.next([{ date: '2024-01-01', grandTotal: '5' }, { date: '2024-01-02', grandTotal: 10 }]);
+    shifts$.next([{ date: '2024-01-01', grandTotal: '5' }, { date: '2024-01-02', grandTotal: 10 }] as unknown as IShift[]);
     const week = service.currentWeekAmount();
     expect(typeof week).toBe('number');
     expect(week).toBeGreaterThanOrEqual(10);
@@ -61,14 +65,14 @@ describe('CurrentAverageStateService', () => {
 
   it('calculates currentMonthAmount for month start and toFiniteNumber handles non-numbers', () => {
     service.setDate('2024-01-02');
-    shifts$.next([{ date: '2024-01-01', grandTotal: 'abc' }, { date: '2024-01-02', grandTotal: 20 }]);
+    shifts$.next([{ date: '2024-01-01', grandTotal: 'abc' }, { date: '2024-01-02', grandTotal: 20 }] as unknown as IShift[]);
     // non-finite grandTotal should be treated as 0
     expect(service.currentMonthAmount()).toBe(20);
   });
 
   it('returns dailyAverage from weekdays data', () => {
     service.setDate('2024-01-02');
-    weekdays$.next([{ day: 2, dailyPrevAverage: 33 }]);
+    weekdays$.next([{ day: 2, dailyPrevAverage: 33 }] as unknown as IWeekday[]);
     expect(service.dailyAverage()).toBe(33);
   });
 
@@ -77,13 +81,13 @@ describe('CurrentAverageStateService', () => {
     weekly$.next([
       { begin: '2023-12-01', average: 10 },
       { begin: '2024-01-01', average: 42 }
-    ]);
+    ] as unknown as IWeekly[]);
     expect(service.weeklyAverage()).toBe(42);
   });
 
   it('returns monthlyAverage based on month/year match', () => {
     service.setDate('2024-01-02');
-    monthly$.next([{ month: '1-2024', average: 99 }]);
+    monthly$.next([{ month: '1-2024', average: 99 }] as unknown as IMonthly[]);
     expect(service.monthlyAverage()).toBe(99);
   });
 });

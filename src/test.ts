@@ -31,6 +31,8 @@ import { TripService } from './app/shared/services/sheets/trip.service';
 import { LoggerService } from './app/shared/services/logger.service';
 import { ThemeService } from './app/shared/services/theme.service';
 import type { UserProfile } from '@interfaces/auth/user-profile.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { MatSnackBarConfig } from '@angular/material/snack-bar';
 
 // Initialize the Angular testing environment (Angular CLI discovers specs automatically)
 getTestBed().initTestEnvironment(
@@ -48,7 +50,7 @@ const AUTH_GOOGLE_SERVICE_STUB = {
 };
 
 const SPREADSHEET_SERVICE_STUB = {
-  spreadsheets$: new BehaviorSubject<any[]>([]),
+  spreadsheets$: new BehaviorSubject<ISpreadsheet[]>([]),
   querySpreadsheets: () => Promise.resolve([]),
   getSpreadsheets: () => Promise.resolve([]),
   getDefaultSheet: () => Promise.resolve(undefined),
@@ -60,9 +62,9 @@ const SPREADSHEET_SERVICE_STUB = {
 const SHIFT_SERVICE_STUB = { getUnsavedShifts: () => Promise.resolve([]) };
 const TRIP_SERVICE_STUB = { getUnsaved: () => Promise.resolve([]) };
 const LOGGER_SERVICE_STUB = { error: () => {}, info: () => {}, debug: () => {} };
-const THEME_SERVICE_STUB = { preferenceChanges: new BehaviorSubject('system'), activeTheme$: new BehaviorSubject('light'), setTheme: (_: any) => {} };
+const THEME_SERVICE_STUB = { preferenceChanges: new BehaviorSubject('system'), activeTheme$: new BehaviorSubject('light'), setTheme: (_: string) => {} };
 const OAUTH_SERVICE_STUB = { configure: () => {}, loadDiscoveryDocumentAndTryLogin: () => Promise.resolve(true), hasValidAccessToken: () => false, initLoginFlow: () => {}, logOut: () => {} };
-const MAT_SNACKBAR_STUB = { open: (message: any, action?: any, config?: any) => ({ message, action, config }) };
+const MAT_SNACKBAR_STUB = { open: (message: string, action?: string, config?: MatSnackBarConfig) => ({ message, action, config }) };
 
 getTestBed().configureTestingModule({
   imports: [

@@ -1,5 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { PermissionService } from './permission.service';
+import type { BehaviorSubject } from 'rxjs';
+import type { PermissionState } from '@interfaces/auth/permission.interface';
+
+interface PermissionServicePrivates {
+  microphoneState$: BehaviorSubject<PermissionState>;
+  locationState$: BehaviorSubject<PermissionState>;
+}
+
+interface WindowWithSpeechRecognition {
+  webkitSpeechRecognition?: unknown;
+  SpeechRecognition?: unknown;
+}
 
 describe('PermissionService', () => {
   let service: PermissionService;
@@ -15,31 +27,31 @@ describe('PermissionService', () => {
 
   describe('isSpeechRecognitionSupported', () => {
     it('returns true when webkitSpeechRecognition exists', () => {
-      (window as any).webkitSpeechRecognition = function() {};
+      (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition = function() {};
 
       expect(service.isSpeechRecognitionSupported()).toBeTrue();
 
-      delete (window as any).webkitSpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition;
     });
 
     it('returns true when SpeechRecognition exists', () => {
-      (window as any).SpeechRecognition = function() {};
+      (window as unknown as WindowWithSpeechRecognition).SpeechRecognition = function() {};
 
       expect(service.isSpeechRecognitionSupported()).toBeTrue();
 
-      delete (window as any).SpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).SpeechRecognition;
     });
 
     it('returns false when neither exists', () => {
-      const webkit = (window as any).webkitSpeechRecognition;
-      const standard = (window as any).SpeechRecognition;
-      delete (window as any).webkitSpeechRecognition;
-      delete (window as any).SpeechRecognition;
+      const webkit = (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition;
+      const standard = (window as unknown as WindowWithSpeechRecognition).SpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).SpeechRecognition;
 
       expect(service.isSpeechRecognitionSupported()).toBeFalse();
 
-      if (webkit) (window as any).webkitSpeechRecognition = webkit;
-      if (standard) (window as any).SpeechRecognition = standard;
+      if (webkit) (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition = webkit;
+      if (standard) (window as unknown as WindowWithSpeechRecognition).SpeechRecognition = standard;
     });
   });
 
@@ -59,7 +71,7 @@ describe('PermissionService', () => {
 
   describe('hasMicrophonePermission', () => {
     it('returns false when denied', async () => {
-      (service as any).microphoneState$.next('denied');
+      (service as unknown as PermissionServicePrivates).microphoneState$.next('denied');
 
       const result = await service.hasMicrophonePermission();
 
@@ -85,7 +97,7 @@ describe('PermissionService', () => {
 
   describe('hasLocationPermission', () => {
     it('returns false when denied', async () => {
-      (service as any).locationState$.next('denied');
+      (service as unknown as PermissionServicePrivates).locationState$.next('denied');
 
       const result = await service.hasLocationPermission();
 
@@ -150,7 +162,7 @@ describe('PermissionService', () => {
       const original = navigator.geolocation;
       Object.defineProperty(navigator, 'geolocation', {
         value: {
-          getCurrentPosition: (success: any) => success({ coords: { latitude: 1, longitude: 2 } })
+          getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 1, longitude: 2 } } as GeolocationPosition)
         },
         configurable: true
       });
@@ -165,7 +177,7 @@ describe('PermissionService', () => {
       const original = navigator.geolocation;
       Object.defineProperty(navigator, 'geolocation', {
         value: {
-          getCurrentPosition: (_success: any, error: any) => error({ message: 'denied' })
+          getCurrentPosition: (_success: PositionCallback, error: PositionErrorCallback) => error({ message: 'denied' } as GeolocationPositionError)
         },
         configurable: true
       });

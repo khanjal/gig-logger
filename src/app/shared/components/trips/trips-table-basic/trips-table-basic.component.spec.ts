@@ -5,14 +5,14 @@ import type { ITrip } from '@interfaces/entities/trip.interface';
 
 describe('TripsTableBasicComponent trackByTrip', () => {
   it('returns id when present', () => {
-    const trip = { id: 5 } as any;
-    const res = (TripsTableBasicComponent.prototype as any).trackByTrip.call(null, 0, trip);
+    const trip = { id: 5 } as ITrip;
+    const res = TripsTableBasicComponent.prototype.trackByTrip.call(null, 0, trip);
     expect(res).toBe(5);
   });
 
   it('falls back to index', () => {
-    const trip = {} as any;
-    const res = (TripsTableBasicComponent.prototype as any).trackByTrip.call(null, 8, trip);
+    const trip = {} as ITrip;
+    const res = TripsTableBasicComponent.prototype.trackByTrip.call(null, 8, trip);
     expect(res).toBe(8);
   });
 });

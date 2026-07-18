@@ -5,11 +5,13 @@ import { ApiService } from './api.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
 
 describe('ApiService (focused tests)', () => {
-  let httpSpy: any;
-  let secureCookieSpy: any;
-  let loggerSpy: any;
+  let httpSpy: { get: jasmine.Spy; post: jasmine.Spy; put: jasmine.Spy };
+  let secureCookieSpy: jasmine.SpyObj<SecureCookieStorageService>;
+  let loggerSpy: jasmine.SpyObj<LoggerService>;
   let service: ApiService;
 
   beforeEach(() => {
@@ -50,8 +52,8 @@ describe('ApiService (focused tests)', () => {
       return null;
     });
 
-    let capturedOptions: any = null;
-    httpSpy.get.and.callFake((url: string, options: any) => {
+    let capturedOptions!: { headers: { get(name: string): string | null } };
+    httpSpy.get.and.callFake((url: string, options: { headers: { get(name: string): string | null } }) => {
       capturedOptions = options;
       return of([{ name: 'file1' }]);
     });
@@ -77,14 +79,14 @@ describe('ApiService (focused tests)', () => {
     });
 
     const result = await service.getSheetData('sheet-id');
-    expect(result as any).toEqual(jasmine.objectContaining({ sheetData: 42 }));
+    expect(result).toEqual(jasmine.objectContaining({ sheetData: 42 }));
     // service tags S3 responses with _source = 's3'
-    expect((result as any)._source).toBe('s3');
+    expect((result as ISheet & { _source?: string })._source).toBe('s3');
     expect(loggerSpy.debug).toHaveBeenCalled();
   });
 
   it('saveSheetData returns error message array when http.put fails', async () => {
-    const sheet = { properties: { id: 's1', name: 'MySheet' } } as any;
+    const sheet = { properties: { id: 's1', name: 'MySheet' } } as unknown as ISheetSavePayload;
     httpSpy.put.and.returnValue(throwError({ message: 'network fail' }));
 
     const res = await service.saveSheetData(sheet);

@@ -14,7 +14,17 @@ import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { IShift } from '@interfaces/entities/shift.interface';
+import { ITrip } from '@interfaces/entities/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
+
+// Exposes the component's private setDefaultShift method for spying/invocation without using `any`.
+interface TripFormPrivateAccess {
+  setDefaultShift: () => Promise<void>;
+}
+
+function asPrivate(component: TripFormComponent): TripFormPrivateAccess {
+  return component as unknown as TripFormPrivateAccess;
+}
 
 describe('TripFormComponent', () => {
   let component: TripFormComponent;
@@ -27,6 +37,7 @@ describe('TripFormComponent', () => {
   let deliveryService: jasmine.SpyObj<DeliveryService>;
   let timerService: jasmine.SpyObj<TimerService>;
   let dialogRef: jasmine.SpyObj<MatDialogRef<TripFormComponent>>;
+  let setDefaultShiftSpy: jasmine.Spy;
 
   beforeEach(async () => {
     const snackSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -76,7 +87,7 @@ describe('TripFormComponent', () => {
     const fixture = TestBed.createComponent(TripFormComponent);
     component = fixture.componentInstance;
 
-    spyOn(component as any, 'setDefaultShift').and.returnValue(Promise.resolve());
+    setDefaultShiftSpy = spyOn(asPrivate(component), 'setDefaultShift').and.returnValue(Promise.resolve());
     spyOn(component, 'selectPlace').and.returnValue(Promise.resolve());
     spyOn(component, 'showNameAddresses').and.returnValue(Promise.resolve());
     spyOn(component, 'showAddressNames').and.returnValue(Promise.resolve());
@@ -119,7 +130,7 @@ describe('TripFormComponent', () => {
       actionTime: 0,
       rowId: 0,
       saved: true
-    } as any));
+    } as unknown as IShift));
     shiftService.getMaxRowId.and.returnValue(Promise.resolve(1));
 
     await component.ngOnInit();
@@ -137,8 +148,8 @@ describe('TripFormComponent', () => {
   });
 
   it('onShiftSelected should remove validator and set region when shift provided', async () => {
-    const shift: IShift = { key: '2024-01-01_1', region: 'Downtown', service: 'DoorDash' } as any;
-    component.data = {} as any;
+    const shift: IShift = { key: '2024-01-01_1', region: 'Downtown', service: 'DoorDash' } as unknown as IShift;
+    component.data = {};
     component.shifts = [shift];
     await component.onShiftSelected(shift.key);
 
@@ -150,7 +161,7 @@ describe('TripFormComponent', () => {
     const shifts = [
       { key: 'k2', service: 'Uber Eats', region: 'Suburbs' },
       { key: 'k1', service: 'DoorDash', region: 'Downtown' }
-    ] as any[];
+    ] as unknown as IShift[];
     shiftService.list.and.returnValue(Promise.resolve(shifts));
 
     await component.onShiftSelected('new');
@@ -163,10 +174,10 @@ describe('TripFormComponent', () => {
   });
 
   it('setDefaultShift keeps New selected when there are no trips today', async () => {
-    (component as any).setDefaultShift.and.callThrough();
+    setDefaultShiftSpy.and.callThrough();
     tripService.query.and.returnValue(Promise.resolve([]));
     shiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([
-      { key: 'older-shift', service: 'DoorDash', region: 'Downtown' } as any
+      { key: 'older-shift', service: 'DoorDash', region: 'Downtown' } as unknown as IShift
     ]));
     placeService.list.and.returnValue(Promise.resolve([]));
     component.tripForm.controls.shift.setValue('stale-shift');
@@ -179,7 +190,7 @@ describe('TripFormComponent', () => {
       subtitle: 'old'
     });
 
-    await (component as any).setDefaultShift();
+    await asPrivate(component).setDefaultShift();
 
     expect(component.tripForm.controls.shift.value).toBe('new');
     expect(component.selectedShiftOption()).toBeUndefined();
@@ -237,7 +248,7 @@ describe('TripFormComponent', () => {
   });
 
   it('addTrip should use selected previous-day shift when shift control is set and not create a new shift', async () => {
-    const oldShift: IShift = { key: '2026-03-25_1', date: '2026-03-25', service: 'DoorDash', rowId: 99 } as any;
+    const oldShift: IShift = { key: '2026-03-25_1', date: '2026-03-25', service: 'DoorDash', rowId: 99 } as unknown as IShift;
     component.shifts = [oldShift];
 
     // No today's shifts returned
@@ -261,12 +272,12 @@ describe('TripFormComponent', () => {
 
     // Trip should have been added and associated with the provided shift key
     expect(tripService.add).toHaveBeenCalled();
-    const addedTrip = tripService.add.calls.argsFor(0)[0] as any;
+    const addedTrip = tripService.add.calls.argsFor(0)[0] as ITrip;
     expect(addedTrip.key).toBe(oldShift.key);
   });
 
   it('close should emit editModeExit when in edit mode', () => {
-    const emitted: any[] = [];
+    const emitted: (string | undefined)[] = [];
     component.isInEditMode = true;
     component.editModeExit.subscribe(v => emitted.push(v));
     component.close();

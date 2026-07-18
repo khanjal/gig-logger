@@ -9,6 +9,10 @@ import { LoggerService } from '@services/logger.service';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { Subject } from 'rxjs';
 import { DataSyncModalComponent } from './data-sync-modal.component';
+import type { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 
 
 describe('DataSyncModalComponent', () => {
@@ -46,7 +50,7 @@ describe('DataSyncModalComponent', () => {
     unsavedDataSpy.commitSavedItems.and.resolveTo();
     timerSpy = jasmine.createSpyObj('TimerService', ['delay']);
     loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'debug'], {
-      onLog: new Subject<any>()
+      onLog: new Subject<{ level: string; message: string }>()
     });
     dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
 
@@ -75,13 +79,13 @@ describe('DataSyncModalComponent', () => {
   });
 
   it('create-demo flow should create, link, seed, then load data and close dialog', async () => {
-    workflowSpy.createFile.and.resolveTo({ id: 'new-demo-id', name: 'Demo' } as any);
+    workflowSpy.createFile.and.resolveTo({ id: 'new-demo-id', name: 'Demo' } as ISheetProperties);
     workflowSpy.createSheet.and.resolveTo();
     workflowSpy.insertDemoData.and.resolveTo();
 
     sheetSpy.getSpreadsheets.and.returnValues(
-      Promise.resolve([{ id: 'old-default', name: 'Old', default: 'true', size: 0 }] as any),
-      Promise.resolve([{ id: 'new-demo-id', name: 'Demo', default: 'true', size: 0 }] as any)
+      Promise.resolve([{ id: 'old-default', name: 'Old', default: 'true', size: 0 }] as ISpreadsheet[]),
+      Promise.resolve([{ id: 'new-demo-id', name: 'Demo', default: 'true', size: 0 }] as ISpreadsheet[])
     );
     sheetSpy.update.and.resolveTo();
     sheetSpy.add.and.resolveTo();
@@ -89,7 +93,7 @@ describe('DataSyncModalComponent', () => {
     sheetSpy.getSpreadsheetData.and.resolveTo({
       properties: { id: 'new-demo-id', name: 'Demo' },
       messages: []
-    } as any);
+    } as unknown as ISheet);
     sheetSpy.loadSpreadsheetData.and.resolveTo();
 
     fixture = TestBed.createComponent(DataSyncModalComponent);
@@ -112,7 +116,7 @@ describe('DataSyncModalComponent', () => {
   });
 
   it('create-demo flow should stop when file creation fails and not close dialog', async () => {
-    workflowSpy.createFile.and.resolveTo(null as any);
+    workflowSpy.createFile.and.resolveTo(null);
 
     fixture = TestBed.createComponent(DataSyncModalComponent);
     component = fixture.componentInstance;
@@ -126,8 +130,8 @@ describe('DataSyncModalComponent', () => {
   });
 
   it('create-demo flow should handle unexpected errors and keep modal open', async () => {
-    workflowSpy.createFile.and.resolveTo({ id: 'new-demo-id', name: 'Demo' } as any);
-    sheetSpy.getSpreadsheets.and.resolveTo([] as any);
+    workflowSpy.createFile.and.resolveTo({ id: 'new-demo-id', name: 'Demo' } as ISheetProperties);
+    sheetSpy.getSpreadsheets.and.resolveTo([]);
     sheetSpy.add.and.resolveTo();
     workflowSpy.createSheet.and.rejectWith(new Error('create sheet failed'));
 
@@ -145,7 +149,7 @@ describe('DataSyncModalComponent', () => {
       useValue: { type: 'create-sheet', sheetName: 'My New Sheet' }
     });
 
-    workflowSpy.createFile.and.resolveTo(null as any);
+    workflowSpy.createFile.and.resolveTo(null);
 
     fixture = TestBed.createComponent(DataSyncModalComponent);
     component = fixture.componentInstance;
@@ -162,12 +166,12 @@ describe('DataSyncModalComponent', () => {
       useValue: { type: 'create-sheet', sheetName: 'My New Sheet' }
     });
 
-    workflowSpy.createFile.and.resolveTo({ id: 'new-sheet-id', name: 'My New Sheet' } as any);
+    workflowSpy.createFile.and.resolveTo({ id: 'new-sheet-id', name: 'My New Sheet' } as ISheetProperties);
     workflowSpy.createSheet.and.resolveTo();
 
     sheetSpy.getSpreadsheets.and.returnValues(
-      Promise.resolve([{ id: 'old-default', name: 'Old', default: 'true', size: 0 }] as any),
-      Promise.resolve([{ id: 'new-sheet-id', name: 'My New Sheet', default: 'true', size: 0 }] as any)
+      Promise.resolve([{ id: 'old-default', name: 'Old', default: 'true', size: 0 }] as ISpreadsheet[]),
+      Promise.resolve([{ id: 'new-sheet-id', name: 'My New Sheet', default: 'true', size: 0 }] as ISpreadsheet[])
     );
     sheetSpy.update.and.resolveTo();
     sheetSpy.add.and.resolveTo();
@@ -175,7 +179,7 @@ describe('DataSyncModalComponent', () => {
     sheetSpy.getSpreadsheetData.and.resolveTo({
       properties: { id: 'new-sheet-id', name: 'My New Sheet' },
       messages: []
-    } as any);
+    } as unknown as ISheet);
     sheetSpy.loadSpreadsheetData.and.resolveTo();
 
     fixture = TestBed.createComponent(DataSyncModalComponent);
@@ -199,12 +203,12 @@ describe('DataSyncModalComponent', () => {
   it('save flow with unsaved shifts should calculate totals before saving', async () => {
     TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'save' });
 
-    const defaultSheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 } as any;
+    const defaultSheet: ISpreadsheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 };
     sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
     sheetSpy.warmUpLambda.and.resolveTo({});
     unsavedDataSpy.collectUnsavedItems.and.resolveTo({
       unsavedTrips: [],
-      unsavedShifts: [{ id: 1, shifts: 5 } as any],
+      unsavedShifts: [{ id: 1, shifts: 5 }] as unknown as IShift[],
       unsavedExpenses: []
     });
     workflowSpy.calculateShiftTotals.and.resolveTo();
@@ -221,19 +225,20 @@ describe('DataSyncModalComponent', () => {
   it('save flow should capture saveStartedAt after shift recalculation', async () => {
     TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'save' });
 
-    const defaultSheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 } as any;
+    const defaultSheet: ISpreadsheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 };
     let recalculationFinishedAt = 0;
     let apiCallTime = 0;
     spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({
       success: true,
-      filteredMessages: []
-    } as any);
+      filteredMessages: [],
+      allMessages: []
+    });
 
     sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
     sheetSpy.warmUpLambda.and.resolveTo({});
     unsavedDataSpy.collectUnsavedItems.and.resolveTo({
       unsavedTrips: [],
-      unsavedShifts: [{ id: 7 } as any],
+      unsavedShifts: [{ id: 7 }] as unknown as IShift[],
       unsavedExpenses: []
     });
     workflowSpy.calculateShiftTotals.and.callFake(async () => {
@@ -250,7 +255,7 @@ describe('DataSyncModalComponent', () => {
 
     await component.ngOnInit();
 
-    const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as [number, ...any[]];
+    const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as Parameters<UnsavedDataService['commitSavedItems']>;
     expect(saveStartedAtArg).toBeGreaterThanOrEqual(recalculationFinishedAt);
     expect(saveStartedAtArg).toBeLessThanOrEqual(apiCallTime);
   });

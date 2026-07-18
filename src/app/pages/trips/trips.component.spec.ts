@@ -13,23 +13,26 @@ import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { DateHelper } from '@helpers/date.helper';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 describe('TripComponent trackByTrip', () => {
   it('returns rowId when present', () => {
-    const trip = { rowId: 123 } as any;
-    const res = (TripComponent.prototype as any).trackByTrip.call(null, 0, trip);
+    const trip = { rowId: 123 } as unknown as ITrip;
+    const res = TripComponent.prototype.trackByTrip.call(null as unknown as TripComponent, 0, trip);
     expect(res).toBe(123);
   });
 
   it('returns key when rowId absent', () => {
-    const trip = { key: 'abc' } as any;
-    const res = (TripComponent.prototype as any).trackByTrip.call(null, 1, trip);
+    const trip = { key: 'abc' } as unknown as ITrip;
+    const res = TripComponent.prototype.trackByTrip.call(null as unknown as TripComponent, 1, trip);
     expect(res).toBe('abc');
   });
 
   it('falls back to index', () => {
-    const trip = {} as any;
-    const res = (TripComponent.prototype as any).trackByTrip.call(null, 7, trip);
+    const trip = {} as unknown as ITrip;
+    const res = TripComponent.prototype.trackByTrip.call(null as unknown as TripComponent, 7, trip);
     expect(res).toBe(7);
   });
 });
@@ -37,9 +40,9 @@ describe('TripComponent trackByTrip', () => {
 describe('TripComponent', () => {
   let component: TripComponent;
   let fixture: ComponentFixture<TripComponent>;
-  let trips$: BehaviorSubject<any[]>;
-  let shifts$: BehaviorSubject<any[]>;
-  let expenses$: BehaviorSubject<any[]>;
+  let trips$: BehaviorSubject<ITrip[]>;
+  let shifts$: BehaviorSubject<IShift[]>;
+  let expenses$: BehaviorSubject<IExpense[]>;
   const mockGigWorkflowService = jasmine.createSpyObj("GigWorkflowService", ["calculateShiftTotals"]);
   const mockSpreadsheetService = jasmine.createSpyObj("SpreadsheetService", ["loadSpreadsheetData", "querySpreadsheets"]);
   let mockShiftService: jasmine.SpyObj<ShiftService>;
@@ -47,9 +50,9 @@ describe('TripComponent', () => {
   let mockExpensesService: jasmine.SpyObj<ExpensesService>;
 
   beforeEach(async () => {
-    trips$ = new BehaviorSubject<any[]>([]);
-    shifts$ = new BehaviorSubject<any[]>([]);
-    expenses$ = new BehaviorSubject<any[]>([]);
+    trips$ = new BehaviorSubject<ITrip[]>([]);
+    shifts$ = new BehaviorSubject<IShift[]>([]);
+    expenses$ = new BehaviorSubject<IExpense[]>([]);
     mockShiftService = jasmine.createSpyObj("ShiftService", ["getByRowId", "getUnsavedShifts", "getPreviousWeekShifts", "query", "queryShiftByKey"], { shifts$: shifts$.asObservable() });
     mockTripService = jasmine.createSpyObj("TripService", ["getByRowId", "getUnsaved", "query", "getMaxRowId"], { trips$: trips$.asObservable() });
     mockExpensesService = jasmine.createSpyObj('ExpensesService', ['getUnsaved', 'saveUnsaved'], { expenses$: expenses$.asObservable() });
@@ -62,15 +65,15 @@ describe('TripComponent', () => {
     );
     mockPollingService.isPollingEnabled.and.returnValue(false);
     const viewportSpy = jasmine.createSpyObj('ViewportScroller', ['scrollToAnchor']);
-    mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([] as any));
-    mockTripService.getUnsaved.and.returnValue(Promise.resolve([] as any));
-    mockTripService.query.and.returnValue(Promise.resolve([] as any));
+    mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([]));
+    mockTripService.getUnsaved.and.returnValue(Promise.resolve([]));
+    mockTripService.query.and.returnValue(Promise.resolve([]));
     mockTripService.getMaxRowId.and.returnValue(Promise.resolve(1));
-    mockShiftService.getUnsavedShifts.and.returnValue(Promise.resolve([] as any));
-    mockShiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([] as any));
-    mockShiftService.query.and.returnValue(Promise.resolve([] as any));
-    mockShiftService.queryShiftByKey.and.returnValue(Promise.resolve(undefined as any));
-    mockExpensesService.getUnsaved.and.returnValue(Promise.resolve([] as any));
+    mockShiftService.getUnsavedShifts.and.returnValue(Promise.resolve([]));
+    mockShiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([]));
+    mockShiftService.query.and.returnValue(Promise.resolve([]));
+    mockShiftService.queryShiftByKey.and.returnValue(Promise.resolve(undefined as unknown as IShift));
+    mockExpensesService.getUnsaved.and.returnValue(Promise.resolve([]));
 
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, MatDialogModule, MatSnackBarModule, TripComponent],
@@ -112,7 +115,7 @@ describe('TripComponent', () => {
   it('shouldShowUpdateMessage returns correct boolean', () => {
     component.todaysTrips.set([]);
     expect(component.shouldShowUpdateMessage()).toBeTrue();
-    component.todaysTrips.set([{ id: 1 } as any]);
+    component.todaysTrips.set([{ id: 1 } as unknown as ITrip]);
     expect(component.shouldShowUpdateMessage()).toBeFalse();
   });
 
@@ -138,14 +141,14 @@ describe('TripComponent', () => {
   it('refreshes demoSheetAttached based on default sheet name format', async () => {
     mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([
       { id: 'any-id', name: 'RaptorGig Demo - Apr 5, 2026, 5:20 PM', default: 'true', size: 0 }
-    ] as any));
+    ]));
 
     await component.ngOnInit();
     expect(component.demoSheetAttached()).toBeTrue();
 
     mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([
       { id: 'any-id', name: 'Production Sheet', default: 'true', size: 0 }
-    ] as any));
+    ]));
 
     await component.reload();
     expect(component.demoSheetAttached()).toBeFalse();
@@ -161,7 +164,7 @@ describe('TripComponent', () => {
       { id: 1, rowId: 4, date: today },
       { id: 2, rowId: 8, date: today },
       { id: 3, rowId: 2, date: yesterday }
-    ] as any);
+    ] as unknown as ITrip[]);
     await Promise.resolve();
 
     expect(component.todaysTrips().map(trip => trip.rowId)).toEqual([8, 4]);

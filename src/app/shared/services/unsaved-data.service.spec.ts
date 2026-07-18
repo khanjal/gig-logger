@@ -3,6 +3,9 @@ import { UnsavedDataService } from './unsaved-data.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 describe('UnsavedDataService', () => {
   let service: UnsavedDataService;
@@ -51,7 +54,7 @@ describe('UnsavedDataService', () => {
     });
 
     it('should return true when trips have unsaved data', async () => {
-      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as any]));
+      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as unknown as ITrip]));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
 
@@ -62,7 +65,7 @@ describe('UnsavedDataService', () => {
 
     it('should return true when shifts have unsaved data', async () => {
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
-      shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([{ id: 1 } as any]));
+      shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([{ id: 1 } as unknown as IShift]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
 
       const result = await service.hasUnsavedData();
@@ -73,7 +76,7 @@ describe('UnsavedDataService', () => {
     it('should return true when expenses have unsaved data', async () => {
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
-      expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as any]));
+      expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as unknown as IExpense]));
 
       const result = await service.hasUnsavedData();
 
@@ -81,8 +84,8 @@ describe('UnsavedDataService', () => {
     });
 
     it('should return true when multiple services have unsaved data', async () => {
-      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as any, { id: 2 } as any]));
-      shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([{ id: 1 } as any]));
+      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as unknown as ITrip, { id: 2 } as unknown as ITrip]));
+      shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([{ id: 1 } as unknown as IShift]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
 
       const result = await service.hasUnsavedData();
@@ -122,9 +125,9 @@ describe('UnsavedDataService', () => {
 
     it('should return correct counts for trips only', async () => {
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([
-        { id: 1 } as any,
-        { id: 2 } as any,
-        { id: 3 } as any
+        { id: 1 } as unknown as ITrip,
+        { id: 2 } as unknown as ITrip,
+        { id: 3 } as unknown as ITrip
       ]));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
@@ -142,8 +145,8 @@ describe('UnsavedDataService', () => {
     it('should return correct counts for shifts only', async () => {
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([
-        { id: 1 } as any,
-        { id: 2 } as any
+        { id: 1 } as unknown as IShift,
+        { id: 2 } as unknown as IShift
       ]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
 
@@ -160,7 +163,7 @@ describe('UnsavedDataService', () => {
     it('should return correct counts for expenses only', async () => {
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
-      expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as any]));
+      expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as unknown as IExpense]));
 
       const result = await service.getUnsavedCounts();
 
@@ -174,16 +177,16 @@ describe('UnsavedDataService', () => {
 
     it('should return correct total count for mixed unsaved data', async () => {
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([
-        { id: 1 } as any,
-        { id: 2 } as any
+        { id: 1 } as unknown as ITrip,
+        { id: 2 } as unknown as ITrip
       ]));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([
-        { id: 1 } as any
+        { id: 1 } as unknown as IShift
       ]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([
-        { id: 1 } as any,
-        { id: 2 } as any,
-        { id: 3 } as any
+        { id: 1 } as unknown as IExpense,
+        { id: 2 } as unknown as IExpense,
+        { id: 3 } as unknown as IExpense
       ]));
 
       const result = await service.getUnsavedCounts();
@@ -211,9 +214,9 @@ describe('UnsavedDataService', () => {
 
   describe('collectUnsavedItems', () => {
     it('should return all three unsaved lists in a single call', async () => {
-      const mockTrips = [{ id: 1 }] as any[];
-      const mockShifts = [{ id: 2 }] as any[];
-      const mockExpenses = [{ id: 3 }] as any[];
+      const mockTrips = [{ id: 1 }] as unknown as ITrip[];
+      const mockShifts = [{ id: 2 }] as unknown as IShift[];
+      const mockExpenses = [{ id: 3 }] as unknown as IExpense[];
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve(mockTrips));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve(mockShifts));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve(mockExpenses));
@@ -291,9 +294,9 @@ describe('UnsavedDataService', () => {
 
   describe('Integration Scenarios', () => {
     it('should detect unsaved data and get counts consistently', async () => {
-      const mockTrips = [{ id: 1 }, { id: 2 }] as any[];
-      const mockShifts = [{ id: 1 }] as any[];
-      const mockExpenses = [] as any[];
+      const mockTrips = [{ id: 1 }, { id: 2 }] as unknown as ITrip[];
+      const mockShifts = [{ id: 1 }] as unknown as IShift[];
+      const mockExpenses: IExpense[] = [];
 
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve(mockTrips));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve(mockShifts));
@@ -307,7 +310,7 @@ describe('UnsavedDataService', () => {
     });
 
     it('should commit saved items after detecting unsaved data', async () => {
-      const mockTrips = [{ id: 1 }] as any[];
+      const mockTrips = [{ id: 1 }] as unknown as ITrip[];
       tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve(mockTrips));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
@@ -317,9 +320,9 @@ describe('UnsavedDataService', () => {
 
       const { unsavedTrips, unsavedShifts, unsavedExpenses } = await service.collectUnsavedItems();
       const ts = Date.now();
-      const tripIds = new Set(unsavedTrips.map((t: any) => t.id as number));
-      const shiftIds = new Set(unsavedShifts.map((s: any) => s.id as number));
-      const expenseIds = new Set(unsavedExpenses.map((e: any) => e.id as number));
+      const tripIds = new Set(unsavedTrips.map((t: ITrip) => t.id as number));
+      const shiftIds = new Set(unsavedShifts.map((s: IShift) => s.id as number));
+      const expenseIds = new Set(unsavedExpenses.map((e: IExpense) => e.id as number));
 
       await service.commitSavedItems(ts, tripIds, shiftIds, expenseIds);
 

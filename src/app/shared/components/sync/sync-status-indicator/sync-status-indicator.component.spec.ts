@@ -7,29 +7,36 @@ import { ThemeService } from '@services/theme.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 
 import type { ThemePreference } from '@interfaces/ui/theme.interface';
-import { MatDialog } from '@angular/material/dialog';
+import type { ISyncState, ISyncMessage } from '@interfaces/sync/sync-status.interface';
+import type { UserProfile } from '@interfaces/auth/user-profile.interface';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
 describe('SyncStatusIndicatorComponent', () => {
   let component: SyncStatusIndicatorComponent;
   let fixture: ComponentFixture<SyncStatusIndicatorComponent>;
   let syncStatusSpy: jasmine.SpyObj<SyncStatusService>;
-  let uiPreferencesSpy: any;
+  let uiPreferencesSpy: {
+    pollingEnabled$: Observable<boolean>;
+    pollingEnabledSubject: BehaviorSubject<boolean>;
+    setPolling: jasmine.Spy;
+  };
   let unsavedDataSpy: jasmine.SpyObj<UnsavedDataService>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let themeSpy: jasmine.SpyObj<ThemeService>;
-  let syncState$: BehaviorSubject<any>;
-  let messages$: BehaviorSubject<any[]>;
+  let syncState$: BehaviorSubject<ISyncState>;
+  let messages$: BehaviorSubject<ISyncMessage[]>;
   let preference$: BehaviorSubject<ThemePreference>;
-  let profile$: BehaviorSubject<any>;
-  let authSpy: jasmine.SpyObj<any>;
+  let profile$: BehaviorSubject<UserProfile | null>;
+  let authSpy: jasmine.SpyObj<AuthGoogleService>;
 
   beforeEach(async () => {
-    syncState$ = new BehaviorSubject({ status: 'idle', message: 'Ready', progress: 0 });
-    messages$ = new BehaviorSubject<any[]>([]);
+    syncState$ = new BehaviorSubject({ status: 'idle', message: 'Ready', progress: 0 } as unknown as ISyncState);
+    messages$ = new BehaviorSubject<ISyncMessage[]>([]);
     preference$ = new BehaviorSubject<ThemePreference>('system');
     
     syncStatusSpy = jasmine.createSpyObj('SyncStatusService', ['clearMessages', 'getTimeSinceLastSync']);
@@ -53,8 +60,8 @@ describe('SyncStatusIndicatorComponent', () => {
 
     themeSpy = jasmine.createSpyObj('ThemeService', ['setTheme'], { currentPreference: 'system', preferenceChanges: preference$.asObservable() });
     // Auth mock - start signed-in by default
-    profile$ = new BehaviorSubject<any>({ sub: 'test-user' });
-    authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync', 'isAuthenticated', 'isAuthenticatedSync'], { profile$: profile$.asObservable() });
+    profile$ = new BehaviorSubject<UserProfile | null>({ sub: 'test-user' });
+    authSpy = jasmine.createSpyObj<AuthGoogleService>('AuthGoogleService', ['canSync', 'isAuthenticated', 'isAuthenticatedSync'], { profile$: profile$.asObservable() });
     authSpy.canSync.and.returnValue(Promise.resolve(true));
     authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
     authSpy.isAuthenticatedSync.and.returnValue(true);
@@ -96,7 +103,7 @@ describe('SyncStatusIndicatorComponent', () => {
   describe('getNextCheckText', () => {
     it('returns dash when polling disabled', () => {
       uiPreferencesSpy.pollingEnabledSubject.next(false);
-      syncState$.next({ status: 'idle', nextSyncIn: 30 });
+      syncState$.next({ status: 'idle', nextSyncIn: 30 } as unknown as ISyncState);
 
       expect(component.getNextCheckText()).toBe('-');
     });
@@ -104,7 +111,7 @@ describe('SyncStatusIndicatorComponent', () => {
     it('returns formatted seconds when next sync available and changes pending', () => {
       uiPreferencesSpy.pollingEnabledSubject.next(true);
       component.hasUnsavedChanges.set(true);
-      syncState$.next({ status: 'idle', nextSyncIn: 45 });
+      syncState$.next({ status: 'idle', nextSyncIn: 45 } as unknown as ISyncState);
 
       expect(component.getNextCheckText()).toBe('in 45s');
     });
@@ -112,7 +119,7 @@ describe('SyncStatusIndicatorComponent', () => {
     it('returns Idle when polling enabled but no pending changes', () => {
       uiPreferencesSpy.pollingEnabledSubject.next(true);
       component.hasUnsavedChanges.set(false);
-      syncState$.next({ status: 'idle', nextSyncIn: 45 });
+      syncState$.next({ status: 'idle', nextSyncIn: 45 } as unknown as ISyncState);
 
       expect(component.getNextCheckText()).toBe('Idle');
     });
@@ -139,7 +146,7 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('ngOnInit', () => {
     it('subscribes to sync state changes', () => {
-      syncState$.next({ status: 'syncing', message: 'Syncing...', progress: 50 });
+      syncState$.next({ status: 'syncing', message: 'Syncing...', progress: 50 } as unknown as ISyncState);
 
       expect(component.syncState()?.status).toBe('syncing');
     });
@@ -176,32 +183,32 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('getStatusIcon', () => {
     it('returns sync_disabled when polling disabled and idle', () => {
-      component.syncState.set({ status: 'idle' } as any);
+      component.syncState.set({ status: 'idle' } as unknown as ISyncState);
       uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getStatusIcon()).toBe('sync_disabled');
     });
 
     it('returns sync when syncing', () => {
-      component.syncState.set({ status: 'syncing' } as any);
+      component.syncState.set({ status: 'syncing' } as unknown as ISyncState);
 
       expect(component.getStatusIcon()).toBe('sync');
     });
 
     it('returns cloud_done when success', () => {
-      component.syncState.set({ status: 'success' } as any);
+      component.syncState.set({ status: 'success' } as unknown as ISyncState);
 
       expect(component.getStatusIcon()).toBe('cloud_done');
     });
 
     it('returns cloud_off when error', () => {
-      component.syncState.set({ status: 'error' } as any);
+      component.syncState.set({ status: 'error' } as unknown as ISyncState);
 
       expect(component.getStatusIcon()).toBe('cloud_off');
     });
 
     it('returns cloud_queue when idle', () => {
-      component.syncState.set({ status: 'idle' } as any);
+      component.syncState.set({ status: 'idle' } as unknown as ISyncState);
 
       expect(component.getStatusIcon()).toBe('cloud_queue');
     });
@@ -215,14 +222,14 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('getStatusClass', () => {
     it('returns status-disabled when polling disabled', () => {
-      component.syncState.set({ status: 'idle' } as any);
+      component.syncState.set({ status: 'idle' } as unknown as ISyncState);
       uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getStatusClass()).toBe('status-disabled');
     });
 
     it('returns status-syncing when syncing', () => {
-      component.syncState.set({ status: 'syncing' } as any);
+      component.syncState.set({ status: 'syncing' } as unknown as ISyncState);
 
       expect(component.getStatusClass()).toBe('status-syncing');
     });
@@ -236,27 +243,27 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('getTooltipText', () => {
     it('returns auto-sync disabled message when polling off', () => {
-      component.syncState.set({ status: 'idle' } as any);
+      component.syncState.set({ status: 'idle' } as unknown as ISyncState);
       uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getTooltipText()).toBe('Auto-sync disabled');
     });
 
     it('shows progress for syncing state', () => {
-      component.syncState.set({ status: 'syncing', message: 'Syncing data', progress: 75 } as any);
+      component.syncState.set({ status: 'syncing', message: 'Syncing data', progress: 75 } as unknown as ISyncState);
 
       expect(component.getTooltipText()).toBe('Syncing data (75%)');
     });
 
     it('shows last sync time for success', () => {
-      component.syncState.set({ status: 'success', message: 'Sync complete' } as any);
+      component.syncState.set({ status: 'success', message: 'Sync complete' } as unknown as ISyncState);
       component.timeSinceLastSync.set('5 min ago');
 
       expect(component.getTooltipText()).toBe('Sync complete - 5 min ago');
     });
 
     it('shows error message on failure', () => {
-      component.syncState.set({ status: 'error', error: 'Network error' } as any);
+      component.syncState.set({ status: 'error', error: 'Network error' } as unknown as ISyncState);
 
       expect(component.getTooltipText()).toBe('Network error');
     });
@@ -264,13 +271,13 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('getOperationText', () => {
     it('returns empty string when operation is null', () => {
-      component.syncState.set({ status: 'idle', operation: null } as any);
+      component.syncState.set({ status: 'idle', operation: null } as unknown as ISyncState);
 
       expect(component.getOperationText()).toBe('');
     });
 
     it('returns mapped label when operation exists', () => {
-      component.syncState.set({ status: 'syncing', operation: 'auto-save' } as any);
+      component.syncState.set({ status: 'syncing', operation: 'auto-save' } as unknown as ISyncState);
 
       expect(component.getOperationText()).toBe('Auto-saving');
     });
@@ -279,7 +286,7 @@ describe('SyncStatusIndicatorComponent', () => {
   describe('forceSync', () => {
     it('opens data sync modal with save mode', async () => {
       const dialogRef = { afterClosed: () => new BehaviorSubject(true).asObservable() };
-      dialogSpy.open.and.returnValue(dialogRef as any);
+      dialogSpy.open.and.returnValue(dialogRef as Partial<MatDialogRef<DataSyncModalComponent>> as MatDialogRef<DataSyncModalComponent>);
 
       await component.forceSync();
 
@@ -290,7 +297,7 @@ describe('SyncStatusIndicatorComponent', () => {
 
     it('checks unsaved changes after dialog closes', (done) => {
       const dialogRef = { afterClosed: () => of(true) };
-      dialogSpy.open.and.returnValue(dialogRef as any);
+      dialogSpy.open.and.returnValue(dialogRef as Partial<MatDialogRef<DataSyncModalComponent>> as MatDialogRef<DataSyncModalComponent>);
       
       // Reset spy call count from ngOnInit
       unsavedDataSpy.hasUnsavedData.calls.reset();
@@ -314,7 +321,7 @@ describe('SyncStatusIndicatorComponent', () => {
 
     it('opens data sync modal with load mode', async () => {
       const dialogRef = { afterClosed: () => new BehaviorSubject(true).asObservable() };
-      dialogSpy.open.and.returnValue(dialogRef as any);
+      dialogSpy.open.and.returnValue(dialogRef as Partial<MatDialogRef<DataSyncModalComponent>> as MatDialogRef<DataSyncModalComponent>);
 
       await component.updateFromSpreadsheet();
 

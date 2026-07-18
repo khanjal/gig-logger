@@ -6,54 +6,54 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { UpdatesComponent } from './updates.component';
 import { UpdatesService } from '@services/updates.service';
-import type { IUpdateDetail } from '@interfaces/sync/update.interface';
+import type { IUpdateDetail, IUpdateEntry } from '@interfaces/sync/update.interface';
 
 describe('UpdatesComponent trackBy helpers', () => {
   it('trackByEntryDate returns date when present', () => {
-    const entry = { date: '2026-04-05' } as any;
-    const res = (UpdatesComponent.prototype as any).trackByEntryDate.call(null, 0, entry);
+    const entry = { date: '2026-04-05' } as unknown as IUpdateEntry;
+    const res = UpdatesComponent.prototype.trackByEntryDate.call(null, 0, entry);
     expect(res).toBe('2026-04-05');
   });
 
   it('trackByEntryDate falls back to index', () => {
-    const entry = {} as any;
-    const res = (UpdatesComponent.prototype as any).trackByEntryDate.call(null, 7, entry);
+    const entry = {} as unknown as IUpdateEntry;
+    const res = UpdatesComponent.prototype.trackByEntryDate.call(null, 7, entry);
     expect(res).toBe(7);
   });
 
   it('trackByUpdateTitle returns title when present', () => {
-    const update = { title: 'Fix bug' } as any;
-    const res = (UpdatesComponent.prototype as any).trackByUpdateTitle.call(null, 0, update);
+    const update = { title: 'Fix bug' } as unknown as IUpdateDetail;
+    const res = UpdatesComponent.prototype.trackByUpdateTitle.call(null, 0, update);
     expect(res).toBe('Fix bug');
   });
 
   it('trackByUpdateTitle falls back to index', () => {
-    const update = {} as any;
-    const res = (UpdatesComponent.prototype as any).trackByUpdateTitle.call(null, 3, update);
+    const update = {} as unknown as IUpdateDetail;
+    const res = UpdatesComponent.prototype.trackByUpdateTitle.call(null, 3, update);
     expect(res).toBe(3);
   });
 
   it('trackByChange returns change when present', () => {
     const change = 'some-change';
-    const res = (UpdatesComponent.prototype as any).trackByChange.call(null, 0, change);
+    const res = UpdatesComponent.prototype.trackByChange.call(null, 0, change);
     expect(res).toBe('some-change');
   });
 
   it('trackByChange falls back to index for undefined', () => {
-    const change = undefined;
-    const res = (UpdatesComponent.prototype as any).trackByChange.call(null, 5, change);
+    const change = undefined as unknown as string;
+    const res = UpdatesComponent.prototype.trackByChange.call(null, 5, change);
     expect(res).toBe(5);
   });
 
   it('trackByPage returns page when present', () => {
     const page = 'PN';
-    const res = (UpdatesComponent.prototype as any).trackByPage.call(null, 0, page);
+    const res = UpdatesComponent.prototype.trackByPage.call(null, 0, page);
     expect(res).toBe('PN');
   });
 
   it('trackByPage falls back to index', () => {
-    const page = undefined;
-    const res = (UpdatesComponent.prototype as any).trackByPage.call(null, 9, page);
+    const page = undefined as unknown as string;
+    const res = UpdatesComponent.prototype.trackByPage.call(null, 9, page);
     expect(res).toBe(9);
   });
 });

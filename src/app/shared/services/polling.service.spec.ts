@@ -10,6 +10,7 @@ import { AuthGoogleService } from './auth-google.service';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { BehaviorSubject } from 'rxjs';
+import type { IShift } from '@interfaces/entities/shift.interface';
 
 describe('PollingService', () => {
   let service: PollingService;
@@ -423,7 +424,7 @@ describe('PollingService', () => {
     });
 
     it('should skip save when there is no unsaved data', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 0, trips: 0, shifts: 0, expenses: 0 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 0, trips: 0, shifts: 0, expenses: 0 }));
 
       await service.forceSave();
 
@@ -431,7 +432,7 @@ describe('PollingService', () => {
     });
 
     it('should show snackbar when not authenticated', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 2, trips: 1, shifts: 1, expenses: 0 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 2, trips: 1, shifts: 1, expenses: 0 }));
       authSpy.canSync.and.returnValue(Promise.resolve(false));
 
       await service.forceSave();
@@ -441,7 +442,7 @@ describe('PollingService', () => {
     });
 
     it('should save and mark items as saved when backend returns success', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 3, trips: 1, shifts: 1, expenses: 1 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 3, trips: 1, shifts: 1, expenses: 1 }));
       unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({ unsavedTrips: [], unsavedShifts: [], unsavedExpenses: [] }));
       authSpy.canSync.and.returnValue(Promise.resolve(true));
 
@@ -449,7 +450,11 @@ describe('PollingService', () => {
       spyOn(SheetSerializerHelper, 'serializeShifts').and.returnValue([]);
 
       gigWorkflowSpy.saveSheetData.and.returnValue(Promise.resolve([]));
-      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({ success: true } as any);
+      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({
+        success: true,
+        filteredMessages: [],
+        allMessages: []
+      });
 
       await service.forceSave();
 
@@ -459,10 +464,10 @@ describe('PollingService', () => {
     });
 
     it('should capture saveStartedAt after shift recalculation and before the API call', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 1, trips: 0, shifts: 1, expenses: 0 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 1, trips: 0, shifts: 1, expenses: 0 }));
       unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({
         unsavedTrips: [],
-        unsavedShifts: [{ id: 10 } as any],
+        unsavedShifts: [{ id: 10 } as Partial<IShift> as IShift],
         unsavedExpenses: []
       }));
       authSpy.canSync.and.returnValue(Promise.resolve(true));
@@ -484,11 +489,15 @@ describe('PollingService', () => {
         apiCallTime = Date.now();
         return [];
       });
-      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({ success: true } as any);
+      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({
+        success: true,
+        filteredMessages: [],
+        allMessages: []
+      });
 
       await service.forceSave();
 
-      const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as [number, ...any[]];
+      const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as Parameters<UnsavedDataService['commitSavedItems']>;
       expect(saveStartedAtArg).toBeGreaterThanOrEqual(beforeSave);
       expect(saveStartedAtArg).toBeGreaterThanOrEqual(recalculationFinishedAt);
       expect(saveStartedAtArg).toBeLessThan(apiCallTime);

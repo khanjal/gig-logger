@@ -11,18 +11,19 @@ import { TimerService } from '@services/timer.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { VersionService } from '@services/version.service';
 import { of } from 'rxjs';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
 describe('SetupComponent (class-only)', () => {
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let snackSpy: jasmine.SpyObj<MatSnackBar>;
-  let authService: any;
-  let spreadsheetService: any;
-  let tripService: any;
-  let shiftService: any;
-  let timerService: any;
-  let versionService: any;
-  let commonService: any;
-  let logger: any;
+  let authService: jasmine.SpyObj<AuthGoogleService>;
+  let spreadsheetService: jasmine.SpyObj<SpreadsheetService>;
+  let tripService: jasmine.SpyObj<TripService>;
+  let shiftService: jasmine.SpyObj<ShiftService>;
+  let timerService: jasmine.SpyObj<TimerService>;
+  let versionService: jasmine.SpyObj<VersionService>;
+  let commonService: jasmine.SpyObj<CommonService>;
+  let logger: jasmine.SpyObj<LoggerService>;
 
   function createComponent(): SetupComponent {
     TestBed.configureTestingModule({
@@ -46,25 +47,27 @@ describe('SetupComponent (class-only)', () => {
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     snackSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
-    authService = {
-      canSync: jasmine.createSpy('canSync')
-    };
+    authService = jasmine.createSpyObj<AuthGoogleService>('AuthGoogleService', ['canSync']);
 
-    spreadsheetService = {
-      getSpreadsheets: jasmine.createSpy('getSpreadsheets'),
-      querySpreadsheets: jasmine.createSpy('querySpreadsheets'),
-      deleteData: jasmine.createSpy('deleteData'),
-      deleteLocalData: jasmine.createSpy('deleteLocalData'),
-      update: jasmine.createSpy('update'),
-      deleteSpreadsheet: jasmine.createSpy('deleteSpreadsheet')
-    };
+    spreadsheetService = jasmine.createSpyObj<SpreadsheetService>('SpreadsheetService', [
+      'getSpreadsheets',
+      'querySpreadsheets',
+      'deleteData',
+      'deleteLocalData',
+      'update',
+      'deleteSpreadsheet'
+    ]);
 
-    tripService = { getUnsaved: jasmine.createSpy('getUnsaved').and.returnValue(Promise.resolve([])) };
-    shiftService = { getUnsavedShifts: jasmine.createSpy('getUnsavedShifts').and.returnValue(Promise.resolve([])) };
-    timerService = { delay: jasmine.createSpy('delay').and.returnValue(Promise.resolve()) };
-    versionService = { getFormattedVersion: jasmine.createSpy('getFormattedVersion').and.returnValue(Promise.resolve('1.0.0')) };
-    commonService = { updateHeaderLink: jasmine.createSpy('updateHeaderLink') };
-    logger = { info: jasmine.createSpy('info') };
+    tripService = jasmine.createSpyObj<TripService>('TripService', ['getUnsaved']);
+    tripService.getUnsaved.and.returnValue(Promise.resolve([]));
+    shiftService = jasmine.createSpyObj<ShiftService>('ShiftService', ['getUnsavedShifts']);
+    shiftService.getUnsavedShifts.and.returnValue(Promise.resolve([]));
+    timerService = jasmine.createSpyObj<TimerService>('TimerService', ['delay']);
+    timerService.delay.and.returnValue(Promise.resolve());
+    versionService = jasmine.createSpyObj<VersionService>('VersionService', ['getFormattedVersion']);
+    versionService.getFormattedVersion.and.returnValue(Promise.resolve('1.0.0'));
+    commonService = jasmine.createSpyObj<CommonService>('CommonService', ['updateHeaderLink']);
+    logger = jasmine.createSpyObj<LoggerService>('LoggerService', ['info']);
   });
 
   it('shows setup card when authenticated and no spreadsheets', async () => {
@@ -93,8 +96,8 @@ describe('SetupComponent (class-only)', () => {
 
   it('shows local-only info when signed out but has spreadsheets', async () => {
     authService.canSync.and.returnValue(Promise.resolve(false));
-    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
-    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true', size: 100 }]));
+    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true', size: 100 }]));
 
     const comp = createComponent();
     await comp.ngOnInit();
@@ -104,14 +107,14 @@ describe('SetupComponent (class-only)', () => {
 
   it('setDefault sets spreadsheet as default and calls update/load/reload', async () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
-    const defaultSheet = { id: 'd1', name: 'Default', default: 'true' } as any;
+    const defaultSheet = { id: 'd1', name: 'Default', default: 'true' } as ISpreadsheet;
     spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([defaultSheet]));
     spreadsheetService.update.and.returnValue(Promise.resolve());
 
     const comp = createComponent();
     await comp.ngOnInit();
 
-    const sheetToSet = { id: 's2', name: 'Other', default: 'false' } as any;
+    const sheetToSet = { id: 's2', name: 'Other', default: 'false' } as ISpreadsheet;
 
     spyOn(comp, 'load').and.returnValue(Promise.resolve());
     spyOn(comp, 'reload').and.returnValue(Promise.resolve());
@@ -120,33 +123,33 @@ describe('SetupComponent (class-only)', () => {
 
     expect(sheetToSet.default).toBe('true');
     expect(spreadsheetService.update).toHaveBeenCalled();
-    expect((comp.load as any)).toHaveBeenCalled();
-    expect((comp.reload as any)).toHaveBeenCalled();
+    expect(comp.load).toHaveBeenCalled();
+    expect(comp.reload).toHaveBeenCalled();
   });
 
   it('unlinkSpreadsheet will call deleteAllData when default and only sheet', async () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
-    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
-    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true', size: 100 }]));
+    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true', size: 100 }]));
 
     const comp = createComponent();
     spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
 
-    await comp.unlinkSpreadsheet({ id: '1', name: 'S', default: 'true' } as any);
+    await comp.unlinkSpreadsheet({ id: '1', name: 'S', default: 'true', size: 100 } as ISpreadsheet);
 
-    expect((comp.deleteAllData as any)).toHaveBeenCalled();
+    expect(comp.deleteAllData).toHaveBeenCalled();
   });
 
   it('unlinkSpreadsheet shows snackbar when default and other sheets exist', async () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([
-      { id: '1', name: 'S1', default: 'true' },
-      { id: '2', name: 'S2', default: 'false' }
+      { id: '1', name: 'S1', default: 'true', size: 100 },
+      { id: '2', name: 'S2', default: 'false', size: 100 }
     ]));
 
     const comp = createComponent();
 
-    await comp.unlinkSpreadsheet({ id: '1', name: 'S1', default: 'true' } as any);
+    await comp.unlinkSpreadsheet({ id: '1', name: 'S1', default: 'true', size: 100 } as ISpreadsheet);
 
     expect(snackSpy.open).toHaveBeenCalled();
   });
@@ -164,7 +167,7 @@ describe('SetupComponent (class-only)', () => {
 
     expect(clearSpy).toHaveBeenCalled();
     expect(snackSpy.open).toHaveBeenCalled();
-    expect((comp.load as any)).toHaveBeenCalled();
+    expect(comp.load).toHaveBeenCalled();
   });
 
   it('loadSheetDialog shows snackbar when not authenticated', async () => {
@@ -215,7 +218,7 @@ describe('SetupComponent (class-only)', () => {
     comp.confirmDeleteAndReloadDialog().then(() => {
       // Give async operation time to complete
       setTimeout(() => {
-        expect((comp.deleteAndReload as any)).toHaveBeenCalled();
+        expect(comp.deleteAndReload).toHaveBeenCalled();
         done();
       }, 50);
     });
@@ -223,8 +226,8 @@ describe('SetupComponent (class-only)', () => {
 
   it('unlinkSpreadsheet calls deleteSpreadsheet for non-default sheet', async () => {
     const allSheets = [
-      { id: '1', name: 'S1', default: 'false' },
-      { id: '2', name: 'S2', default: 'true' }
+      { id: '1', name: 'S1', default: 'false', size: 100 },
+      { id: '2', name: 'S2', default: 'true', size: 100 }
     ];
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve(allSheets));
     spreadsheetService.deleteSpreadsheet.and.returnValue(Promise.resolve());
@@ -232,11 +235,11 @@ describe('SetupComponent (class-only)', () => {
     const comp = createComponent();
     spyOn(comp, 'load').and.returnValue(Promise.resolve());
 
-    const nonDefaultSheet = { id: '1', name: 'S1', default: 'false' };
-    await comp.unlinkSpreadsheet(nonDefaultSheet as any);
+    const nonDefaultSheet = { id: '1', name: 'S1', default: 'false', size: 100 };
+    await comp.unlinkSpreadsheet(nonDefaultSheet as ISpreadsheet);
 
     expect(spreadsheetService.deleteSpreadsheet).toHaveBeenCalledWith(nonDefaultSheet);
-    expect((comp.load as any)).toHaveBeenCalled();
+    expect(comp.load).toHaveBeenCalled();
   });
 
   it('handleParentReload calls load for load-only and reload otherwise', async () => {
@@ -248,16 +251,16 @@ describe('SetupComponent (class-only)', () => {
     spyOn(comp, 'reload').and.returnValue(Promise.resolve());
 
     await comp.handleParentReload({ mode: 'load-only' });
-    expect((comp.load as any)).toHaveBeenCalled();
+    expect(comp.load).toHaveBeenCalled();
 
     await comp.handleParentReload({ mode: 'reload' });
-    expect((comp.reload as any)).toHaveBeenCalled();
+    expect(comp.reload).toHaveBeenCalled();
   });
 
   it('getDataSize returns placeholder string and updateHeader calls commonService', () => {
     const comp = createComponent();
     expect(comp.getDataSize()).toBe('0 bytes');
-    (comp as any).updateHeader();
+    (comp as unknown as { updateHeader(): void }).updateHeader();
     expect(commonService.updateHeaderLink).toHaveBeenCalled();
   });
 
@@ -273,7 +276,7 @@ describe('SetupComponent (class-only)', () => {
 
     comp.confirmDeleteAllDialog().then(() => {
       setTimeout(() => {
-        expect((comp.deleteAllData as any)).toHaveBeenCalled();
+        expect(comp.deleteAllData).toHaveBeenCalled();
         done();
       }, 20);
     });
@@ -290,25 +293,25 @@ describe('SetupComponent (class-only)', () => {
     spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
 
     await comp.confirmDeleteAllDialog();
-    expect((comp.deleteAllData as any)).not.toHaveBeenCalled();
+    expect(comp.deleteAllData).not.toHaveBeenCalled();
   });
 
   it('confirmUnlinkSpreadsheetDialog shows snackbar when default and other sheets exist', async () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([
-      { id: '1', name: 'S1', default: 'true' },
-      { id: '2', name: 'S2', default: 'false' }
+      { id: '1', name: 'S1', default: 'true', size: 100 },
+      { id: '2', name: 'S2', default: 'false', size: 100 }
     ]));
 
     const comp = createComponent();
 
-    await comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true' } as any);
+    await comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true', size: 100 } as ISpreadsheet);
     expect(snackSpy.open).toHaveBeenCalled();
   });
 
   it('confirmUnlinkSpreadsheetDialog calls unlinkSpreadsheet when confirmed', (done: DoneFn) => {
     authService.canSync.and.returnValue(Promise.resolve(true));
-    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S1', default: 'true' }]));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S1', default: 'true', size: 100 }]));
 
     const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
     dialogSpy.open.and.returnValue(dialogRefSpyObj);
@@ -316,9 +319,9 @@ describe('SetupComponent (class-only)', () => {
     const comp = createComponent();
     spyOn(comp, 'unlinkSpreadsheet').and.returnValue(Promise.resolve());
 
-    comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true' } as any).then(() => {
+    comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true', size: 100 } as ISpreadsheet).then(() => {
       setTimeout(() => {
-        expect((comp.unlinkSpreadsheet as any)).toHaveBeenCalled();
+        expect(comp.unlinkSpreadsheet).toHaveBeenCalled();
         done();
       }, 20);
     });

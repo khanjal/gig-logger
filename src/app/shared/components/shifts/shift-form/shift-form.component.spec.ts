@@ -413,7 +413,7 @@ describe('ShiftFormComponent', () => {
       });
 
       shiftServiceSpy.getShiftsByDate.and.returnValue(Promise.resolve([shift]));
-      tripServiceSpy.query.and.callFake(async (field: string, value: any) => {
+      tripServiceSpy.query.and.callFake(async (field: string, value: string | number) => {
         if (field === 'key' && value === '19372-1-DoorDash') {
           return linkedTrips;
         }

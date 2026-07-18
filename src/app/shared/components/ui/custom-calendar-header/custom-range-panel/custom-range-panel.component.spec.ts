@@ -5,8 +5,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDateRangePicker } from '@angular/material/datepicker';
 
 describe('CustomRangePanelComponent', () => {
-  let component: CustomRangePanelComponent<any>;
-  let fixture: ComponentFixture<CustomRangePanelComponent<any>>;
+  let component: CustomRangePanelComponent<Date>;
+  let fixture: ComponentFixture<CustomRangePanelComponent<Date>>;
   const mockDateRangePicker = jasmine.createSpyObj('MatDateRangePicker', ['select', 'close']);
 
   beforeEach(async () => {

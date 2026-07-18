@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PermissionsComponent } from './permissions.component';
 import { LoggerService } from '@services/logger.service';
-import { PermissionService } from '@services/permission.service';
+import { PermissionService, PermissionState } from '@services/permission.service';
 import { BehaviorSubject } from 'rxjs';
 
 describe('PermissionsComponent', () => {
@@ -9,8 +9,8 @@ describe('PermissionsComponent', () => {
   let fixture: ComponentFixture<PermissionsComponent>;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
   let permissionServiceSpy: jasmine.SpyObj<PermissionService>;
-  let locationState$: BehaviorSubject<any>;
-  let microphoneState$: BehaviorSubject<any>;
+  let locationState$: BehaviorSubject<PermissionState>;
+  let microphoneState$: BehaviorSubject<PermissionState>;
 
   beforeEach(async () => {
     loggerSpy = jasmine.createSpyObj('LoggerService', ['error', 'info', 'warn']);

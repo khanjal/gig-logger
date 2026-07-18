@@ -16,21 +16,22 @@ import { RegionService } from '@services/sheets/region.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
+import type { IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
 
 describe('DiagnosticsComponent', () => {
   let component: DiagnosticsComponent;
   let fixture: ComponentFixture<DiagnosticsComponent>;
-  let shiftService: any;
-  let tripService: any;
-  let addressService: any;
-  let placeService: any;
-  let nameService: any;
-  let serviceService: any;
-  let typeService: any;
-  let regionService: any;
-  let loggerService: any;
-  let gigCalculator: any;
-  let gigWorkflow: any;
+  let shiftService: jasmine.SpyObj<ShiftService>;
+  let tripService: jasmine.SpyObj<TripService>;
+  let addressService: jasmine.SpyObj<AddressService>;
+  let placeService: jasmine.SpyObj<PlaceService>;
+  let nameService: jasmine.SpyObj<NameService>;
+  let serviceService: jasmine.SpyObj<ServiceService>;
+  let typeService: jasmine.SpyObj<TypeService>;
+  let regionService: jasmine.SpyObj<RegionService>;
+  let loggerService: jasmine.SpyObj<LoggerService>;
+  let gigCalculator: jasmine.SpyObj<GigCalculatorService>;
+  let gigWorkflow: jasmine.SpyObj<GigWorkflowService>;
 
   beforeEach(async () => {
     shiftService = jasmine.createSpyObj('ShiftService', ['list', 'findDuplicates', 'update', 'getMaxRowId', 'add', 'delete', 'queryShiftByKey']);
@@ -142,8 +143,8 @@ describe('DiagnosticsComponent', () => {
     tripService.list.and.returnValue(Promise.resolve(trips));
     shiftService.list.and.returnValue(Promise.resolve(shifts));
 
-    const selected = { service: 'New', trips: 5 } as any;
-    const other = { service: 'Old', trips: 5 } as any;
+    const selected: IDiagnosticRecord = { service: 'New', trips: 5 };
+    const other: IDiagnosticRecord = { service: 'Old', trips: 5 };
     const group = [selected, other];
 
     await component.mergeDuplicates(group, selected, 'service');
@@ -154,24 +155,24 @@ describe('DiagnosticsComponent', () => {
   });
 
   it('fixShiftDuration should compute duration, mark fixed, and decrement count', async () => {
-    component.dataDiagnostics.set([{ name: 'Shifts Missing Time Duration', count: 1, severity: 'warning', description: '', itemType: 'shift', items: [] } as any]);
+    component.dataDiagnostics.set([{ name: 'Shifts Missing Time Duration', count: 1, severity: 'warning', description: '', itemType: 'shift', items: [] }]);
     const shift: IShift = { start: '2024-01-01T00:00:00Z', finish: '2024-01-01T00:30:00Z' } as IShift;
 
     await component.fixShiftDuration(shift);
 
     expect(shiftService.update).toHaveBeenCalledWith([shift]);
-    expect((shift as any).fixed).toBeTrue();
+    expect((shift as unknown as IDiagnosticRecord).fixed).toBeTrue();
     expect(component.getCountBySeverity('warning')).toBe(0);
   });
 
   it('fixTripDuration should call calculator and decrement count', async () => {
-    component.dataDiagnostics.set([{ name: 'Trips Missing Duration', count: 1, severity: 'warning', description: '', itemType: 'trip', items: [] } as any]);
+    component.dataDiagnostics.set([{ name: 'Trips Missing Duration', count: 1, severity: 'warning', description: '', itemType: 'trip', items: [] }]);
     const trip = { key: 't1' } as ITrip;
 
     await component.fixTripDuration(trip);
 
     expect(gigCalculator.updateTripDuration).toHaveBeenCalledWith(trip);
-    expect((trip as any).fixed).toBeTrue();
+    expect((trip as unknown as IDiagnosticRecord).fixed).toBeTrue();
     expect(component.getCountBySeverity('warning')).toBe(0);
   });
 
@@ -198,7 +199,7 @@ describe('DiagnosticsComponent', () => {
   });
 
   it('applyAddressToTrip should set address and persist', async () => {
-    const trip: any = { rowId: 1 };
+    const trip: IDiagnosticRecord = { rowId: 1 };
 
     await component.applyAddressToTrip(trip, '123 Main');
 
@@ -208,45 +209,45 @@ describe('DiagnosticsComponent', () => {
   });
 
   it('createShiftFromTrip should create shift and mark orphaned trip fixed', async () => {
-    const trip: ITrip = { key: 'abc', date: '2024-01-01', service: 'Svc', number: 1, region: 'R1', pickupTime: '10:00', total: 0 } as any;
-    component.dataDiagnostics.set([{ name: 'Orphaned Trips', count: 1, severity: 'error', description: '', itemType: 'trip', items: [trip] } as any]);
+    const trip: ITrip = { key: 'abc', date: '2024-01-01', service: 'Svc', number: 1, region: 'R1', pickupTime: '10:00', total: 0 } as ITrip;
+    component.dataDiagnostics.set([{ name: 'Orphaned Trips', count: 1, severity: 'error', description: '', itemType: 'trip', items: [trip] }]);
 
     await component.createShiftFromTrip(trip);
 
     expect(shiftService.getMaxRowId).toHaveBeenCalled();
     expect(gigWorkflow.calculateShiftTotals).toHaveBeenCalled();
     expect(shiftService.add).toHaveBeenCalled();
-    expect((trip as any).fixed).toBeTrue();
+    expect((trip as unknown as IDiagnosticRecord).fixed).toBeTrue();
     expect(component.dataDiagnostics()[0].count).toBe(0);
   });
 
   it('hasMarkedForDelete should detect flagged shifts', () => {
-    const shifts: IShift[] = [{ markedForDelete: true } as any];
+    const shifts: IDiagnosticRecord[] = [{ markedForDelete: true }];
 
     expect(component.hasMarkedForDelete(shifts)).toBeTrue();
   });
 
   it('markShiftForDelete should delete new shifts and clear selection', async () => {
     const rowId = 1;
-    const group: IShift[] = [{ rowId, action: ActionEnum.Add } as any];
-    component.selectedShiftToDelete = { 0: rowId } as any;
+    const group: IDiagnosticRecord[] = [{ rowId, action: ActionEnum.Add } as unknown as IDiagnosticRecord];
+    component.selectedShiftToDelete = { 0: rowId };
 
     await component.markShiftForDelete(group, rowId, 0);
 
     expect(shiftService.delete).toHaveBeenCalled();
-    expect((group[0] as any).markedForDelete).toBeTrue();
+    expect(group[0].markedForDelete).toBeTrue();
     expect(component.selectedShiftToDelete[0]).toBeUndefined();
   });
 
   it('markShiftForDelete should mark existing shifts for delete', async () => {
     const rowId = 2;
-    const group: IShift[] = [{ rowId, action: ActionEnum.Update } as any];
-    component.selectedShiftToDelete = { 1: rowId } as any;
+    const group: IDiagnosticRecord[] = [{ rowId, action: ActionEnum.Update } as unknown as IDiagnosticRecord];
+    component.selectedShiftToDelete = { 1: rowId };
 
     await component.markShiftForDelete(group, rowId, 1);
 
     expect(shiftService.update).toHaveBeenCalled();
-    expect((group[0] as any).markedForDelete).toBeTrue();
+    expect(group[0].markedForDelete).toBeTrue();
     expect(component.selectedShiftToDelete[1]).toBeUndefined();
   });
 });
