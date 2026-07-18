@@ -59,8 +59,8 @@
 @if (!isEditMode()) {
   @for (trip of todaysTrips(); track (trackByTrip($index, trip))) {
     <div [id]="trip.rowId">
-      <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)">
-      </trips-quick-view>
+      <app-trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)">
+      </app-trips-quick-view>
       <!-- Info icon for first trip (rowId === 2) -->
       @if (trip.rowId === 2) {
         <div class="flex items-center mt-1 mb-2">
@@ -85,7 +85,7 @@
         <div>
           @for (trip of yesterdaysTrips(); track (trackByTrip($index, trip))) {
             <div [id]="trip.rowId">
-              <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+              <app-trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)"></app-trips-quick-view>
             </div>
           }
         </div>

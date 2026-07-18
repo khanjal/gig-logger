@@ -237,7 +237,7 @@
                               appearance="fill"
                               class="flex-1 min-w-0 rg-field-shell"
                               >
-                              <mat-select [(ngModel)]="selectedAddress[problemItem.rowId]" panelClass="diagnostics-select-panel" placeholder="Select address...">
+                              <mat-select [(ngModel)]="selectedAddress[problemItem.rowId!]" panelClass="diagnostics-select-panel" placeholder="Select address...">
                                 <mat-option [value]="undefined">Select address...</mat-option>
                                 @for (addr of problemItem.availableAddresses; track addr) {
                                   <mat-option [value]="addr" [title]="addr">{{ addr }}</mat-option>
@@ -247,7 +247,7 @@
                           }
                           @if (!problemItem.availableAddresses || problemItem.availableAddresses.length === 0) {
                             <input
-                              [(ngModel)]="selectedAddress[problemItem.rowId]"
+                              [(ngModel)]="selectedAddress[problemItem.rowId!]"
                               placeholder="Enter address..."
                               class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-surface text-primary"
                               >
@@ -255,9 +255,9 @@
                           <app-base-fab-button
                             fabStyle="mini"
                             variant="primary"
-                            [disabled]="!selectedAddress[problemItem.rowId]"
+                            [disabled]="!selectedAddress[problemItem.rowId!]"
                             [icon]="'check'"
-                            (clicked)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
+                            (clicked)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId!])"
                             matTooltip="Apply address"
                             >
                           </app-base-fab-button>

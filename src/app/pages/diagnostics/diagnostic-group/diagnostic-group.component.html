@@ -43,7 +43,7 @@
             [(ngModel)]="selectedShiftToDelete"
             (ngModelChange)="onShiftChange($event)"
             [value]="problemItem.rowId"
-            [disabled]="problemItem.markedForDelete"
+            [disabled]="!!problemItem.markedForDelete"
             class="w-4 h-4 radio-input">
         }
         <div class="flex-1 item-content">

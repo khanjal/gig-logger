@@ -99,7 +99,7 @@
             matTooltip="Clear log">
           </app-base-field-button>
         </div>
-        @if (showDetailedView) {
+        @if (showDetailedView()) {
           <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1">
             @for (message of messages().slice(-10).reverse(); track message) {
               <div
