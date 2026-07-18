@@ -195,7 +195,7 @@ export class TripFormComponent implements OnInit {
   }
 
   private async createShift(): Promise<IShift> {
-    let shift: IShift = {} as IShift;
+    let shift: IShift;
     const selectedShiftKey = this.tripForm.value.shift;
 
     if (!selectedShiftKey || selectedShiftKey === NEW_SHIFT_VALUE) {

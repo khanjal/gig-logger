@@ -32,7 +32,7 @@ describe('AppComponent', () => {
   });
 
   it('should create the app and have initial values', () => {
-    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.componentInstance;
@@ -51,7 +51,7 @@ describe('AppComponent', () => {
   });
 
   it('should hide loading after the initial timeout', fakeAsync(() => {
-    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.componentInstance;
@@ -62,7 +62,7 @@ describe('AppComponent', () => {
   }));
 
   it('should hide loading when window load fires', () => {
-    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.componentInstance;
@@ -74,7 +74,7 @@ describe('AppComponent', () => {
   });
 
   it('should hide loading after NavigationEnd event', fakeAsync(() => {
-    try { Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     app.ngOnInit();

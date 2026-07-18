@@ -92,19 +92,19 @@ export class ApiService {
         try {
             if (response.isStoredInS3 && response.s3Link) {
                 // Mark the raw response so callers that inspect it know the data is in S3
-                try { (response as any)._source = 's3'; } catch {}
+                try { (response as any)._source = 's3'; } catch { /* response may be frozen/non-extensible */ }
                 this.logger.debug(`Large ${operation} data stored in S3, fetching from: ${response.s3Link}`);
                 const s3Response = await firstValueFrom(
                     this._http.get<any>(response.s3Link)
                 );
                 // Tag the returned payload so callers know it originated from S3
-                try { (s3Response as any)._source = 's3'; } catch {}
+                try { (s3Response as any)._source = 's3'; } catch { /* response may be frozen/non-extensible */ }
                 return s3Response;
             } else if (response.sheetEntity) {
                 // Mark the raw response as originating from lambda
-                try { (response as any)._source = 'lambda'; } catch {}
+                try { (response as any)._source = 'lambda'; } catch { /* response may be frozen/non-extensible */ }
                 this.logger.debug(`${operation} data loaded directly`);
-                try { (response.sheetEntity as any)._source = 'lambda'; } catch {}
+                try { (response.sheetEntity as any)._source = 'lambda'; } catch { /* response may be frozen/non-extensible */ }
                 return response.sheetEntity;
             } else {
                 this.logger.warn(`Invalid response format for ${operation}: no sheetEntity or s3Link provided`);
