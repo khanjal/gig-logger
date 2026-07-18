@@ -5,7 +5,6 @@ import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { UnsavedDataService } from '@services/unsaved-data.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
@@ -45,7 +44,6 @@ const SECTION_LABELS: Record<PendingSectionKey, string> = {
   styleUrls: ['./pending-changes.component.scss']
 })
 export class PendingChangesComponent implements OnInit {
-  private unsavedService = inject(UnsavedDataService);
   private tripService = inject(TripService);
   private shiftService = inject(ShiftService);
   private expensesService = inject(ExpensesService);

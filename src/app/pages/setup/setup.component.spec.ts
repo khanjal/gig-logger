@@ -154,6 +154,64 @@ describe('SetupComponent (class-only)', () => {
     expect(snackSpy.open).toHaveBeenCalled();
   });
 
+  it('deleteAllData deletes data and refreshes the spreadsheet list', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([]));
+    spreadsheetService.deleteData.and.returnValue(Promise.resolve());
+
+    const comp = createComponent();
+
+    await comp.deleteAllData();
+
+    expect(spreadsheetService.deleteData).toHaveBeenCalled();
+    expect(comp.spreadsheets()).toEqual([]);
+    expect(comp.deletingState.isSuccess()).toBeTrue();
+  });
+
+  it('deleteAllData sets error state when deleteData rejects', async () => {
+    spreadsheetService.deleteData.and.returnValue(Promise.reject(new Error('boom')));
+
+    const comp = createComponent();
+
+    await expectAsync(comp.deleteAllData()).toBeRejected();
+
+    expect(comp.deletingState.hasError()).toBeTrue();
+  });
+
+  it('deleteAndReload re-adds spreadsheets and prompts manual reload when no default sheet', async () => {
+    const sheets = [{ id: 's1', name: 'Sheet 1', default: 'false' } as ISpreadsheet];
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve(sheets));
+    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([]));
+    spreadsheetService.deleteData.and.returnValue(Promise.resolve());
+    spreadsheetService.update.and.returnValue(Promise.resolve());
+
+    const comp = createComponent();
+
+    await comp.deleteAndReload();
+
+    expect(spreadsheetService.deleteData).toHaveBeenCalled();
+    expect(spreadsheetService.update).toHaveBeenCalledWith(sheets[0]);
+    expect(snackSpy.open).toHaveBeenCalled();
+    expect(comp.deletingState.isSuccess()).toBeTrue();
+    expect(comp.reloadingState.isSuccess()).toBeTrue();
+    expect(comp.settingState.isSuccess()).toBeTrue();
+  });
+
+  it('deleteAndReload sets error state on all three operations when deleteData rejects', async () => {
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+    spreadsheetService.deleteData.and.returnValue(Promise.reject(new Error('boom')));
+
+    const comp = createComponent();
+
+    await expectAsync(comp.deleteAndReload()).toBeRejected();
+
+    expect(comp.deletingState.hasError()).toBeTrue();
+    expect(comp.reloadingState.hasError()).toBeTrue();
+    expect(comp.settingState.hasError()).toBeTrue();
+  });
+
   it('deleteLocalData clears storage and shows snackbar', async () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
