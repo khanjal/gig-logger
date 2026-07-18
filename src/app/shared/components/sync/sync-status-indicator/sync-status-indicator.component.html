@@ -76,7 +76,13 @@
     <!-- Messages log (collapsible) -->
     @if (messages().length > 0) {
       <div class="messages-section border-t border-[var(--color-border-light)] bg-[var(--color-surface)]">
-        <div class="messages-header px-4 py-3 flex justify-between items-center bg-overlay/5 hover:bg-overlay/10 cursor-pointer transition" (click)="toggleDetailedView(); $event.stopPropagation()">
+        <div
+          class="messages-header px-4 py-3 flex justify-between items-center bg-overlay/5 hover:bg-overlay/10 cursor-pointer transition"
+          (click)="toggleDetailedView(); $event.stopPropagation()"
+          (keydown.enter)="toggleDetailedView()"
+          (keydown.space)="toggleDetailedView(); $event.preventDefault()"
+          role="button"
+          tabindex="0">
           <span class="messages-title flex items-center gap-1 text-sm font-medium text-primary">
             <mat-icon class="expand-icon text-secondary" [class.expanded]="showDetailedView()">
               expand_more
@@ -147,6 +153,7 @@
       [cdkConnectedOverlayBackdropClass]="'cdk-overlay-transparent-backdrop'"
       (backdropClick)="closeMenu()"
       (overlayOutsideClick)="closeMenu()">
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
       <div class="sync-overlay-panel bg-[var(--color-surface)] border border-[var(--color-border-light)] shadow-[0_16px_40px_var(--shadow-heavy)] rounded-xl overflow-hidden" (click)="$event.stopPropagation()">
         <div class="sync-menu-content w-full min-w-[320px] max-w-[90vw] sm:max-w-[460px] bg-[var(--color-surface)] overflow-hidden p-0">
           <ng-container *ngTemplateOutlet="syncContent"></ng-container>
@@ -155,6 +162,7 @@
     </ng-template>
   } @else {
     <div class="sync-menu-panel sync-menu-panel--embedded bg-[var(--color-surface)] border border-[var(--color-border-light)] shadow-[0_16px_40px_var(--shadow-heavy)] rounded-xl overflow-hidden">
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
       <div class="sync-menu-content embedded w-full min-w-[340px] max-w-[480px] bg-[var(--color-surface)] overflow-hidden p-0" (click)="$event.stopPropagation()">
         <ng-container *ngTemplateOutlet="syncContent"></ng-container>
       </div>

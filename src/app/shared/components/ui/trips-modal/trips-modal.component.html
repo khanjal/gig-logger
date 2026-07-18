@@ -14,12 +14,12 @@
   <div class="flex-1 overflow-y-auto">
     @for (trip of data.trips; track (trackByTrip($index, trip))) {
       <div>
-        <trips-quick-view
+        <app-trips-quick-view
           [trip]="trip"
           [index]="$index"
           [stripeEven]="$index % 2 === 0"
           [showActions]="false"
-          (editClicked)="onEditClicked($event)"></trips-quick-view>
+          (editClicked)="onEditClicked($event)"></app-trips-quick-view>
       </div>
     }
   </div>

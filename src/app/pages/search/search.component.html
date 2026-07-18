@@ -92,7 +92,11 @@
                 <div
                   class="flex items-center p-2 rounded border transition-colors cursor-pointer bg-[var(--color-surface)] dark:bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] dark:hover:bg-[var(--color-surface-tertiary)] border-[var(--color-border-light)] dark:border-[var(--color-border)]"
                   [ngClass]="{ 'border-primary': isCategoryEnabled(category) }"
-                  (click)="toggleCategory(category)">
+                  (click)="toggleCategory(category)"
+                  (keydown.enter)="toggleCategory(category)"
+                  (keydown.space)="toggleCategory(category); $event.preventDefault()"
+                  role="button"
+                  tabindex="0">
                   <mat-checkbox
                     [checked]="isCategoryEnabled(category)"
                     (change)="toggleCategory(category)"
@@ -221,7 +225,13 @@
         @for (group of groupedResults(); track trackByGroup($index, group)) {
           <div class="mb-6">
             <!-- Month Group Header -->
-            <div class="card card-hover" (click)="toggleGroup(group.month)">
+            <div
+              class="card card-hover"
+              (click)="toggleGroup(group.month)"
+              (keydown.enter)="toggleGroup(group.month)"
+              (keydown.space)="toggleGroup(group.month); $event.preventDefault()"
+              role="button"
+              tabindex="0">
               <div class="p-4">
                 <div class="flex-between">
                   <div class="flex-start">
@@ -267,7 +277,11 @@
                     <div
                       class="p-4 card-hover border-l-4"
                       [ngClass]="categoryMetadata[result.type].borderClass"
-                      (click)="toggleResult(getResultKey(result, group.month))">
+                      (click)="toggleResult(getResultKey(result, group.month))"
+                      (keydown.enter)="toggleResult(getResultKey(result, group.month))"
+                      (keydown.space)="toggleResult(getResultKey(result, group.month)); $event.preventDefault()"
+                      role="button"
+                      tabindex="0">
                       <div class="flex-between">
                         <div class="flex-start">
                           <mat-icon [ngClass]="categoryMetadata[result.type].color">
@@ -309,16 +323,17 @@
                     }
                     <!-- Trip List (Expanded) -->
                     @if (isResultExpanded(getResultKey(result, group.month))) {
+                      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
                       <div class="border-t bg-surface-2" (click)="$event.stopPropagation()">
                         <div class="p-2">
                           <div class="space-y-2">
                             @for (trip of result.trips; track trackByTrip(i, trip); let i = $index) {
-                              <trips-quick-view
+                              <app-trips-quick-view
                                 [trip]="trip"
                                 [stripeEven]="i % 2 === 0"
                                 [showActions]="false"
                                 class="block">
-                              </trips-quick-view>
+                              </app-trips-quick-view>
                             }
                           </div>
                         </div>

@@ -73,7 +73,7 @@
   }    <br/>
   @if (yesterdaysTrips().length > 0 && !isEditMode()) {
     <div class="my-4">
-      <h2 id="yesterdaysTrips" class="flex items-center cursor-pointer bg-surface-2 rounded-lg px-4 py-2 transition hover:bg-surface-3 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()">
+      <h2 id="yesterdaysTrips" class="flex items-center cursor-pointer bg-surface-2 rounded-lg px-4 py-2 transition hover:bg-surface-3 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()" (keydown.enter)="toggleYesterdayTrips()" (keydown.space)="toggleYesterdayTrips(); $event.preventDefault()" role="button" tabindex="0">
         <mat-icon class="mr-2 transition-transform duration-200" [class.rotate-180]="showYesterdayTrips()">
           {{ showYesterdayTrips() ? 'expand_less' : 'expand_more' }}
         </mat-icon>

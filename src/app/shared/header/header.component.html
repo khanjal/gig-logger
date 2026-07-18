@@ -103,12 +103,14 @@
     [class.opacity-100]="isMenuOpen()"
     [class.pointer-events-auto]="isMenuOpen()"
     (click)="closeMenu()"
+    (keydown.escape)="closeMenu()"
     role="dialog"
     aria-modal="true"
     aria-labelledby="menu-title">
     <nav class="absolute top-0 left-0 h-full w-64 max-w-[90vw] bg-surface shadow-strong transform -translate-x-full transition-transform duration-300 flex flex-col"
       [class.translate-x-0]="isMenuOpen()"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="closeMenu()"
       role="navigation"
       aria-label="Main menu">
       <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-light)] text-inverse" style="background: linear-gradient(90deg, var(--primary-800), var(--primary-900));">
