@@ -359,9 +359,9 @@ export class SetupComponent implements OnInit {
       return;
     }
 
-    let message = '';
-    let title = '';
-    let confirmText = '';
+    let message: string;
+    let title: string;
+    let confirmText: string;
 
     if (isDefaultSheet && isOnlySheet) {
       // Last remaining sheet - will clear all data

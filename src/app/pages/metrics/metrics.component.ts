@@ -297,7 +297,7 @@ export class MetricsComponent implements OnInit {
     filteredShifts.forEach(s => {
       // Always use local date for label
       const d = DateHelper.getDateFromISO(this.getShiftYMD(s));
-      let label = '';
+      let label: string;
       if (aggType === 'year') label = d.getFullYear().toString();
       else if (aggType === 'quarter') {
         const year = d.getFullYear();
@@ -361,7 +361,7 @@ export class MetricsComponent implements OnInit {
     filteredShifts.forEach(s => {
       // Always use local date for label
       const d = DateHelper.getDateFromISO(this.getShiftYMD(s));
-      let label = '';
+      let label: string;
       if (aggType === 'year') label = d.getFullYear().toString();
       else if (aggType === 'quarter') {
         const year = d.getFullYear();

@@ -55,7 +55,7 @@ export class AppInitializerService {
       localStorage.setItem(SESSION_CONSTANTS.APP_TEST_KEY, 'test');
       localStorage.removeItem(SESSION_CONSTANTS.APP_TEST_KEY);
     } catch (error) {
-      throw new Error('localStorage is not available');
+      throw new Error('localStorage is not available', { cause: error });
     }
 
     // Check if document is ready

@@ -137,11 +137,12 @@ export class DiagnosticHelper {
           item.trips = trips.filter((t: ITrip) => t.place === item.place).length;
           break;
 
-        case 'name':
+        case 'name': {
           const nameTrips = trips.filter((t: ITrip) => t.name === item.name);
           item.trips = nameTrips.length;
           item.addresses = [...new Set(nameTrips.map(t => t.endAddress).filter(a => a))];
           break;
+        }
 
         case 'address':
           item.trips = trips.filter((t: ITrip) => 

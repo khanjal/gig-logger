@@ -167,7 +167,7 @@ export class AddressHelper {
      * @param map The abbreviation map to use.
      */
     private static abbreviateWord(wordRaw: string, map: Record<string, string>): string {
-        const word = wordRaw.replace(/[,\.]/g, "").toLowerCase();
+        const word = wordRaw.replace(/[,.]/g, "").toLowerCase();
         const abbr = map[word];
         if (abbr) {
             return abbr + (wordRaw.endsWith(",") ? "," : "");

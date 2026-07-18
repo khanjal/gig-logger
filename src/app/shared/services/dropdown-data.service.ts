@@ -167,7 +167,7 @@ export class DropdownDataService {
     const normalize = (str: string) => 
       str.toLowerCase()
          .replace(/[']/g, '')  // Remove apostrophes
-         .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')  // Remove punctuation
+         .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')  // Remove punctuation
          .replace(/\s+/g, ' ')  // Normalize spaces
          .trim();
     

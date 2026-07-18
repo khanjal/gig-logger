@@ -347,7 +347,7 @@ export class TripFormComponent implements OnInit {
 
   public async editTrip() {
     try {
-      let shifts: IShift[] = [];
+      const shifts: IShift[] = [];
 
       if (this.selectedShift) {
         shifts.push(this.selectedShift);
@@ -365,13 +365,11 @@ export class TripFormComponent implements OnInit {
 
       shifts.push(shift);
 
-      if (shifts.length > 1) {
-        shifts = [...new Set(shifts)];
-      }
+      const uniqueShifts = shifts.length > 1 ? [...new Set(shifts)] : shifts;
 
       await this._tripService.update([trip]);
 
-      await this._gigLoggerService.calculateShiftTotals(shifts);
+      await this._gigLoggerService.calculateShiftTotals(uniqueShifts);
       await this._gigLoggerService.updateAncillaryInfo();
 
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_UPDATED);
