@@ -21,7 +21,7 @@
               }
             </mat-select-trigger>
             <mat-option [value]="'new'">New</mat-option>
-            @for (shiftOption of shiftOptions(); track shiftOption) {
+            @for (shiftOption of shiftOptions(); track shiftOption.shiftKey) {
               <mat-option [value]="shiftOption.shiftKey">
                 <div class="flex flex-col leading-tight">
                   <span>{{ shiftOption.dateLabel }} - {{ shiftOption.serviceLabel | truncate:15 }}{{ shiftOption.numberLabel }}</span>
