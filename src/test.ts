@@ -30,7 +30,7 @@ import { ShiftService } from './app/shared/services/sheets/shift.service';
 import { TripService } from './app/shared/services/sheets/trip.service';
 import { LoggerService } from './app/shared/services/logger.service';
 import { ThemeService } from './app/shared/services/theme.service';
-import type { UserProfile } from './app/shared/interfaces/user-profile.interface';
+import type { UserProfile } from '@interfaces/auth/user-profile.interface';
 
 // Initialize the Angular testing environment (Angular CLI discovers specs automatically)
 getTestBed().initTestEnvironment(
