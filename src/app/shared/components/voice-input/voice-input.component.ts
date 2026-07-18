@@ -7,6 +7,12 @@ import { VoicePatternProcessorService } from '@services/voice-pattern-processor.
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
+import type {
+  ISpeechRecognition,
+  ISpeechRecognitionErrorEvent,
+  ISpeechRecognitionEvent,
+  IWindowWithSpeechRecognition
+} from '@interfaces/speech-recognition.interface';
 
 @Component({
   selector: 'app-voice-input',
@@ -32,9 +38,9 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   // Component state
   transcript = signal('');
   parsedResult = signal<IVoiceParseResult | null>(null);
-  recognition: any = null;
+  recognition: ISpeechRecognition | null = null;
   recognizing = signal(false);
-  private transcriptTimeout: any = null;
+  private transcriptTimeout: ReturnType<typeof setTimeout> | null = null;
   suggestionPhrase = signal('');
 
   // Auto-hide delay (in milliseconds)
@@ -110,32 +116,35 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   }
 
   private initializeSpeechRecognition(): void {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    this.recognition = new SpeechRecognition();
+    const win = window as unknown as IWindowWithSpeechRecognition;
+    const SpeechRecognitionCtor = win.SpeechRecognition || win.webkitSpeechRecognition;
+    if (!SpeechRecognitionCtor) return;
+
+    this.recognition = new SpeechRecognitionCtor();
     this.recognition.lang = 'en-US';
     this.recognition.interimResults = false;
     this.recognition.maxAlternatives = 1;
-    
-    this.recognition.onresult = (event: any) => this.handleRecognitionResult(event);
-    this.recognition.onerror = (event: any) => this.handleRecognitionError(event);
+
+    this.recognition.onresult = (event: ISpeechRecognitionEvent) => this.handleRecognitionResult(event);
+    this.recognition.onerror = (event: ISpeechRecognitionErrorEvent) => this.handleRecognitionError(event);
     this.recognition.onend = () => {
       this.recognizing.set(false);
     };
   }
 
-  private handleRecognitionResult(event: any): void {
+  private handleRecognitionResult(event: ISpeechRecognitionEvent): void {
     const result = event.results[0][0].transcript;
     this.transcript.set(result);
     const parsed = this.parseTranscript(result);
     this.parsedResult.set(parsed);
     this.voiceResult.emit(parsed);
     this.recognizing.set(false);
-    
+
     // Auto-hide transcript after delay
     this.scheduleTranscriptHide();
   }
 
-  private handleRecognitionError(event: any): void {
+  private handleRecognitionError(event: ISpeechRecognitionErrorEvent): void {
     this.logger.error('VoiceInput - Speech recognition error:', event.error);
     
     const errorMessages: Record<string, string> = {
@@ -151,6 +160,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   }
 
   private startListening(): void {
+    if (!this.recognition) return;
+
     this.transcript.set('');
     this.parsedResult.set(null);
     this.suggestionPhrase.set(this._voiceSuggestionService.getRandomSuggestion(
@@ -158,7 +169,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       this.typeList,
       this.placeList
     ));
-    
+
     try {
       this.recognition.start();
       this.recognizing.set(true);

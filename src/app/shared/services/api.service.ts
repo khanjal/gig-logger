@@ -11,17 +11,8 @@ import type { ISheet } from "@interfaces/sheet.interface";
 import type { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
 import type { IMessage } from "@interfaces/message.interface";
-
-interface ISheetApiResponse {
-    isStoredInS3?: boolean;
-    s3Link?: string;
-    sheetEntity?: { messages?: IMessage[]; _source?: string };
-    _source?: string;
-}
-
-export interface IAuthTokenResponse {
-    accessToken: string;
-}
+import type { ISheetApiResponse } from "@interfaces/sheet-api-response.interface";
+import type { IAuthTokenResponse } from "@interfaces/auth-token-response.interface";
 
 @Injectable({
     providedIn: 'root'

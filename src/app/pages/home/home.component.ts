@@ -6,13 +6,9 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AppUpdateService } from '@services/app-update.service';
 import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
+import type { IBeforeInstallPromptEvent } from '@interfaces/before-install-prompt-event.interface';
 import { fromEvent } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base';
-
-interface IBeforeInstallPromptEvent extends Event {
-  readonly userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
-  prompt(): Promise<void>;
-}
 
 @Component({
     selector: 'app-home',
