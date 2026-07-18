@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, signal, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { DateHelper } from '@helpers/date.helper';
@@ -17,6 +17,11 @@ import { WeeklyService } from '@services/sheets/weekly.service';
   providedIn: 'root'
 })
 export class CurrentAverageStateService {
+  private _monthlyService = inject(MonthlyService);
+  private _shiftService = inject(ShiftService);
+  private _weekdayService = inject(WeekdayService);
+  private _weeklyService = inject(WeeklyService);
+
   private selectedDate = signal<string>(DateHelper.toISO());
 
   private shifts = toSignal(this._shiftService.shifts$, { initialValue: [] as IShift[] });
@@ -72,13 +77,6 @@ export class CurrentAverageStateService {
 
     return this.toFiniteNumber(monthly?.average);
   });
-
-  constructor(
-    private _monthlyService: MonthlyService,
-    private _shiftService: ShiftService,
-    private _weekdayService: WeekdayService,
-    private _weeklyService: WeeklyService
-  ) {}
 
   setDate(date: string | null | undefined): void {
     this.selectedDate.set(date || DateHelper.toISO());

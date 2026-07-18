@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
@@ -17,6 +17,12 @@ import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface
 })
 
 export class VoiceInputComponent implements OnInit, OnDestroy {
+  private _dropdownDataService = inject(DropdownDataService);
+  private logger = inject(LoggerService);
+  private _permissionService = inject(PermissionService);
+  private _voiceSuggestionService = inject(VoiceSuggestionService);
+  private _voicePatternProcessor = inject(VoicePatternProcessorService);
+
   // Dropdown data (from database + canonical JSON fallback)
   serviceList: string[] = [];
   addressList: string[] = [];
@@ -33,14 +39,6 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
   // Auto-hide delay (in milliseconds)
   private readonly TRANSCRIPT_AUTO_HIDE_DELAY = 3000;
-
-  constructor(
-    private _dropdownDataService: DropdownDataService,
-    private logger: LoggerService,
-    private _permissionService: PermissionService,
-    private _voiceSuggestionService: VoiceSuggestionService,
-    private _voicePatternProcessor: VoicePatternProcessorService
-  ) {}
 
   async ngOnInit(): Promise<void> {
     // Load dropdown data (service handles canonical fallback)

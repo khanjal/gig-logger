@@ -9,22 +9,28 @@
           {{ getStatusText() }}
         </span>
       </div>
-      
-      <div class="flex items-start justify-between gap-2 text-sm" *ngIf="syncState()?.status === 'syncing'">
-        <span class="font-medium text-secondary whitespace-nowrap">Progress:</span>
-        <span class="text-right text-primary">
-          {{ syncState()?.progress }}%
-          <span *ngIf="(syncState()?.totalItems || 0) > 0">
-            ({{ syncState()?.itemsSynced }}/{{ syncState()?.totalItems }})
-          </span>
-        </span>
-      </div>
 
-      <div *ngIf="syncState()?.status === 'syncing' && (syncState()?.progress || 0) > 0">
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="syncState()?.progress || 0"></div>
+      @if (syncState()?.status === 'syncing') {
+        <div class="flex items-start justify-between gap-2 text-sm">
+          <span class="font-medium text-secondary whitespace-nowrap">Progress:</span>
+          <span class="text-right text-primary">
+            {{ syncState()?.progress }}%
+            @if ((syncState()?.totalItems || 0) > 0) {
+              <span>
+                ({{ syncState()?.itemsSynced }}/{{ syncState()?.totalItems }})
+              </span>
+            }
+          </span>
         </div>
-      </div>
+      }
+
+      @if (syncState()?.status === 'syncing' && (syncState()?.progress || 0) > 0) {
+        <div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="syncState()?.progress || 0"></div>
+          </div>
+        </div>
+      }
 
       <div class="flex items-start justify-between gap-2 text-sm">
         <span class="font-medium text-secondary whitespace-nowrap">Last sync:</span>
@@ -36,18 +42,20 @@
         <span class="text-right text-primary">{{ getNextCheckText() }}</span>
       </div>
 
-      <div class="flex items-start justify-between gap-2 text-sm" *ngIf="syncState()?.error">
-        <span class="font-medium text-[var(--error-500)] whitespace-nowrap">Error:</span>
-        <span class="text-right text-[var(--error-500)] text-sm">{{ syncState()?.error }}</span>
-      </div>
+      @if (syncState()?.error) {
+        <div class="flex items-start justify-between gap-2 text-sm">
+          <span class="font-medium text-[var(--error-500)] whitespace-nowrap">Error:</span>
+          <span class="text-right text-[var(--error-500)] text-sm">{{ syncState()?.error }}</span>
+        </div>
+      }
 
       <div class="flex items-start justify-between gap-2 text-sm">
         <span class="font-medium text-primary">Pending Changes</span>
-              <div class="text-sm text-tertiary">
-                <a role="link" tabindex="0" aria-label="Open pending trips" class="pending-link pc-trips" (click)="openPendingChanges('trips'); $event.stopPropagation()" (keydown.enter)="openPendingChanges('trips'); $event.stopPropagation()">{{ unsavedCounts().trips }} trips</a>
-                <span class="pc-sep"> • </span>
-                <a role="link" tabindex="0" aria-label="Open pending shifts" class="pending-link pc-shifts" (click)="openPendingChanges('shifts'); $event.stopPropagation()" (keydown.enter)="openPendingChanges('shifts'); $event.stopPropagation()">{{ unsavedCounts().shifts }} shifts</a>
-              </div>
+        <div class="text-sm text-tertiary">
+          <a role="link" tabindex="0" aria-label="Open pending trips" class="pending-link pc-trips" (click)="openPendingChanges('trips'); $event.stopPropagation()" (keydown.enter)="openPendingChanges('trips'); $event.stopPropagation()">{{ unsavedCounts().trips }} trips</a>
+          <span class="pc-sep"> • </span>
+          <a role="link" tabindex="0" aria-label="Open pending shifts" class="pending-link pc-shifts" (click)="openPendingChanges('shifts'); $event.stopPropagation()" (keydown.enter)="openPendingChanges('shifts'); $event.stopPropagation()">{{ unsavedCounts().shifts }} shifts</a>
+        </div>
       </div>
 
       <div class="pt-2">
@@ -66,43 +74,47 @@
     </div>
 
     <!-- Messages log (collapsible) -->
-    <div class="messages-section border-t border-[var(--color-border-light)] bg-[var(--color-surface)]" *ngIf="messages().length > 0">
-      <div class="messages-header px-4 py-3 flex justify-between items-center bg-overlay/5 hover:bg-overlay/10 cursor-pointer transition" (click)="toggleDetailedView(); $event.stopPropagation()">
-        <span class="messages-title flex items-center gap-1 text-sm font-medium text-primary">
-          <mat-icon class="expand-icon text-secondary" [class.expanded]="showDetailedView()">
-            expand_more
-          </mat-icon>
-          Activity Log ({{ messages().length }})
-        </span>
-        <app-base-field-button 
-          [fab]="true" 
-          fabStyle="mini"
-          [icon]="'clear_all'"
-          [iconColor]="'var(--error-500)'"
-          (clicked)="clearMessages()"
-          class="clear-button flex h-8 w-8 items-center justify-center"
-          matTooltip="Clear log">
-        </app-base-field-button>
-      </div>
-
-      <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1" *ngIf="showDetailedView">
-        <div 
-          *ngFor="let message of messages().slice(-10).reverse()" 
-          class="message-item flex gap-2 p-2 rounded border-l-4 transition"
-          [ngClass]="'message-' + message.type">
-          <mat-icon class="message-icon text-secondary">{{ getMessageIcon(message.type) }}</mat-icon>
-          <div class="message-content flex-1 min-w-0">
-            <div class="message-text text-sm text-primary break-words">{{ message.text }}</div>
-            <div class="message-time text-xs text-tertiary">{{ formatTimestamp(message.timestamp) }}</div>
-          </div>
+    @if (messages().length > 0) {
+      <div class="messages-section border-t border-[var(--color-border-light)] bg-[var(--color-surface)]">
+        <div class="messages-header px-4 py-3 flex justify-between items-center bg-overlay/5 hover:bg-overlay/10 cursor-pointer transition" (click)="toggleDetailedView(); $event.stopPropagation()">
+          <span class="messages-title flex items-center gap-1 text-sm font-medium text-primary">
+            <mat-icon class="expand-icon text-secondary" [class.expanded]="showDetailedView()">
+              expand_more
+            </mat-icon>
+            Activity Log ({{ messages().length }})
+          </span>
+          <app-base-field-button
+            [fab]="true"
+            fabStyle="mini"
+            [icon]="'clear_all'"
+            [iconColor]="'var(--error-500)'"
+            (clicked)="clearMessages()"
+            class="clear-button flex h-8 w-8 items-center justify-center"
+            matTooltip="Clear log">
+          </app-base-field-button>
         </div>
+        @if (showDetailedView) {
+          <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1">
+            @for (message of messages().slice(-10).reverse(); track message) {
+              <div
+                class="message-item flex gap-2 p-2 rounded border-l-4 transition"
+                [ngClass]="'message-' + message.type">
+                <mat-icon class="message-icon text-secondary">{{ getMessageIcon(message.type) }}</mat-icon>
+                <div class="message-content flex-1 min-w-0">
+                  <div class="message-text text-sm text-primary break-words">{{ message.text }}</div>
+                  <div class="message-time text-xs text-tertiary">{{ formatTimestamp(message.timestamp) }}</div>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </div>
-    </div>
+    }
   </ng-template>
 
-  <ng-container *ngIf="mode === 'button'; else panelMode">
+  @if (mode === 'button') {
     <!-- Main status button with menu trigger -->
-    <div 
+    <div
       class="relative"
       cdkOverlayOrigin
       #syncOverlayOrigin="cdkOverlayOrigin"
@@ -118,13 +130,13 @@
         matTooltipPosition="below">
       </app-base-icon-button>
       <!-- Progress badge for syncing state -->
-      <span 
-        *ngIf="syncState()?.status === 'syncing' && (syncState()?.totalItems || 0) > 0"
-        class="progress-badge">
-        {{ syncState()?.itemsSynced }}/{{ syncState()?.totalItems }}
-      </span>
+      @if (syncState()?.status === 'syncing' && (syncState()?.totalItems || 0) > 0) {
+        <span
+          class="progress-badge">
+          {{ syncState()?.itemsSynced }}/{{ syncState()?.totalItems }}
+        </span>
+      }
     </div>
-
     <!-- Dropdown popover with detailed sync information -->
     <ng-template
       cdkConnectedOverlay
@@ -141,13 +153,12 @@
         </div>
       </div>
     </ng-template>
-  </ng-container>
-
-  <ng-template #panelMode>
+  } @else {
     <div class="sync-menu-panel sync-menu-panel--embedded bg-[var(--color-surface)] border border-[var(--color-border-light)] shadow-[0_16px_40px_var(--shadow-heavy)] rounded-xl overflow-hidden">
       <div class="sync-menu-content embedded w-full min-w-[340px] max-w-[480px] bg-[var(--color-surface)] overflow-hidden p-0" (click)="$event.stopPropagation()">
         <ng-container *ngTemplateOutlet="syncContent"></ng-container>
       </div>
     </div>
-  </ng-template>
+  }
+
 </div>

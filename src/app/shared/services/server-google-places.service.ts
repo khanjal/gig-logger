@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { LoggerService } from './logger.service';
@@ -17,6 +17,10 @@ import type {
   providedIn: 'root'
 })
 export class ServerGooglePlacesService {
+  private http = inject(HttpClient);
+  private logger = inject(LoggerService);
+  private mockLocationService = inject(MockLocationService);
+
   private baseUrl = environment.gigLoggerApi;
   private cachedLocation: { lat: number; lng: number; timestamp: number } | null = null;
   private locationCacheDuration = 5 * 60 * 1000; // 5 minutes
@@ -25,13 +29,7 @@ export class ServerGooglePlacesService {
   private autocompleteCache = new Map<string, { results: IAutocompleteResult[]; timestamp: number }>();
   private placeDetailsCache = new Map<string, { details: IPlaceDetails; timestamp: number }>();
   private autocompleteCacheDuration = 2 * 60 * 1000; // 2 minutes
-  private placeDetailsCacheDuration = 5 * 60 * 1000; // 5 minutes
-
-  constructor(
-    private http: HttpClient,
-    private logger: LoggerService,
-    private mockLocationService: MockLocationService
-  ) {}
+  private placeDetailsCacheDuration = 5 * 60 * 1000;
 
   /**
    * Get autocomplete suggestions from server-side Google Places API

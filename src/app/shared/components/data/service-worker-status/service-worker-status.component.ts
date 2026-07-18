@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
 import { AppUpdateService } from '@services/app-update.service';
 import { Subscription } from 'rxjs';
@@ -13,17 +13,15 @@ import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
   templateUrl: './service-worker-status.component.html',
 })
 export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
+  private appUpdateService = inject(AppUpdateService);
+  private logger = inject(LoggerService);
+
   serviceWorkerStatus = signal('Checking...');
   isUpdateAvailable = signal(false);
   showInstallButton = signal(false);
   isOnline = signal(navigator.onLine);
   private updateStatusSubscription: Subscription | undefined;
   private deferredPrompt: any;
-
-  constructor(
-    private appUpdateService: AppUpdateService,
-    private logger: LoggerService
-  ) {}
   
   async ngOnInit(): Promise<void> {
     // Subscribe to app update status

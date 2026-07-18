@@ -6,8 +6,9 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
   providedIn: 'root'
 })
 export class DefaultSheetGuard {
-  
-  constructor(private _sheetService: SpreadsheetService, private _router: Router) {}
+  private _sheetService = inject(SpreadsheetService);
+  private _router = inject(Router);
+
 
   async canActivate() {
 

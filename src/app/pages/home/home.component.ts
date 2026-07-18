@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+
 import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -15,7 +15,7 @@ import { BaseRectButtonComponent } from '@components/base';
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
     standalone: true,
-    imports: [CommonModule, MatIcon, BaseRectButtonComponent]
+    imports: [MatIcon, BaseRectButtonComponent]
 })
 export class HomeComponent implements OnInit {
   private logger = inject(LoggerService);

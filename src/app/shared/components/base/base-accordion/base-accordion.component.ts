@@ -1,10 +1,10 @@
 import { Component, AfterContentInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-base-accordion',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="accordion" role="presentation">
       <ng-content></ng-content>

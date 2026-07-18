@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, merge, fromEvent } from 'rxjs';
 import { map, startWith, debounceTime, shareReplay } from 'rxjs/operators';
 
@@ -11,6 +11,8 @@ export interface ViewportSnapshot {
 
 @Injectable({ providedIn: 'root' })
 export class ViewportService {
+  private ngZone = inject(NgZone);
+
   private started = false;
   private snapshot$ = new BehaviorSubject<ViewportSnapshot>(this.computeSnapshot());
   private eventsSub: Subscription | null = null;
@@ -18,8 +20,6 @@ export class ViewportService {
   // Debounced stream for settled viewport changes
   public viewportChange$: Observable<ViewportSnapshot> = this.snapshot$.asObservable().pipe(shareReplay(1));
   public viewportSettled$: Observable<ViewportSnapshot> = this.snapshot$.asObservable().pipe(debounceTime(120), shareReplay(1));
-
-  constructor(private ngZone: NgZone) {}
 
   start(): void {
     if (this.started) {

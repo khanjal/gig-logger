@@ -1,5 +1,5 @@
-import { Component, OnInit, effect, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, effect, signal, inject } from '@angular/core';
+
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
@@ -20,11 +20,17 @@ import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.com
 @Component({
   selector: 'app-pending-changes',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, MatListModule, MatButtonModule, MatIconModule, RouterModule, TripsQuickViewComponent, ShiftsQuickViewComponent],
+  imports: [MatExpansionModule, MatListModule, MatButtonModule, MatIconModule, RouterModule, TripsQuickViewComponent, ShiftsQuickViewComponent],
   templateUrl: './pending-changes.component.html',
   styleUrls: ['./pending-changes.component.scss']
 })
 export class PendingChangesComponent implements OnInit {
+  private unsavedService = inject(UnsavedDataService);
+  private tripService = inject(TripService);
+  private shiftService = inject(ShiftService);
+  private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+
   trips = signal<any[]>([]);
   shifts = signal<IShift[]>([]);
   duplicateShiftKeys = signal<Set<string>>(new Set());
@@ -34,13 +40,7 @@ export class PendingChangesComponent implements OnInit {
   private queryParams = toSignal(this.route.queryParams, { initialValue: {} as Record<string, string> });
   private lastHandledSection: string | undefined;
 
-  constructor(
-    private unsavedService: UnsavedDataService,
-    private tripService: TripService,
-    private shiftService: ShiftService,
-    private route: ActivatedRoute,
-    private dialog: MatDialog
-  ) {
+  constructor() {
     effect(() => {
       const section = this.queryParams()['section'];
       if (section === this.lastHandledSection) {

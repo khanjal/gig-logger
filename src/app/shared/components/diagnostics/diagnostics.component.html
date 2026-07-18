@@ -5,123 +5,214 @@
     </app-base-rect-button>
   </div>
   <div class="diagnostics-list space-y-6">
-    <div *ngFor="let item of dataDiagnostics()" class="mb-6">
-      <div class="flex items-center gap-4 border-b pb-2 mb-2">
-        <mat-icon [color]="getSeverityColor(item.severity)" class="text-2xl">
-          {{ getSeverityIcon(item.severity) }}
-        </mat-icon>
-        <div class="flex-1">
-          <div class="font-semibold text-lg text-primary">{{ item.name }}</div>
-          <div class="text-tertiary text-sm">{{ item.description }}</div>
-        </div>
-        <div class="text-xs bg-surface-2 dark:bg-surface-3 text-tertiary rounded px-2 py-1">{{ item.count }}</div>
-      </div>
-      <div *ngIf="item.items && item.items.length > 0" class="mt-2">
-        <div class="font-medium mb-2 text-primary">
-          Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):
-        </div>
-        <ng-container *ngIf="item.groups && item.groups.length > 0; else showIndividualItems">
-          <div *ngFor="let group of item.groups; let groupIndex = index" class="mb-4">
-                <div class="font-bold text-primary mb-1">
-              Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):
-            </div>
-                <ul class="pl-4 border-l-2 border-soft dark:border-[var(--color-border)]">
-              <li *ngFor="let problemItem of group" class="py-1">
-                <ng-container [ngSwitch]="item.itemType">
-                  <ng-container *ngSwitchCase="'shift'">
-                    <strong>Shift:</strong>
-                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                    <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
-                    <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                    <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
-                    <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
-                    <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'address'">
-                    <strong>Address:</strong>
-                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                    <span class="address-info">{{ problemItem.address }}</span>
-                    <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                    <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'place'">
-                    <strong>Place:</strong>
-                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                    <span class="place-info">{{ problemItem.place }}</span>
-                    <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                    <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'name'">
-                    <strong>Name:</strong>
-                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                    <span class="name-info">{{ problemItem.name }}</span>
-                    <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                    <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
-                  </ng-container>
-                  <ng-container *ngSwitchDefault>
-                    <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
-                  </ng-container>
-                </ng-container>
-              </li>
-            </ul>
+    @for (item of dataDiagnostics(); track item) {
+      <div class="mb-6">
+        <div class="flex items-center gap-4 border-b pb-2 mb-2">
+          <mat-icon [color]="getSeverityColor(item.severity)" class="text-2xl">
+            {{ getSeverityIcon(item.severity) }}
+          </mat-icon>
+          <div class="flex-1">
+            <div class="font-semibold text-lg text-primary">{{ item.name }}</div>
+            <div class="text-tertiary text-sm">{{ item.description }}</div>
           </div>
-        </ng-container>
-        <ng-template #showIndividualItems>
-          <ul class="pl-4">
-            <li *ngFor="let problemItem of item.items" class="py-1">
-              <ng-container [ngSwitch]="item.itemType">
-                <ng-container *ngSwitchCase="'shift'">
-                  <strong>Shift:</strong>
-                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                  <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
-                  <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                  <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
-                  <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
-                  <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-                </ng-container>
-                <ng-container *ngSwitchCase="'trip'">
-                  <strong>Trip:</strong>
-                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                  <span *ngIf="problemItem.place" class="place-info">{{ problemItem.place }}</span>
-                  <span *ngIf="problemItem.name" class="name-info">{{ problemItem.name }}</span>
-                  <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
-                  <span *ngIf="problemItem.pickup">{{ problemItem.pickup }}</span>
-                  <span *ngIf="(problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)"> → </span>
-                  <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
-                  <span *ngIf="problemItem.dropoff">{{ problemItem.dropoff }}</span>
-                  <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
-                  <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
-                  <span *ngIf="problemItem.exclude"> - EXCLUDED</span>
-                </ng-container>
-                <ng-container *ngSwitchCase="'address'">
-                  <strong>Address:</strong>
-                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                  <span class="address-info">{{ problemItem.address }}</span>
-                  <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                  <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
-                </ng-container>
-                <ng-container *ngSwitchCase="'place'">
-                  <strong>Place:</strong>
-                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                  <span class="place-info">{{ problemItem.place }}</span>
-                  <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                  <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>
-                </ng-container>
-                <ng-container *ngSwitchCase="'name'">
-                  <strong>Name:</strong>
-                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
-                  <span class="name-info">{{ problemItem.name }}</span>
-                  <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                  <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
-                </ng-container>
-                <ng-container *ngSwitchDefault>
-                  <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
-                </ng-container>
-              </ng-container>
-            </li>
-          </ul>
-        </ng-template>
+          <div class="text-xs bg-surface-2 dark:bg-surface-3 text-tertiary rounded px-2 py-1">{{ item.count }}</div>
+        </div>
+        @if (item.items && item.items.length > 0) {
+          <div class="mt-2">
+            <div class="font-medium mb-2 text-primary">
+              Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):
+            </div>
+            @if (item.groups && item.groups.length > 0) {
+              @for (group of item.groups; track group; let groupIndex = $index) {
+                <div class="mb-4">
+                  <div class="font-bold text-primary mb-1">
+                    Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):
+                  </div>
+                  <ul class="pl-4 border-l-2 border-soft dark:border-[var(--color-border)]">
+                    @for (problemItem of group; track problemItem) {
+                      <li class="py-1">
+                        @switch (item.itemType) {
+                          @case ('shift') {
+                            <strong>Shift:</strong>
+                            @if (problemItem.rowId) {
+                              <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                            }
+                            @if (problemItem.date) {
+                              <span>{{ problemItem.date }}</span>
+                            }
+                            @if (problemItem.key) {
+                              <span> ({{ problemItem.key }})</span>
+                            }
+                            @if (problemItem.totalTrips !== undefined) {
+                              <span> - Trips: {{ problemItem.totalTrips }}</span>
+                            }
+                            @if (problemItem.start) {
+                              <span> - Start: {{ problemItem.start }}</span>
+                            }
+                            @if (problemItem.finish) {
+                              <span> - End: {{ problemItem.finish }}</span>
+                            }
+                          }
+                          @case ('address') {
+                            <strong>Address:</strong>
+                            @if (problemItem.rowId) {
+                              <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                            }
+                            <span class="address-info">{{ problemItem.address }}</span>
+                            @if (problemItem.trips !== undefined) {
+                              <span> - Trips: {{ problemItem.trips }}</span>
+                            }
+                            @if (problemItem.names && problemItem.names.length > 0) {
+                              <span> - Names: {{ problemItem.names.join(', ') }}</span>
+                            }
+                          }
+                          @case ('place') {
+                            <strong>Place:</strong>
+                            @if (problemItem.rowId) {
+                              <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                            }
+                            <span class="place-info">{{ problemItem.place }}</span>
+                            @if (problemItem.trips !== undefined) {
+                              <span> - Trips: {{ problemItem.trips }}</span>
+                            }
+                            @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                              <span> - Addresses: {{ problemItem.addresses.length }}</span>
+                            }
+                          }
+                          @case ('name') {
+                            <strong>Name:</strong>
+                            @if (problemItem.rowId) {
+                              <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                            }
+                            <span class="name-info">{{ problemItem.name }}</span>
+                            @if (problemItem.trips !== undefined) {
+                              <span> - Trips: {{ problemItem.trips }}</span>
+                            }
+                            @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                              <span> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
+                            }
+                          }
+                          @default {
+                            <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
+                          }
+                        }
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            } @else {
+              <ul class="pl-4">
+                @for (problemItem of item.items; track problemItem) {
+                  <li class="py-1">
+                    @switch (item.itemType) {
+                      @case ('shift') {
+                        <strong>Shift:</strong>
+                        @if (problemItem.rowId) {
+                          <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                        }
+                        @if (problemItem.date) {
+                          <span>{{ problemItem.date }}</span>
+                        }
+                        @if (problemItem.key) {
+                          <span> ({{ problemItem.key }})</span>
+                        }
+                        @if (problemItem.totalTrips !== undefined) {
+                          <span> - Trips: {{ problemItem.totalTrips }}</span>
+                        }
+                        @if (problemItem.start) {
+                          <span> - Start: {{ problemItem.start }}</span>
+                        }
+                        @if (problemItem.finish) {
+                          <span> - End: {{ problemItem.finish }}</span>
+                        }
+                      }
+                      @case ('trip') {
+                        <strong>Trip:</strong>
+                        @if (problemItem.rowId) {
+                          <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                        }
+                        @if (problemItem.place) {
+                          <span class="place-info">{{ problemItem.place }}</span>
+                        }
+                        @if (problemItem.name) {
+                          <span class="name-info">{{ problemItem.name }}</span>
+                        }
+                        @if (problemItem.startLocation) {
+                          <span>{{ problemItem.startLocation }}</span>
+                        }
+                        @if (problemItem.pickup) {
+                          <span>{{ problemItem.pickup }}</span>
+                        }
+                        @if ((problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)) {
+                          <span> → </span>
+                        }
+                        @if (problemItem.endLocation) {
+                          <span>{{ problemItem.endLocation }}</span>
+                        }
+                        @if (problemItem.dropoff) {
+                          <span>{{ problemItem.dropoff }}</span>
+                        }
+                        @if (problemItem.key) {
+                          <span> (Shift: {{ problemItem.key }})</span>
+                        }
+                        @if (problemItem.date) {
+                          <span> - {{ problemItem.date }}</span>
+                        }
+                        @if (problemItem.exclude) {
+                          <span> - EXCLUDED</span>
+                        }
+                      }
+                      @case ('address') {
+                        <strong>Address:</strong>
+                        @if (problemItem.rowId) {
+                          <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                        }
+                        <span class="address-info">{{ problemItem.address }}</span>
+                        @if (problemItem.trips !== undefined) {
+                          <span> - Trips: {{ problemItem.trips }}</span>
+                        }
+                        @if (problemItem.names && problemItem.names.length > 0) {
+                          <span> - Names: {{ problemItem.names.join(', ') }}</span>
+                        }
+                      }
+                      @case ('place') {
+                        <strong>Place:</strong>
+                        @if (problemItem.rowId) {
+                          <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                        }
+                        <span class="place-info">{{ problemItem.place }}</span>
+                        @if (problemItem.trips !== undefined) {
+                          <span> - Trips: {{ problemItem.trips }}</span>
+                        }
+                        @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                          <span> - Addresses: {{ problemItem.addresses.length }}</span>
+                        }
+                      }
+                      @case ('name') {
+                        <strong>Name:</strong>
+                        @if (problemItem.rowId) {
+                          <span class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                        }
+                        <span class="name-info">{{ problemItem.name }}</span>
+                        @if (problemItem.trips !== undefined) {
+                          <span> - Trips: {{ problemItem.trips }}</span>
+                        }
+                        @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                          <span> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
+                        }
+                      }
+                      @default {
+                        <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
+                      }
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
       </div>
-    </div>
+    }
   </div>
 </div>

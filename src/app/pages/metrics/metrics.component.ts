@@ -11,7 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
-import { CommonModule } from '@angular/common';
+
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
 import { combineLatest, from, of } from 'rxjs';
@@ -52,13 +52,16 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
 @Component({
   selector: 'app-metrics',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
+  imports: [BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
   providers: [ShiftService],
   templateUrl: './metrics.component.html',
   styleUrls: ['./metrics.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class MetricsComponent implements OnInit {
+  private shiftService = inject(ShiftService);
+  private themeService = inject(ThemeService);
+
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   shifts = signal<any[]>([]);
   filteredShifts = signal<any[]>([]);
@@ -171,11 +174,6 @@ export class MetricsComponent implements OnInit {
 
   // Date Range
   range = new FormGroup({ start: new FormControl(), end: new FormControl() });
-
-  constructor(
-    private shiftService: ShiftService,
-    private themeService: ThemeService
-  ) {}
 
   private getTextColor(): string {
     // Provide sensible fallbacks depending on the active theme so tests

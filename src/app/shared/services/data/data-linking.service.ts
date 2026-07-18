@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import type { ITrip } from "@interfaces/trip.interface";
 import type { IDelivery } from "@interfaces/delivery.interface";
 import type { INote } from "@interfaces/note.interface";
@@ -20,17 +20,16 @@ import { groupBy, uniquePush } from "@helpers/array.helper";
     providedIn: 'root'
 })
 export class DataLinkingService {
-    constructor(
-        private _addressService: AddressService,
-        private _deliveryService: DeliveryService,
-        private _nameService: NameService,
-        private _placeService: PlaceService,
-        private _regionService: RegionService,
-        private _serviceService: ServiceService,
-        private _tripService: TripService,
-        private _typeService: TypeService,
-        private _logger: LoggerService
-    ) {}
+    private _addressService = inject(AddressService);
+    private _deliveryService = inject(DeliveryService);
+    private _nameService = inject(NameService);
+    private _placeService = inject(PlaceService);
+    private _regionService = inject(RegionService);
+    private _serviceService = inject(ServiceService);
+    private _tripService = inject(TripService);
+    private _typeService = inject(TypeService);
+    private _logger = inject(LoggerService);
+
 
     private handleError(operation: string, error: any): void {
         this._logger.error(`${operation} failed`, {

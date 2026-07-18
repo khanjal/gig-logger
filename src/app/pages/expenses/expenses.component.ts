@@ -60,6 +60,13 @@ import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface
 })
 
 export class ExpensesComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private expensesService = inject(ExpensesService);
+  private unsavedDataService = inject(UnsavedDataService);
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  protected authService = inject(AuthGoogleService);
+
   dateFormats = DATE_FORMATS;
   groupedExpensesByYear = signal<Record<string, IExpense[]>>({});
   yearTotals = signal<Record<string, number>>({});
@@ -78,15 +85,6 @@ export class ExpensesComponent implements OnInit {
   actionEnum = ActionEnum;
   maxRowId = signal(1);
   private readonly destroyRef = inject(DestroyRef);
-
-  constructor(
-    private fb: FormBuilder,
-    private expensesService: ExpensesService,
-    private unsavedDataService: UnsavedDataService,
-    public dialog: MatDialog,
-    private _snackBar: MatSnackBar,
-    protected authService: AuthGoogleService
-  ) {}
 
   async ngOnInit() {
     this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);

@@ -15,10 +15,10 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './updates.component.scss'
 })
 export class UpdatesComponent implements OnInit {
+  private updatesService = inject(UpdatesService);
+
   updates = signal<IUpdateEntry[]>([]);
   private destroyRef = inject(DestroyRef);
-
-  constructor(private updatesService: UpdatesService) { }
 
   ngOnInit(): void {
     this.updatesService.getUpdates()

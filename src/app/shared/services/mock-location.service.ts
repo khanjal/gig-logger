@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LoggerService } from './logger.service';
 import type { IMockLocation, IPresetLocation } from '@interfaces/mock-location.interface';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
@@ -7,6 +7,8 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
   providedIn: 'root'
 })
 export class MockLocationService {
+  private logger = inject(LoggerService);
+
   private readonly STORAGE_KEY = SESSION_CONSTANTS.MOCK_LOCATION;
   private readonly LEGACY_KEY = 'mockLocation';
   private readonly DEFAULT_RADIUS = 25; // miles
@@ -42,8 +44,6 @@ export class MockLocationService {
     { name: 'Halifax, NS', latitude: 44.6488, longitude: -63.5752, country: 'CA' },
     { name: 'Victoria, BC', latitude: 48.4284, longitude: -123.3656, country: 'CA' }
   ];
-
-  constructor(private logger: LoggerService) {}
 
   /**
    * Get current mock location settings

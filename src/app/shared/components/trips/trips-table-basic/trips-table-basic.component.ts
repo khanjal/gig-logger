@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { NgClass, NgIf, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { DateHelper } from '@helpers/date.helper';
 import type { ITrip } from '@interfaces/trip.interface';
 
@@ -10,7 +10,7 @@ import type { ITrip } from '@interfaces/trip.interface';
     templateUrl: './trips-table-basic.component.html',
     styleUrls: ['./trips-table-basic.component.scss'],
     standalone: true,
-  imports: [MatIcon, NgClass, NgIf, CurrencyPipe, DatePipe]
+  imports: [MatIcon, NgClass, CurrencyPipe, DatePipe]
 })
 export class TripsTableBasicComponent implements OnInit {
   @Input() trips: ITrip[] = [];

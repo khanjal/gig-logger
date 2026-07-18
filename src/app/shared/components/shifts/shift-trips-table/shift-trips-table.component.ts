@@ -1,5 +1,5 @@
-import { Component, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core';
-import { CommonModule, NgIf, NgClass, CurrencyPipe } from '@angular/common';
+import { Component, Input, OnChanges, OnInit, signal, SimpleChanges, inject } from '@angular/core';
+import { CommonModule, NgClass, CurrencyPipe } from '@angular/common';
 import { TripService } from '@services/sheets/trip.service';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
@@ -16,29 +16,26 @@ import type { ITrip } from '@interfaces/trip.interface';
   templateUrl: './shift-trips-table.component.html',
   standalone: true,
   imports: [
-    NgIf,
     NgClass,
     MatIcon,
     BaseFabButtonComponent,
     CurrencyPipe,
     NoSecondsPipe,
-    TruncatePipe,
-  ],
+    TruncatePipe
+],
   styleUrls: ['./shift-trips-table.component.scss'],
 })
 
 export class ShiftTripsTableComponent implements OnInit, OnChanges {
+  private tripService = inject(TripService);
+  private dialog = inject(MatDialog);
+  private _logger = inject(LoggerService);
+
   @Input() tripKey = '';
   prefers24Hour = false;
   displayedColumns: string[] = [];
   trips = signal<ITrip[]>([]);
   private loadToken = 0;
-
-  constructor(
-    private tripService: TripService,
-    private dialog: MatDialog,
-    private _logger: LoggerService
-  ) {}
 
   trackByTrip(index: number, t: ITrip): any {
     return t?.id ?? t?.rowId ?? index;

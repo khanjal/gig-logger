@@ -1,88 +1,98 @@
 <div class="page-container container flex flex-col min-h-screen md:p-8 lg:p-12">
   <div class="flex flex-wrap gap-4 mb-6 items-center justify-between">
     <h1 class="text-2xl font-bold flex-1">Data Diagnostics</h1>
-      <app-base-rect-button 
-        variant="primary" 
-        [icon]="isLoading() ? 'hourglass_empty' : 'refresh'" 
-        iconPosition="left"
-        (clicked)="runDiagnostics()" 
-        [disabled]="isLoading()"
-        class="!min-w-[140px]"
+    <app-base-rect-button
+      variant="primary"
+      [icon]="isLoading() ? 'hourglass_empty' : 'refresh'"
+      iconPosition="left"
+      (clicked)="runDiagnostics()"
+      [disabled]="isLoading()"
+      class="!min-w-[140px]"
       >
-        {{ isLoading() ? 'Running...' : 'Run Check' }}
-      </app-base-rect-button>
+      {{ isLoading() ? 'Running...' : 'Run Check' }}
+    </app-base-rect-button>
   </div>
 
   <!-- Summary Cards -->
-  <div class="grid grid-cols-3 gap-4 mb-6" *ngIf="dataDiagnostics().length > 0">
-    <div class="bg-error-soft border-l-4 border-error p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-error mb-1 lg:mb-0 leading-none">
-        <mat-icon class="text-error !text-2xl !w-8 !h-8 !leading-none relative top-0.5">error</mat-icon>
-        <span>{{ getCountBySeverity('error') }}</span>
-        <span class="hidden lg:inline text-sm text-error font-normal ml-1">Errors</span>
+  @if (dataDiagnostics().length > 0) {
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="bg-error-soft border-l-4 border-error p-4 rounded-lg">
+        <div class="flex items-center gap-1 text-2xl font-bold text-error mb-1 lg:mb-0 leading-none">
+          <mat-icon class="text-error !text-2xl !w-8 !h-8 !leading-none relative top-0.5">error</mat-icon>
+          <span>{{ getCountBySeverity('error') }}</span>
+          <span class="hidden lg:inline text-sm text-error font-normal ml-1">Errors</span>
+        </div>
+        <div class="text-sm text-error text-center lg:hidden">Errors</div>
       </div>
-      <div class="text-sm text-error text-center lg:hidden">Errors</div>
-    </div>
-    <div class="bg-warning-soft border-l-4 border-warning p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-warning mb-1 lg:mb-0 leading-none">
-        <mat-icon class="text-warning !text-2xl !w-8 !h-8 !leading-none relative top-0.5">warning</mat-icon>
-        <span>{{ getCountBySeverity('warning') }}</span>
-        <span class="hidden lg:inline text-sm text-warning font-normal ml-1">Warnings</span>
+      <div class="bg-warning-soft border-l-4 border-warning p-4 rounded-lg">
+        <div class="flex items-center gap-1 text-2xl font-bold text-warning mb-1 lg:mb-0 leading-none">
+          <mat-icon class="text-warning !text-2xl !w-8 !h-8 !leading-none relative top-0.5">warning</mat-icon>
+          <span>{{ getCountBySeverity('warning') }}</span>
+          <span class="hidden lg:inline text-sm text-warning font-normal ml-1">Warnings</span>
+        </div>
+        <div class="text-sm text-warning text-center lg:hidden">Warnings</div>
       </div>
-      <div class="text-sm text-warning text-center lg:hidden">Warnings</div>
-    </div>
-    <div class="bg-info-soft border-l-4 border-primary p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-info mb-1 lg:mb-0 leading-none">
-        <mat-icon class="text-info !text-2xl !w-8 !h-8 !leading-none relative top-0.5">info</mat-icon>
-        <span>{{ getCountBySeverity('info') }}</span>
-        <span class="hidden lg:inline text-sm text-info font-normal ml-1">Info</span>
+      <div class="bg-info-soft border-l-4 border-primary p-4 rounded-lg">
+        <div class="flex items-center gap-1 text-2xl font-bold text-info mb-1 lg:mb-0 leading-none">
+          <mat-icon class="text-info !text-2xl !w-8 !h-8 !leading-none relative top-0.5">info</mat-icon>
+          <span>{{ getCountBySeverity('info') }}</span>
+          <span class="hidden lg:inline text-sm text-info font-normal ml-1">Info</span>
+        </div>
+        <div class="text-sm text-info text-center lg:hidden">Info</div>
       </div>
-      <div class="text-sm text-info text-center lg:hidden">Info</div>
     </div>
-  </div>
+  }
 
   <!-- Loading State -->
-    <div *ngIf="isLoading()" class="text-center py-12">
-    <mat-icon class="text-info !text-[64px] !w-16 !h-16 mx-auto mb-4 animate-spin">refresh</mat-icon>
-    <h2 class="text-xl font-semibold text-primary mb-2">Running Diagnostics...</h2>
-    <p class="text-secondary">Analyzing your data for potential issues.</p>
-  </div>
+  @if (isLoading()) {
+    <div class="text-center py-12">
+      <mat-icon class="text-info !text-[64px] !w-16 !h-16 mx-auto mb-4 animate-spin">refresh</mat-icon>
+      <h2 class="text-xl font-semibold text-primary mb-2">Running Diagnostics...</h2>
+      <p class="text-secondary">Analyzing your data for potential issues.</p>
+    </div>
+  }
 
   <!-- Empty State -->
-  <div *ngIf="!isLoading() && dataDiagnostics().length === 0" class="text-center py-12">
-    <mat-icon class="text-tertiary !text-[64px] !w-16 !h-16 mx-auto mb-4">check_circle</mat-icon>
-    <h2 class="text-xl font-semibold text-secondary mb-2">No Diagnostics Run Yet</h2>
-    <p class="text-tertiary">Click "Run Check" to analyze your data for potential issues.</p>
-  </div>
+  @if (!isLoading() && dataDiagnostics().length === 0) {
+    <div class="text-center py-12">
+      <mat-icon class="text-tertiary !text-[64px] !w-16 !h-16 mx-auto mb-4">check_circle</mat-icon>
+      <h2 class="text-xl font-semibold text-secondary mb-2">No Diagnostics Run Yet</h2>
+      <p class="text-tertiary">Click "Run Check" to analyze your data for potential issues.</p>
+    </div>
+  }
 
   <!-- All Clear State -->
-  <div *ngIf="!isLoading() && dataDiagnostics().length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-success-soft rounded-lg border border-success">
-    <mat-icon class="text-success !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
-    <h2 class="text-xl font-semibold text-success mb-2">All Clear!</h2>
-    <p class="text-success">No issues found in your data. Everything looks good!</p>
-  </div>
+  @if (!isLoading() && dataDiagnostics().length > 0 && getTotalIssues() === 0) {
+    <div class="text-center py-12 bg-success-soft rounded-lg border border-success">
+      <mat-icon class="text-success !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
+      <h2 class="text-xl font-semibold text-success mb-2">All Clear!</h2>
+      <p class="text-success">No issues found in your data. Everything looks good!</p>
+    </div>
+  }
 
   <!-- Diagnostic Items as Expansion Panels -->
-  <mat-accordion class="diagnostics-accordion" *ngIf="!isLoading() && getTotalIssues() > 0">
-    <mat-expansion-panel *ngFor="let item of dataDiagnostics(); trackBy: trackByDiagnostic" [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <mat-icon [class.text-error]="item.severity === 'error'"
-                    [class.text-warning]="item.severity === 'warning'"
-                    [class.text-info]="item.severity === 'info'">
-            {{ getSeverityIcon(item.severity) }}
-          </mat-icon>
-          <span>{{ item.name }}</span>
-        </mat-panel-title>
-        <mat-panel-description>
-          <span class="hidden md:inline text-secondary dark:text-tertiary text-sm mr-2">{{ item.description }}</span>
-                <span class="px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold flex-shrink-0"
-                            [class.bg-error-soft]="item.severity === 'error' && item.count > 0"
-                            [class.text-error]="item.severity === 'error' && item.count > 0"
-                            [class.bg-warning-soft]="item.severity === 'warning' && item.count > 0"
-                            [class.text-warning]="item.severity === 'warning' && item.count > 0"
-                            [class.bg-surface-2]="item.count === 0"
-                            [class.text-secondary]="item.count === 0"
+  @if (!isLoading() && getTotalIssues() > 0) {
+    <mat-accordion class="diagnostics-accordion">
+      @for (item of dataDiagnostics(); track trackByDiagnostic($index, item)) {
+        <mat-expansion-panel [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon [class.text-error]="item.severity === 'error'"
+                [class.text-warning]="item.severity === 'warning'"
+                [class.text-info]="item.severity === 'info'">
+                {{ getSeverityIcon(item.severity) }}
+              </mat-icon>
+              <span>{{ item.name }}</span>
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="hidden md:inline text-secondary dark:text-tertiary text-sm mr-2">{{ item.description }}</span>
+              <span class="px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold flex-shrink-0"
+                [class.bg-error-soft]="item.severity === 'error' && item.count > 0"
+                [class.text-error]="item.severity === 'error' && item.count > 0"
+                [class.bg-warning-soft]="item.severity === 'warning' && item.count > 0"
+                [class.text-warning]="item.severity === 'warning' && item.count > 0"
+                [class.bg-surface-2]="item.count === 0"
+                [class.text-secondary]="item.count === 0"
                             [ngClass]="{
                               'dark:text-error': item.severity === 'error' && item.count > 0,
                               'dark:bg-warning-soft': item.severity === 'warning' && item.count > 0,
@@ -90,158 +100,179 @@
                               'dark:bg-surface-3': item.count === 0,
                               'dark:text-secondary': item.count === 0
                             }">
-                  {{ item.count }}
-                </span>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <!-- Panel Content -->
-      <div class="mt-4 px-4 pb-4">
-        <p class="text-sm text-secondary mb-4 md:hidden">{{ item.description }}</p>
-
-        <div *ngIf="item.name === 'Shifts Missing Time Duration' && item.count > 0" class="mb-4">
-          <app-base-rect-button
-            *ngIf="!isBulkFixing()"
-            variant="primary"
-            [icon]="'build'"
-            iconPosition="left"
-            (clicked)="bulkFixShiftDurations()"
-          >
-            Fix All ({{ item.count }})
-          </app-base-rect-button>
-          <div *ngIf="isBulkFixing()" class="flex items-center gap-2 text-info">
-            <mat-spinner diameter="20"></mat-spinner>
-            <span>Fixing...</span>
-          </div>
-        </div>
-
-        <div *ngIf="item.name === 'Orphaned Trips' && item.count > 0" class="mb-4">
-          <app-base-rect-button
-            *ngIf="!isBulkFixing()"
-            variant="primary"
-            [icon]="'playlist_add'"
-            iconPosition="left"
-            (clicked)="createShiftsFromTrips(item.items || [])"
-            class="!min-w-[160px]"
-          >
-            Create Shifts
-          </app-base-rect-button>
-          <div *ngIf="isBulkFixing()" class="flex items-center gap-2 text-info">
-            <mat-spinner diameter="20"></mat-spinner>
-            <span>Creating...</span>
-          </div>
-        </div>
-
-        <div *ngIf="item.name === 'Trips Missing Duration' && item.count > 0" class="mb-4">
-          <app-base-rect-button
-            *ngIf="!isBulkFixing()"
-            variant="primary"
-            [icon]="'build'"
-            iconPosition="left"
-            (clicked)="bulkFixTripDurations()"
-          >
-            Fix All ({{ item.count }})
-          </app-base-rect-button>
-          <div *ngIf="isBulkFixing()" class="flex items-center gap-2 text-info">
-            <mat-spinner diameter="20"></mat-spinner>
-            <span>Fixing...</span>
-          </div>
-        </div>
-
-        <div *ngIf="item.groups && item.groups.length > 0" class="space-y-4">
-          <div class="text-sm text-secondary mb-3 font-medium">
-            Found {{ item.items?.length }} items in {{ item.groups.length }} duplicate groups
-          </div>
-
-          <app-diagnostic-group
-            *ngFor="let group of item.groups; let groupIndex = index; trackBy: trackByGroup"
-            [group]="group"
-            [groupIndex]="groupIndex"
-            [itemType]="item.itemType!"
-            [(selectedValue)]="selectedValue[groupIndex]"
-            [(selectedShiftToDelete)]="selectedShiftToDelete[groupIndex]"
-            (merge)="mergeDuplicates($event.group, $event.value, $event.itemType)"
-            (deleteShift)="markShiftForDelete($event.group, $event.shiftId, $event.groupIndex)"
-          >
-          </app-diagnostic-group>
-        </div>
-
-        <div *ngIf="!item.groups || item.groups.length === 0" class="space-y-2">
-          <div
-            *ngFor="let problemItem of item.items; trackBy: trackByProblemItem"
-            class="bg-surface-2 rounded-lg border border-soft p-3 hover:bg-surface-3 transition-colors"
-            [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed"
-            [class.bg-success-soft]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed"
-          >
-            <div *ngIf="problemItem.fixed" class="flex items-center gap-2 text-success text-sm mb-2">
-              <mat-icon class="!text-base">check_circle</mat-icon>
-              <span>{{ item.name === 'Orphaned Trips' ? 'Fixed - Shift created' : 'Fixed successfully' }}</span>
-            </div>
-
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex-1">
-                <app-diagnostic-item
-                  [item]="problemItem"
-                  [itemType]="item.itemType!"
-                  [diagnosticName]="item.name"
-                  (fixShiftDuration)="fixShiftDuration($event)"
-                  (fixTripDuration)="fixTripDuration($event)"
-                >
-                </app-diagnostic-item>
+                {{ item.count }}
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <!-- Panel Content -->
+          <div class="mt-4 px-4 pb-4">
+            <p class="text-sm text-secondary mb-4 md:hidden">{{ item.description }}</p>
+            @if (item.name === 'Shifts Missing Time Duration' && item.count > 0) {
+              <div class="mb-4">
+                @if (!isBulkFixing()) {
+                  <app-base-rect-button
+                    variant="primary"
+                    [icon]="'build'"
+                    iconPosition="left"
+                    (clicked)="bulkFixShiftDurations()"
+                    >
+                    Fix All ({{ item.count }})
+                  </app-base-rect-button>
+                }
+                @if (isBulkFixing()) {
+                  <div class="flex items-center gap-2 text-info">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Fixing...</span>
+                  </div>
+                }
               </div>
-
-              <app-base-fab-button
-                *ngIf="item.name === 'Orphaned Trips' && !problemItem.fixed"
-                fabStyle="mini"
-                variant="primary"
-                [icon]="'add'"
-                (clicked)="createShiftFromTrip(problemItem)"
-                matTooltip="Create shift from trip"
-              >
-              </app-base-fab-button>
-            </div>
-
-            <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-soft">
-              <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-success text-sm mb-2">
-                <mat-icon class="!text-base">check_circle</mat-icon>
-                <span>Address applied successfully</span>
+            }
+            @if (item.name === 'Orphaned Trips' && item.count > 0) {
+              <div class="mb-4">
+                @if (!isBulkFixing()) {
+                  <app-base-rect-button
+                    variant="primary"
+                    [icon]="'playlist_add'"
+                    iconPosition="left"
+                    (clicked)="createShiftsFromTrips(item.items || [])"
+                    class="!min-w-[160px]"
+                    >
+                    Create Shifts
+                  </app-base-rect-button>
+                }
+                @if (isBulkFixing()) {
+                  <div class="flex items-center gap-2 text-info">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Creating...</span>
+                  </div>
+                }
               </div>
-
-              <div class="flex items-center gap-2">
-                <mat-form-field
-                  *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0"
-                  appearance="fill"
-                  class="flex-1 min-w-0 rg-field-shell"
-                >
-                  <mat-select [(ngModel)]="selectedAddress[problemItem.rowId]" panelClass="diagnostics-select-panel" placeholder="Select address...">
-                    <mat-option [value]="undefined">Select address...</mat-option>
-                    <mat-option *ngFor="let addr of problemItem.availableAddresses" [value]="addr" [title]="addr">{{ addr }}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-
-                <input
-                  *ngIf="!problemItem.availableAddresses || problemItem.availableAddresses.length === 0"
-                  [(ngModel)]="selectedAddress[problemItem.rowId]"
-                  placeholder="Enter address..."
-                  class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-surface text-primary"
-                >
-
-                <app-base-fab-button
-                  fabStyle="mini"
-                  variant="primary"
-                  [disabled]="!selectedAddress[problemItem.rowId]"
-                  [icon]="'check'"
-                  (clicked)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
-                  matTooltip="Apply address"
-                >
-                </app-base-fab-button>
+            }
+            @if (item.name === 'Trips Missing Duration' && item.count > 0) {
+              <div class="mb-4">
+                @if (!isBulkFixing()) {
+                  <app-base-rect-button
+                    variant="primary"
+                    [icon]="'build'"
+                    iconPosition="left"
+                    (clicked)="bulkFixTripDurations()"
+                    >
+                    Fix All ({{ item.count }})
+                  </app-base-rect-button>
+                }
+                @if (isBulkFixing()) {
+                  <div class="flex items-center gap-2 text-info">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Fixing...</span>
+                  </div>
+                }
               </div>
-            </div>
+            }
+            @if (item.groups && item.groups.length > 0) {
+              <div class="space-y-4">
+                <div class="text-sm text-secondary mb-3 font-medium">
+                  Found {{ item.items?.length }} items in {{ item.groups.length }} duplicate groups
+                </div>
+                @for (group of item.groups; track trackByGroup(groupIndex, group); let groupIndex = $index) {
+                  <app-diagnostic-group
+                    [group]="group"
+                    [groupIndex]="groupIndex"
+                    [itemType]="item.itemType!"
+                    [(selectedValue)]="selectedValue[groupIndex]"
+                    [(selectedShiftToDelete)]="selectedShiftToDelete[groupIndex]"
+                    (merge)="mergeDuplicates($event.group, $event.value, $event.itemType)"
+                    (deleteShift)="markShiftForDelete($event.group, $event.shiftId, $event.groupIndex)"
+                    >
+                  </app-diagnostic-group>
+                }
+              </div>
+            }
+            @if (!item.groups || item.groups.length === 0) {
+              <div class="space-y-2">
+                @for (problemItem of item.items; track trackByProblemItem($index, problemItem)) {
+                  <div
+                    class="bg-surface-2 rounded-lg border border-soft p-3 hover:bg-surface-3 transition-colors"
+                    [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed"
+                    [class.bg-success-soft]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed"
+                    >
+                    @if (problemItem.fixed) {
+                      <div class="flex items-center gap-2 text-success text-sm mb-2">
+                        <mat-icon class="!text-base">check_circle</mat-icon>
+                        <span>{{ item.name === 'Orphaned Trips' ? 'Fixed - Shift created' : 'Fixed successfully' }}</span>
+                      </div>
+                    }
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex-1">
+                        <app-diagnostic-item
+                          [item]="problemItem"
+                          [itemType]="item.itemType!"
+                          [diagnosticName]="item.name"
+                          (fixShiftDuration)="fixShiftDuration($event)"
+                          (fixTripDuration)="fixTripDuration($event)"
+                          >
+                        </app-diagnostic-item>
+                      </div>
+                      @if (item.name === 'Orphaned Trips' && !problemItem.fixed) {
+                        <app-base-fab-button
+                          fabStyle="mini"
+                          variant="primary"
+                          [icon]="'add'"
+                          (clicked)="createShiftFromTrip(problemItem)"
+                          matTooltip="Create shift from trip"
+                          >
+                        </app-base-fab-button>
+                      }
+                    </div>
+                    @if (item.name === 'Trip Places Missing Address') {
+                      <div class="mt-2 pt-2 border-t border-soft">
+                        @if (problemItem.addressApplied) {
+                          <div class="flex items-center gap-2 text-success text-sm mb-2">
+                            <mat-icon class="!text-base">check_circle</mat-icon>
+                            <span>Address applied successfully</span>
+                          </div>
+                        }
+                        <div class="flex items-center gap-2">
+                          @if (problemItem.availableAddresses && problemItem.availableAddresses.length > 0) {
+                            <mat-form-field
+                              appearance="fill"
+                              class="flex-1 min-w-0 rg-field-shell"
+                              >
+                              <mat-select [(ngModel)]="selectedAddress[problemItem.rowId]" panelClass="diagnostics-select-panel" placeholder="Select address...">
+                                <mat-option [value]="undefined">Select address...</mat-option>
+                                @for (addr of problemItem.availableAddresses; track addr) {
+                                  <mat-option [value]="addr" [title]="addr">{{ addr }}</mat-option>
+                                }
+                              </mat-select>
+                            </mat-form-field>
+                          }
+                          @if (!problemItem.availableAddresses || problemItem.availableAddresses.length === 0) {
+                            <input
+                              [(ngModel)]="selectedAddress[problemItem.rowId]"
+                              placeholder="Enter address..."
+                              class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-surface text-primary"
+                              >
+                          }
+                          <app-base-fab-button
+                            fabStyle="mini"
+                            variant="primary"
+                            [disabled]="!selectedAddress[problemItem.rowId]"
+                            [icon]="'check'"
+                            (clicked)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
+                            matTooltip="Apply address"
+                            >
+                          </app-base-fab-button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
           </div>
-        </div>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
 </div>
 
 <app-back-to-top></app-back-to-top>

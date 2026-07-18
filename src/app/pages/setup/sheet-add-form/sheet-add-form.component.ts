@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Output, signal, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, signal, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { environment } from "src/environments/environment";
-import { CommonModule } from '@angular/common';
+
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 
@@ -12,9 +12,11 @@ import { BaseInputComponent } from '@components/base/base-input/base-input.compo
     templateUrl: './sheet-add-form.component.html',
     styleUrls: ['./sheet-add-form.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseRectButtonComponent, BaseInputComponent]
+    imports: [FormsModule, ReactiveFormsModule, BaseRectButtonComponent, BaseInputComponent]
 })
 export class SheetAddFormComponent implements OnInit {
+  private _spreadsheetService = inject(SpreadsheetService);
+
   @Output() parentReload = new EventEmitter<any>();
   private demoSheetId = environment.demoSheet;
   
@@ -25,8 +27,6 @@ export class SheetAddFormComponent implements OnInit {
 
   saving = signal(false);
   defaultSpreadsheet: ISpreadsheet | undefined;
-
-  constructor(private _spreadsheetService: SpreadsheetService) { }
 
   async ngOnInit(): Promise<void> {
     await this.load();

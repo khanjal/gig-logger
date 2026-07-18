@@ -1,10 +1,13 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, Renderer2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, Renderer2, SimpleChanges, inject } from '@angular/core';
 
 @Directive({
   selector: '[appBaseButton]',
   standalone: true
 })
 export class BaseButtonDirective implements OnChanges, OnDestroy {
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
+
   @Input('appBaseButtonVariant') variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
   @Input('appBaseButtonFab') fab = false;
   @Input('appBaseButtonFabStyle') fabStyle: 'regular' | 'mini' = 'regular';
@@ -16,7 +19,7 @@ export class BaseButtonDirective implements OnChanges, OnDestroy {
 
   private host: HTMLElement;
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {
+  constructor() {
     this.host = this.el.nativeElement as HTMLElement;
     this.renderer.addClass(this.host, 'app-base-button');
   }

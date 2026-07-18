@@ -1,153 +1,254 @@
 <div class="diagnostics-container">
   <div class="diagnostics-actions">
-      <app-base-rect-button 
-        variant="primary" 
-        [icon]="'refresh'" 
-        iconPosition="left"
-        (clicked)="runDiagnostics()" 
-        [disabled]="isLoading"
+    <app-base-rect-button
+      variant="primary"
+      [icon]="'refresh'"
+      iconPosition="left"
+      (clicked)="runDiagnostics()"
+      [disabled]="isLoading"
       >
-        {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
-      </app-base-rect-button>
+      {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
+    </app-base-rect-button>
   </div>
   <div class="diagnostics-list">
-    <div *ngFor="let item of dataDiagnostics" class="diagnostic-item-container">
-      <div class="diagnostic-header">
-        <mat-icon [color]="getSeverityColor(item.severity)" class="severity-icon">
-          {{ getSeverityIcon(item.severity) }}
-        </mat-icon>
-        <div class="diagnostic-info">
-          <div class="diagnostic-title">{{ item.name }}</div>
-          <div class="diagnostic-description">{{ item.description }}</div>
-        </div>
-        <div class="diagnostic-count">{{ item.count }}</div>
-      </div>
-      
-      <!-- Detailed items list -->
-      <div *ngIf="item.items && item.items.length > 0" class="diagnostic-details">
-        <div class="details-header">
-          <strong>Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):</strong>
-        </div>
-        
-        <!-- Show grouped duplicates if available -->
-        <div *ngIf="item.groups && item.groups.length > 0; else showIndividualItems" class="groups-list">
-          <div *ngFor="let group of item.groups; let groupIndex = index" class="duplicate-group">
-            <div class="group-header">
-              <strong>Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):</strong>
-            </div>
-            <div class="group-items">
-              <div *ngFor="let problemItem of group" class="diagnostic-item grouped-item">
-                <!-- For shifts -->
-                <div *ngIf="item.itemType === 'shift'" class="shift-item">
-                  <strong>Shift:</strong>
-                  <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                  <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
-                  <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                  <span *ngIf="problemItem.totalTrips !== undefined"> Trips: {{ problemItem.totalTrips }}</span>
-                  <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
-                  <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-                </div>
-
-                <!-- For addresses -->
-                <div *ngIf="item.itemType === 'address'" class="address-item">
-                  <strong>Address:</strong>&nbsp;
-                  <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                  <span class="address-info">{{ problemItem.address }}</span>
-                  <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                  <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
-                </div>
-
-                <!-- For places -->
-                <div *ngIf="item.itemType === 'place'" class="place-item">
-                  <strong>Place:</strong>&nbsp;
-                  <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                  <span class="place-info">{{ problemItem.place }}</span>
-                  <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                  <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>
-                </div>
-
-                <!-- For names -->
-                <div *ngIf="item.itemType === 'name'" class="name-item">
-                  <strong>Name:</strong>&nbsp;
-                  <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                  <span class="name-info">{{ problemItem.name }}</span>
-                  <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                  <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
-                </div>
-              </div>
-            </div>
+    @for (item of dataDiagnostics; track item) {
+      <div class="diagnostic-item-container">
+        <div class="diagnostic-header">
+          <mat-icon [color]="getSeverityColor(item.severity)" class="severity-icon">
+            {{ getSeverityIcon(item.severity) }}
+          </mat-icon>
+          <div class="diagnostic-info">
+            <div class="diagnostic-title">{{ item.name }}</div>
+            <div class="diagnostic-description">{{ item.description }}</div>
           </div>
+          <div class="diagnostic-count">{{ item.count }}</div>
         </div>
-          <!-- Fallback to individual items display -->
-        <ng-template #showIndividualItems>
-          <div class="items-list">
-            <div *ngFor="let problemItem of item.items" class="diagnostic-item">              <!-- For shifts -->
-              <div *ngIf="item.itemType === 'shift'" class="shift-item">
-                <strong>Shift:</strong>
-                <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
-                <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                <span *ngIf="problemItem.totalTrips !== undefined"> Trips: {{ problemItem.totalTrips }}</span>
-                <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
-                <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-              </div>
-                <!-- For trips -->
-              <div *ngIf="item.itemType === 'trip'" class="trip-item">
-                <strong>Trip:</strong>
-                <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
-                <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                
-                <!-- Place information -->
-                <span *ngIf="problemItem.place" class="place-info"> {{ problemItem.place }}</span>
-                
-                <!-- Name information -->
-                <span *ngIf="problemItem.name" class="name-info"> {{ problemItem.name }}</span>
-                
-                <!-- Legacy location fields -->
-                <span *ngIf="problemItem.startLocation"> {{ problemItem.startLocation }}</span>
-                <span *ngIf="problemItem.pickup"> {{ problemItem.pickup }}</span>
-                <span *ngIf="(problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)"> → </span>
-                <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
-                <span *ngIf="problemItem.dropoff">{{ problemItem.dropoff }}</span>
-                
-                <span *ngIf="problemItem.exclude"> - EXCLUDED</span>
-              </div>
-
-              <!-- For addresses -->
-              <div *ngIf="item.itemType === 'address'" class="address-item">
-                <strong>Address:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                <span class="address-info">{{ problemItem.address }}</span>
-                <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
-              </div>
-
-              <!-- For places -->
-              <div *ngIf="item.itemType === 'place'" class="place-item">
-                <strong>Place:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                <span class="place-info">{{ problemItem.place }}</span>
-                <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>
-              </div>
-
-              <!-- For names -->
-              <div *ngIf="item.itemType === 'name'" class="name-item">
-                <strong>Name:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
-                <span class="name-info">{{ problemItem.name }}</span>
-                <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
-              </div>
-              
-              <!-- Fallback for any other items -->
-              <div *ngIf="item.itemType !== 'shift' && item.itemType !== 'trip' && item.itemType !== 'address' && item.itemType !== 'place' && item.itemType !== 'name'" class="unknown-item">
-                <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
-              </div>
+        <!-- Detailed items list -->
+        @if (item.items && item.items.length > 0) {
+          <div class="diagnostic-details">
+            <div class="details-header">
+              <strong>Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):</strong>
             </div>
-          </div>        </ng-template>
+            <!-- Show grouped duplicates if available -->
+            @if (item.groups && item.groups.length > 0) {
+              <div class="groups-list">
+                @for (group of item.groups; track group; let groupIndex = $index) {
+                  <div class="duplicate-group">
+                    <div class="group-header">
+                      <strong>Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):</strong>
+                    </div>
+                    <div class="group-items">
+                      @for (problemItem of group; track problemItem) {
+                        <div class="diagnostic-item grouped-item">
+                          <!-- For shifts -->
+                          @if (item.itemType === 'shift') {
+                            <div class="shift-item">
+                              <strong>Shift:</strong>
+                              @if (problemItem.rowId) {
+                                <span class="row-id">[{{ problemItem.rowId }}]</span>
+                              }
+                              @if (problemItem.date) {
+                                <span>{{ problemItem.date }}</span>
+                              }
+                              @if (problemItem.key) {
+                                <span> ({{ problemItem.key }})</span>
+                              }
+                              @if (problemItem.totalTrips !== undefined) {
+                                <span> Trips: {{ problemItem.totalTrips }}</span>
+                              }
+                              @if (problemItem.start) {
+                                <span> - Start: {{ problemItem.start }}</span>
+                              }
+                              @if (problemItem.finish) {
+                                <span> - End: {{ problemItem.finish }}</span>
+                              }
+                            </div>
+                          }
+                          <!-- For addresses -->
+                          @if (item.itemType === 'address') {
+                            <div class="address-item">
+                              <strong>Address:</strong>&nbsp;
+                              @if (problemItem.rowId) {
+                                <span class="row-id">[{{ problemItem.rowId }}]</span>
+                              }
+                              <span class="address-info">{{ problemItem.address }}</span>
+                              @if (problemItem.trips !== undefined) {
+                                <span> - Trips: {{ problemItem.trips }}</span>
+                              }
+                              @if (problemItem.names && problemItem.names.length > 0) {
+                                <span> - Names: {{ problemItem.names.join(', ') }}</span>
+                              }
+                            </div>
+                          }
+                          <!-- For places -->
+                          @if (item.itemType === 'place') {
+                            <div class="place-item">
+                              <strong>Place:</strong>&nbsp;
+                              @if (problemItem.rowId) {
+                                <span class="row-id">[{{ problemItem.rowId }}]</span>
+                              }
+                              <span class="place-info">{{ problemItem.place }}</span>
+                              @if (problemItem.trips !== undefined) {
+                                <span> - Trips: {{ problemItem.trips }}</span>
+                              }
+                              @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                                <span> - Addresses: {{ problemItem.addresses.length }}</span>
+                              }
+                            </div>
+                          }
+                          <!-- For names -->
+                          @if (item.itemType === 'name') {
+                            <div class="name-item">
+                              <strong>Name:</strong>&nbsp;
+                              @if (problemItem.rowId) {
+                                <span class="row-id">[{{ problemItem.rowId }}]</span>
+                              }
+                              <span class="name-info">{{ problemItem.name }}</span>
+                              @if (problemItem.trips !== undefined) {
+                                <span> - Trips: {{ problemItem.trips }}</span>
+                              }
+                              @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                                <span> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="items-list">
+                @for (problemItem of item.items; track problemItem) {
+                  <div class="diagnostic-item">              <!-- For shifts -->
+                    @if (item.itemType === 'shift') {
+                      <div class="shift-item">
+                        <strong>Shift:</strong>
+                        @if (problemItem.rowId) {
+                          <span class="row-id">[{{ problemItem.rowId }}]</span>
+                        }
+                        @if (problemItem.date) {
+                          <span>{{ problemItem.date }}</span>
+                        }
+                        @if (problemItem.key) {
+                          <span> ({{ problemItem.key }})</span>
+                        }
+                        @if (problemItem.totalTrips !== undefined) {
+                          <span> Trips: {{ problemItem.totalTrips }}</span>
+                        }
+                        @if (problemItem.start) {
+                          <span> - Start: {{ problemItem.start }}</span>
+                        }
+                        @if (problemItem.finish) {
+                          <span> - End: {{ problemItem.finish }}</span>
+                        }
+                      </div>
+                    }
+                    <!-- For trips -->
+                    @if (item.itemType === 'trip') {
+                      <div class="trip-item">
+                        <strong>Trip:</strong>
+                        @if (problemItem.rowId) {
+                          <span class="row-id">[{{ problemItem.rowId }}]</span>
+                        }
+                        @if (problemItem.date) {
+                          <span>{{ problemItem.date }}</span>
+                        }
+                        @if (problemItem.key) {
+                          <span> ({{ problemItem.key }})</span>
+                        }
+                        <!-- Place information -->
+                        @if (problemItem.place) {
+                          <span class="place-info"> {{ problemItem.place }}</span>
+                        }
+                        <!-- Name information -->
+                        @if (problemItem.name) {
+                          <span class="name-info"> {{ problemItem.name }}</span>
+                        }
+                        <!-- Legacy location fields -->
+                        @if (problemItem.startLocation) {
+                          <span> {{ problemItem.startLocation }}</span>
+                        }
+                        @if (problemItem.pickup) {
+                          <span> {{ problemItem.pickup }}</span>
+                        }
+                        @if ((problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)) {
+                          <span> → </span>
+                        }
+                        @if (problemItem.endLocation) {
+                          <span>{{ problemItem.endLocation }}</span>
+                        }
+                        @if (problemItem.dropoff) {
+                          <span>{{ problemItem.dropoff }}</span>
+                        }
+                        @if (problemItem.exclude) {
+                          <span> - EXCLUDED</span>
+                        }
+                      </div>
+                    }
+                    <!-- For addresses -->
+                    @if (item.itemType === 'address') {
+                      <div class="address-item">
+                        <strong>Address:</strong>&nbsp;
+                        @if (problemItem.rowId) {
+                          <span class="row-id">[{{ problemItem.rowId }}]</span>
+                        }
+                        <span class="address-info">{{ problemItem.address }}</span>
+                        @if (problemItem.trips !== undefined) {
+                          <span> - Trips: {{ problemItem.trips }}</span>
+                        }
+                        @if (problemItem.names && problemItem.names.length > 0) {
+                          <span> - Names: {{ problemItem.names.join(', ') }}</span>
+                        }
+                      </div>
+                    }
+                    <!-- For places -->
+                    @if (item.itemType === 'place') {
+                      <div class="place-item">
+                        <strong>Place:</strong>&nbsp;
+                        @if (problemItem.rowId) {
+                          <span class="row-id">[{{ problemItem.rowId }}]</span>
+                        }
+                        <span class="place-info">{{ problemItem.place }}</span>
+                        @if (problemItem.trips !== undefined) {
+                          <span> - Trips: {{ problemItem.trips }}</span>
+                        }
+                        @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                          <span> - Addresses: {{ problemItem.addresses.length }}</span>
+                        }
+                      </div>
+                    }
+                    <!-- For names -->
+                    @if (item.itemType === 'name') {
+                      <div class="name-item">
+                        <strong>Name:</strong>&nbsp;
+                        @if (problemItem.rowId) {
+                          <span class="row-id">[{{ problemItem.rowId }}]</span>
+                        }
+                        <span class="name-info">{{ problemItem.name }}</span>
+                        @if (problemItem.trips !== undefined) {
+                          <span> - Trips: {{ problemItem.trips }}</span>
+                        }
+                        @if (problemItem.addresses && problemItem.addresses.length > 0) {
+                          <span> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
+                        }
+                      </div>
+                    }
+                    <!-- Fallback for any other items -->
+                    @if (item.itemType !== 'shift' && item.itemType !== 'trip' && item.itemType !== 'address' && item.itemType !== 'place' && item.itemType !== 'name') {
+                      <div class="unknown-item">
+                        <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+            <!-- Fallback to individual items display -->
+          </div>
+        }
       </div>
-    </div>
+    }
   </div>
 </div>

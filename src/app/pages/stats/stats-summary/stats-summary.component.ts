@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +31,10 @@ interface ISummaryCard {
   imports: [CommonModule, MatButtonModule, MatIconModule, MatDialogModule, MatTooltipModule]
 })
 export class StatsSummaryComponent implements OnChanges, OnInit {
+  private dialog = inject(MatDialog);
+  private dailyService = inject(DailyService);
+  private destroyRef = inject(DestroyRef);
+
   private stats: ITripStatistics = this.createEmptyStats();
   dailyData = signal<IDaily[]>([]);
 
@@ -51,12 +55,6 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   private _cachedHighestEarningDay: { date: string; total: number } | null = null;
   private _cachedBestWeekdayPerTrip: { label: string; value: number; dayIndex: number } | null = null;
   private _cachedBestWeekdayPerTime: { label: string; value: number; dayIndex: number } | null = null;
-
-  constructor(
-    private dialog: MatDialog,
-    private dailyService: DailyService,
-    private destroyRef: DestroyRef
-  ) {}
 
   ngOnInit(): void {
     this.dailyService.daily$

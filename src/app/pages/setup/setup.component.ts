@@ -1,6 +1,6 @@
 // Angular Core
-import { Component, signal, ViewChild, OnInit } from '@angular/core';
-import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { Component, signal, ViewChild, OnInit, inject } from '@angular/core';
+
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
@@ -47,24 +47,32 @@ import { createAsyncOperationState } from '@helpers/async-operation-state.helper
     styleUrls: ['./setup.component.scss'],
     standalone: true,
     imports: [
-      CommonModule,
-      NgIf,
-      NgFor,
-      MatIcon,
-      LoginComponent,
-      ServiceWorkerStatusComponent,
-      SheetLinkComponent,
-      SheetDemoComponent,
-      SheetQuickViewComponent,
-      SheetQuotaComponent,
-      AuthStatusComponent,
-      PermissionsComponent,
-      LocationOverrideComponent,
-      BaseRectButtonComponent,
-      BaseCardComponent
-  ]
+    MatIcon,
+    LoginComponent,
+    ServiceWorkerStatusComponent,
+    SheetLinkComponent,
+    SheetDemoComponent,
+    SheetQuickViewComponent,
+    SheetQuotaComponent,
+    AuthStatusComponent,
+    PermissionsComponent,
+    LocationOverrideComponent,
+    BaseRectButtonComponent,
+    BaseCardComponent
+]
 })
 export class SetupComponent implements OnInit {
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  private _commonService = inject(CommonService);
+  private _logger = inject(LoggerService);
+  private _spreadsheetService = inject(SpreadsheetService);
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+  private _timerService = inject(TimerService);
+  protected authService = inject(AuthGoogleService);
+  private versionService = inject(VersionService);
+
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
 
   isAuthenticated = signal(false);
@@ -80,19 +88,6 @@ export class SetupComponent implements OnInit {
   showAdvanced = signal(false);
 
   version = signal('');
-
-  constructor(
-    public dialog: MatDialog,
-    private _snackBar: MatSnackBar,
-    private _commonService: CommonService,
-    private _logger: LoggerService,
-    private _spreadsheetService: SpreadsheetService,
-    private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _timerService: TimerService,
-    protected authService: AuthGoogleService,
-    private versionService: VersionService
-  ) { }
 
 
   async ngOnInit(): Promise<void> {

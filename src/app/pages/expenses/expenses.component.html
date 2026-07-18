@@ -2,187 +2,211 @@
 <div class="page-container container">
   <div class="flex flex-wrap gap-3 items-center justify-between">
     <h1 class="text-2xl font-bold flex-1">Expenses</h1>
-      <div class="flex gap-2">
-      <app-base-fab-button 
-        *ngIf="unsavedData() && !(showAddForm() || editingExpenseId())" 
-        fabStyle="mini" 
-        variant="primary"
-        [icon]="'save'" 
-        [disabled]="saving()" 
-        [loading]="saving()"
-        (clicked)="confirmSaveDialog()" 
-        title="Save Changes">
-      </app-base-fab-button>
-      <app-base-fab-button 
-        *ngIf="!showAddForm() && !editingExpenseId()" 
-        fabStyle="mini" 
-        variant="primary"
-        [icon]="'add'" 
-        (clicked)="showAddForm.set(true); resetForm()" 
-        title="Add Expense">
-      </app-base-fab-button>
-      <app-base-fab-button 
-        *ngIf="showAddForm() && !editingExpenseId()" 
-        fabStyle="mini" 
-        variant="danger"
-        [icon]="'close'" 
-        (clicked)="hideAddForm()" 
-        title="Close Form">
-      </app-base-fab-button>
+    <div class="flex gap-2">
+      @if (unsavedData() && !(showAddForm() || editingExpenseId())) {
+        <app-base-fab-button
+          fabStyle="mini"
+          variant="primary"
+          [icon]="'save'"
+          [disabled]="saving()"
+          [loading]="saving()"
+          (clicked)="confirmSaveDialog()"
+          title="Save Changes">
+        </app-base-fab-button>
+      }
+      @if (!showAddForm() && !editingExpenseId()) {
+        <app-base-fab-button
+          fabStyle="mini"
+          variant="primary"
+          [icon]="'add'"
+          (clicked)="showAddForm.set(true); resetForm()"
+          title="Add Expense">
+        </app-base-fab-button>
+      }
+      @if (showAddForm() && !editingExpenseId()) {
+        <app-base-fab-button
+          fabStyle="mini"
+          variant="danger"
+          [icon]="'close'"
+          (clicked)="hideAddForm()"
+          title="Close Form">
+        </app-base-fab-button>
+      }
     </div>
   </div>
 
-  <div *ngIf="showAddForm() || editingExpenseId()" class="my-4">
-    <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface p-6 rounded-lg shadow mb-4">
-      <div class="col-span-1 md:col-span-2 grid grid-cols-3 gap-4">
-        <div class="w-full">
-          <app-base-input 
-            formControlName="rowId" 
-            label="Row ID">
+  @if (showAddForm() || editingExpenseId()) {
+    <div class="my-4">
+      <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface p-6 rounded-lg shadow mb-4">
+        <div class="col-span-1 md:col-span-2 grid grid-cols-3 gap-4">
+          <div class="w-full">
+            <app-base-input
+              formControlName="rowId"
+              label="Row ID">
+            </app-base-input>
+          </div>
+          <app-base-datepicker
+            formControlName="date"
+            label="Date"
+            class="w-full col-span-2">
+          </app-base-datepicker>
+        </div>
+        <div class="w-full col-span-1 md:col-span-2">
+          <app-base-input
+            formControlName="name"
+            label="Name"
+            [required]="true">
           </app-base-input>
         </div>
-        <app-base-datepicker 
-          formControlName="date" 
-          label="Date"
-          class="w-full col-span-2">
-        </app-base-datepicker>
-      </div>
-    <div class="w-full col-span-1 md:col-span-2">
-      <app-base-input 
-        formControlName="name" 
-        label="Name"
-        [required]="true">
-      </app-base-input>
-    </div>
-    <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
-      <div class="w-full">
-        <app-base-input 
-          formControlName="amount" 
-          label="Amount" 
-          type="number"
-          [required]="true">
-        </app-base-input>
-      </div>
-      <mat-form-field class="w-full rg-field-shell" appearance="fill">
-        <mat-label>Category</mat-label>
-        <input matInput formControlName="category" [matAutocomplete]="autoCategory" required />
-        <mat-autocomplete #autoCategory="matAutocomplete">
-          <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-    </div>
-    <div class="w-full col-span-1 md:col-span-4">
-      <app-base-input 
-        formControlName="note" 
-        label="Note" 
-        type="text">
-      </app-base-input>
-    </div>
-      <div class="col-span-1 md:col-span-4 flex flex-row items-center justify-between gap-2 mt-6">
+        <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
+          <div class="w-full">
+            <app-base-input
+              formControlName="amount"
+              label="Amount"
+              type="number"
+              [required]="true">
+            </app-base-input>
+          </div>
+          <mat-form-field class="w-full rg-field-shell" appearance="fill">
+            <mat-label>Category</mat-label>
+            <input matInput formControlName="category" [matAutocomplete]="autoCategory" required />
+            <mat-autocomplete #autoCategory="matAutocomplete">
+              @for (cat of categories; track cat) {
+                <mat-option [value]="cat">{{ cat }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="w-full col-span-1 md:col-span-4">
+          <app-base-input
+            formControlName="note"
+            label="Note"
+            type="text">
+          </app-base-input>
+        </div>
+        <div class="col-span-1 md:col-span-4 flex flex-row items-center justify-between gap-2 mt-6">
           <div class="flex gap-2">
-          <app-base-fab-button 
-            *ngIf="editingExpenseId()" 
-            [extended]="true"
-            variant="danger" 
-            [icon]="'cancel'"
-            type="button" 
-            (clicked)="cancelEdit()">
-            Cancel
-          </app-base-fab-button>
-        </div>
-        <div class="flex gap-2">
-          <app-base-fab-button 
-            *ngIf="!editingExpenseId()" 
-            [extended]="true"
-            variant="primary" 
-            [icon]="'add'"
-            type="submit"
-            [disabled]="expenseForm.invalid">
-            Store
-          </app-base-fab-button>
-          <app-base-fab-button 
-            *ngIf="editingExpenseId()" 
-            [extended]="true"
-            variant="primary" 
-            [icon]="'save'"
-            type="submit"
-            [disabled]="expenseForm.invalid">
-            Update
-          </app-base-fab-button>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  <div *ngIf="!(showAddForm() || editingExpenseId())" class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
-    <div *ngIf="expenses().length === 0" class="pt-12 text-center">
-      <p class="text-lg text-secondary mb-4">You have no expenses yet. Add your first expense to get started.</p>
-      <app-base-rect-button variant="primary" (clicked)="showAddForm.set(true); resetForm()" [icon]="'add'" [label]="'Add Expense'"></app-base-rect-button>
-    </div>
-    <div *ngFor="let year of (groupedExpensesByYear() | keyvalue:sortByMonth)">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-primary">{{ year.key }}</h2>
-        <div class="text-right text-lg font-semibold text-primary">
-          Year Total: {{ yearTotals()[year.key] | currency }}
-        </div>
-      </div>
-      <div *ngFor="let month of (year.value | groupByMonth | keyvalue:sortByMonth)">
-        <div class="flex items-end justify-between mb-0 py-1">
-          <h3 class="text-lg font-bold text-primary pb-0">{{ month.key | date:dateFormats.MONTH_YEAR }}</h3>
-          <div class="text-right text-base font-semibold text-primary mb-2">
-            Total: {{ monthTotals()[month.key] | currency }}
+            @if (editingExpenseId()) {
+              <app-base-fab-button
+                [extended]="true"
+                variant="danger"
+                [icon]="'cancel'"
+                type="button"
+                (clicked)="cancelEdit()">
+                Cancel
+              </app-base-fab-button>
+            }
+          </div>
+          <div class="flex gap-2">
+            @if (!editingExpenseId()) {
+              <app-base-fab-button
+                [extended]="true"
+                variant="primary"
+                [icon]="'add'"
+                type="submit"
+                [disabled]="expenseForm.invalid">
+                Store
+              </app-base-fab-button>
+            }
+            @if (editingExpenseId()) {
+              <app-base-fab-button
+                [extended]="true"
+                variant="primary"
+                [icon]="'save'"
+                type="submit"
+                [disabled]="expenseForm.invalid">
+                Update
+              </app-base-fab-button>
+            }
           </div>
         </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-surface rounded-lg shadow mb-8">
-            <thead>
-              <tr class="bg-primary-soft">
-                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
-                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Name</th>
-                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
-                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Category</th>
-                <th class="py-1 px-1 sm:py-2 sm:px-2 text-left font-semibold text-xs sm:text-base w-12"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
-                <tr class="even:bg-surface dark:even:bg-surface-3/50" [class.bg-warning-soft]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
-                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
-                    {{ expense.date | date:'EEE M/d' }}
-                  </td>
-                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.name }}</td>
-                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
-                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
-                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-2 align-middle">
-                    <button appBaseButton appBaseButtonVariant="icon" [matMenuTriggerFor]="expenseMenu" aria-label="Actions">
-                      <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <mat-menu #expenseMenu="matMenu">
-                      <button mat-menu-item (click)="editExpense(expense)">
-                        <mat-icon>edit</mat-icon>
-                        <span>Edit</span>
-                      </button>
-                      <button mat-menu-item *ngIf="expense.action !== actionEnum.Delete" (click)="deleteExpense(expense)">
-                        <mat-icon color="warn">delete</mat-icon>
-                        <span>Delete</span>
-                      </button>
-                      <button mat-menu-item *ngIf="expense.action === actionEnum.Delete" (click)="restoreExpense(expense)">
-                        <mat-icon color="primary">restore</mat-icon>
-                        <span>Restore</span>
-                      </button>
-                    </mat-menu>
-                  </td>
-                </tr>
-                <tr *ngIf="expense.note">
-                  <td class="py-0 px-1 sm:px-3"></td>
-                  <td colspan="3" class="py-0 px-1 sm:px-3 text-tertiary italic text-xs sm:text-base">"{{ expense.note }}"</td>
-                  <td class="py-0 px-1 sm:px-3"></td>
-                </tr>
-              </ng-container>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      </form>
     </div>
-  </div>
+  }
+
+  @if (!(showAddForm() || editingExpenseId())) {
+    <div class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
+      @if (expenses().length === 0) {
+        <div class="pt-12 text-center">
+          <p class="text-lg text-secondary mb-4">You have no expenses yet. Add your first expense to get started.</p>
+          <app-base-rect-button variant="primary" (clicked)="showAddForm.set(true); resetForm()" [icon]="'add'" [label]="'Add Expense'"></app-base-rect-button>
+        </div>
+      }
+      @for (year of (groupedExpensesByYear() | keyvalue:sortByMonth); track year) {
+        <div>
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-primary">{{ year.key }}</h2>
+            <div class="text-right text-lg font-semibold text-primary">
+              Year Total: {{ yearTotals()[year.key] | currency }}
+            </div>
+          </div>
+          @for (month of (year.value | groupByMonth | keyvalue:sortByMonth); track month) {
+            <div>
+              <div class="flex items-end justify-between mb-0 py-1">
+                <h3 class="text-lg font-bold text-primary pb-0">{{ month.key | date:dateFormats.MONTH_YEAR }}</h3>
+                <div class="text-right text-base font-semibold text-primary mb-2">
+                  Total: {{ monthTotals()[month.key] | currency }}
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full bg-surface rounded-lg shadow mb-8">
+                  <thead>
+                    <tr class="bg-primary-soft">
+                      <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
+                      <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Name</th>
+                      <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
+                      <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Category</th>
+                      <th class="py-1 px-1 sm:py-2 sm:px-2 text-left font-semibold text-xs sm:text-base w-12"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (expense of month.value | orderBy:'date':'asc'; track expense) {
+                      <tr class="even:bg-surface dark:even:bg-surface-3/50" [class.bg-warning-soft]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
+                        <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
+                          {{ expense.date | date:'EEE M/d' }}
+                        </td>
+                        <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.name }}</td>
+                        <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
+                        <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
+                        <td class="py-0.5 px-1 sm:py-1.5 sm:px-2 align-middle">
+                          <button appBaseButton appBaseButtonVariant="icon" [matMenuTriggerFor]="expenseMenu" aria-label="Actions">
+                            <mat-icon>more_vert</mat-icon>
+                          </button>
+                          <mat-menu #expenseMenu="matMenu">
+                            <button mat-menu-item (click)="editExpense(expense)">
+                              <mat-icon>edit</mat-icon>
+                              <span>Edit</span>
+                            </button>
+                            @if (expense.action !== actionEnum.Delete) {
+                              <button mat-menu-item (click)="deleteExpense(expense)">
+                                <mat-icon color="warn">delete</mat-icon>
+                                <span>Delete</span>
+                              </button>
+                            }
+                            @if (expense.action === actionEnum.Delete) {
+                              <button mat-menu-item (click)="restoreExpense(expense)">
+                                <mat-icon color="primary">restore</mat-icon>
+                                <span>Restore</span>
+                              </button>
+                            }
+                          </mat-menu>
+                        </td>
+                      </tr>
+                      @if (expense.note) {
+                        <tr>
+                          <td class="py-0 px-1 sm:px-3"></td>
+                          <td colspan="3" class="py-0 px-1 sm:px-3 text-tertiary italic text-xs sm:text-base">"{{ expense.note }}"</td>
+                          <td class="py-0 px-1 sm:px-3"></td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
 </div>

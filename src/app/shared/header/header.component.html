@@ -1,11 +1,11 @@
 <!-- Mobile-First PWA Header Component -->
 <header class="fixed inset-x-0 top-0 z-[1000] bg-surface shadow-soft">
   <mat-toolbar class="flex items-center h-14 min-h-14 max-h-14 px-4 text-inverse gap-2"
-               [style.background]="toolbarGradient">
+    [style.background]="toolbarGradient">
     <div class="flex items-center">
       <button (click)="toggleMenu()"
-              class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-              aria-label="Toggle menu">
+        class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+        aria-label="Toggle menu">
         <mat-icon>{{ isMenuOpen() ? 'close' : 'menu' }}</mat-icon>
       </button>
     </div>
@@ -14,53 +14,57 @@
 
     <div class="flex items-center gap-1">
       <a routerLink="/"
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{ exact: true }"
-         class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-         aria-label="Go to home page"
-         matTooltip="Home"
-         matTooltipPosition="below">
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+        aria-label="Go to home page"
+        matTooltip="Home"
+        matTooltipPosition="below">
         <mat-icon>home</mat-icon>
       </a>
 
-      <ng-container *ngIf="defaultSheet()">
-          <a routerLink="/trips"
-            routerLinkActive="active"
-            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-            aria-label="View trips"
-            matTooltip="Trips"
-            matTooltipPosition="below">
+      @if (defaultSheet()) {
+        <a routerLink="/trips"
+          routerLinkActive="active"
+          class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+          aria-label="View trips"
+          matTooltip="Trips"
+          matTooltipPosition="below">
           <mat-icon>navigation</mat-icon>
-          <span *ngIf="unsavedTripsCount() > 0" class="notification-badge">{{ unsavedTripsCount() }}</span>
+          @if (unsavedTripsCount() > 0) {
+            <span class="notification-badge">{{ unsavedTripsCount() }}</span>
+          }
         </a>
-          <a routerLink="/shifts"
-            routerLinkActive="active"
-            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-            aria-label="View shifts"
-            matTooltip="Shifts"
-            matTooltipPosition="below">
+        <a routerLink="/shifts"
+          routerLinkActive="active"
+          class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+          aria-label="View shifts"
+          matTooltip="Shifts"
+          matTooltipPosition="below">
           <mat-icon>today</mat-icon>
-          <span *ngIf="unsavedShiftsCount() > 0" class="notification-badge">{{ unsavedShiftsCount() }}</span>
+          @if (unsavedShiftsCount() > 0) {
+            <span class="notification-badge">{{ unsavedShiftsCount() }}</span>
+          }
         </a>
-          <a routerLink="/metrics"
-            routerLinkActive="active"
-            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-            aria-label="View metrics"
-            matTooltip="Metrics"
-            matTooltipPosition="below">
+        <a routerLink="/metrics"
+          routerLinkActive="active"
+          class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+          aria-label="View metrics"
+          matTooltip="Metrics"
+          matTooltipPosition="below">
           <mat-icon>bar_chart</mat-icon>
         </a>
-          <a routerLink="/search"
-            routerLinkActive="active"
-            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-            aria-label="Search"
-            matTooltip="Search"
-            matTooltipPosition="below">
+        <a routerLink="/search"
+          routerLinkActive="active"
+          class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+          aria-label="Search"
+          matTooltip="Search"
+          matTooltipPosition="below">
           <mat-icon>search</mat-icon>
         </a>
-      </ng-container>
+      }
 
-      <ng-container *ngIf="defaultSheet()">
+      @if (defaultSheet()) {
         <div class="hidden md:flex items-center gap-1">
           <a routerLink="/stats" routerLinkActive="active" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View statistics" matTooltip="Statistics" matTooltipPosition="below">
             <mat-icon>table_chart</mat-icon>
@@ -75,44 +79,46 @@
             <mat-icon>history</mat-icon>
           </a>
         </div>
-      </ng-container>
+      }
 
-      <ng-container *ngIf="defaultSheet()">
+      @if (defaultSheet()) {
         <app-sync-status-indicator></app-sync-status-indicator>
-      </ng-container>
+      }
 
       <a routerLink="/setup"
-         routerLinkActive="active"
-         class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition relative"
-         aria-label="Open settings"
-         matTooltip="Settings"
-         matTooltipPosition="below">
+        routerLinkActive="active"
+        class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition relative"
+        aria-label="Open settings"
+        matTooltip="Settings"
+        matTooltipPosition="below">
         <mat-icon>settings</mat-icon>
-        <span *ngIf="localOnlyMode()" class="notification-dot" title="Signed out / offline — local data only" role="status" aria-label="Signed out or offline; local data only">!</span>
+        @if (localOnlyMode()) {
+          <span class="notification-dot" title="Signed out / offline — local data only" role="status" aria-label="Signed out or offline; local data only">!</span>
+        }
       </a>
     </div>
   </mat-toolbar>
 
   <div class="fixed inset-0 z-[1001] bg-overlay backdrop-blur-sm opacity-0 pointer-events-none transition"
-      [class.opacity-100]="isMenuOpen()"
-      [class.pointer-events-auto]="isMenuOpen()"
-       (click)="closeMenu()"
-       role="dialog"
-       aria-modal="true"
-       aria-labelledby="menu-title">
+    [class.opacity-100]="isMenuOpen()"
+    [class.pointer-events-auto]="isMenuOpen()"
+    (click)="closeMenu()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="menu-title">
     <nav class="absolute top-0 left-0 h-full w-64 max-w-[90vw] bg-surface shadow-strong transform -translate-x-full transition-transform duration-300 flex flex-col"
-          [class.translate-x-0]="isMenuOpen()"
-         (click)="$event.stopPropagation()"
-         role="navigation"
-         aria-label="Main menu">
+      [class.translate-x-0]="isMenuOpen()"
+      (click)="$event.stopPropagation()"
+      role="navigation"
+      aria-label="Main menu">
       <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-light)] text-inverse" style="background: linear-gradient(90deg, var(--primary-800), var(--primary-900));">
         <div class="flex flex-col">
           <h2 id="menu-title" class="text-lg font-semibold leading-tight text-inverse">Raptor Gig</h2>
           <div class="text-sm opacity-90 text-inverse">Quick logs, big insights</div>
         </div>
         <button (click)="closeMenu()"
-                class="flex h-9 w-9 items-center justify-center rounded-md text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-                aria-label="Close menu">
+          class="flex h-9 w-9 items-center justify-center rounded-md text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+          aria-label="Close menu">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -123,7 +129,7 @@
           <span class="text-sm font-medium">Home</span>
         </a>
 
-        <ng-container *ngIf="defaultSheet()">
+        @if (defaultSheet()) {
           <div class="mt-3">
             <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Logging</div>
             <a routerLink="/trips" routerLinkActive="active" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-primary-soft hover:text-primary transition rounded-md" aria-label="View trips">
@@ -139,7 +145,6 @@
               <span class="text-sm font-medium">Expenses</span>
             </a>
           </div>
-
           <div class="mt-3">
             <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Insights</div>
             <a routerLink="/metrics" routerLinkActive="active" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-primary-soft hover:text-primary transition rounded-md" aria-label="View metrics">
@@ -151,7 +156,6 @@
               <span class="text-sm font-medium">Statistics</span>
             </a>
           </div>
-
           <div class="mt-3">
             <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Tools</div>
             <a routerLink="/search" routerLinkActive="active" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-primary-soft hover:text-primary transition rounded-md" aria-label="Search">
@@ -163,7 +167,7 @@
               <span class="text-sm font-medium">Diagnostics</span>
             </a>
           </div>
-        </ng-container>
+        }
 
         <div class="mt-3">
           <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Settings</div>

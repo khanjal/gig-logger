@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy, Output, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
@@ -19,6 +19,14 @@ const DEFAULT_INTERVAL = 60000; // 1 minute
   providedIn: 'root'
 })
 export class PollingService implements OnDestroy {
+  private _snackBar = inject(MatSnackBar);
+  private _sheetService = inject(SpreadsheetService);
+  private _unsavedDataService = inject(UnsavedDataService);
+  private _gigWorkflowService = inject(GigWorkflowService);
+  private _syncStatusService = inject(SyncStatusService);
+  private _logger = inject(LoggerService);
+  protected authService = inject(AuthGoogleService);
+
   @Output() parentReload = new EventEmitter<any>();
 
   private worker: Worker | null = null;
@@ -33,15 +41,7 @@ export class PollingService implements OnDestroy {
 
   pollingEnabled$ = this.enabledState.asObservable();
 
-  constructor(
-    private _snackBar: MatSnackBar,
-    private _sheetService: SpreadsheetService,
-    private _unsavedDataService: UnsavedDataService,
-    private _gigWorkflowService: GigWorkflowService,
-    private _syncStatusService: SyncStatusService,
-    private _logger: LoggerService,
-    protected authService: AuthGoogleService
-  ) {
+  constructor() {
     this.initializeWorker();
     this.setupVisibilityChangeListener();
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -38,6 +38,15 @@ import type { ThemePreference } from '@interfaces/theme.interface';
 })
 
 export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
+  private syncStatusService = inject(SyncStatusService);
+  private uiPreferences = inject(UiPreferencesService);
+  private unsavedDataService = inject(UnsavedDataService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private themeService = inject(ThemeService);
+  protected authService = inject(AuthGoogleService);
+
   @Input() mode: 'button' | 'panel' = 'button';
   private destroy$ = new Subject<void>();
   private intervalId?: number;
@@ -56,17 +65,6 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetX: 0, offsetY: 6 },
     { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetX: 0, offsetY: -6 }
   ];
-
-  constructor(
-    private syncStatusService: SyncStatusService,
-    private uiPreferences: UiPreferencesService,
-    private unsavedDataService: UnsavedDataService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private router: Router,
-    private themeService: ThemeService,
-    protected authService: AuthGoogleService
-  ) {}
 
   ngOnInit(): void {
     // Subscribe to sync state changes

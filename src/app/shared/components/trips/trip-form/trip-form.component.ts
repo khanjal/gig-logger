@@ -1,6 +1,6 @@
 // Angular core imports
-import { ViewportScroller, NgFor, NgIf, CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Optional, Output, signal, ViewChild } from '@angular/core';
+import { ViewportScroller, CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, signal, ViewChild, inject } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -74,9 +74,23 @@ const NEW_SHIFT_VALUE = 'new';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, SearchInputComponent, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<TripFormComponent>>(MatDialogRef, { optional: true });
+  data = inject(MAT_DIALOG_DATA, { optional: true });
+  private _snackBar = inject(MatSnackBar);
+  private _addressService = inject(AddressService);
+  private _deliveryService = inject(DeliveryService);
+  private _gigLoggerService = inject(GigWorkflowService);
+  private _nameService = inject(NameService);
+  private _placeService = inject(PlaceService);
+  private _shiftService = inject(ShiftService);
+  private _timerService = inject(TimerService);
+  private _tripService = inject(TripService);
+  private _viewportScroller = inject(ViewportScroller);
+  private cdr = inject(ChangeDetectorRef);
+
   @Output() parentReload = new EventEmitter<any>();
   @Output() editModeExit = new EventEmitter<string | undefined>();
   @Input() isInEditMode = false;
@@ -151,22 +165,6 @@ export class TripFormComponent implements OnInit {
   selectedShiftOption = signal<IShiftSummaryOption | undefined>(undefined);
 
   title = "Add Trip";
-
-  constructor(
-      @Optional() public dialogRef: MatDialogRef<TripFormComponent>,
-      @Optional() @Inject(MAT_DIALOG_DATA) public data: any,
-      private _snackBar: MatSnackBar,
-      private _addressService: AddressService,
-      private _deliveryService: DeliveryService,
-      private _gigLoggerService: GigWorkflowService,
-      private _nameService: NameService,
-      private _placeService: PlaceService,
-      private _shiftService: ShiftService,
-      private _timerService: TimerService,
-      private _tripService: TripService,
-      private _viewportScroller: ViewportScroller,
-      private cdr: ChangeDetectorRef
-    ) {}
 
   async ngOnInit(): Promise<void> {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service

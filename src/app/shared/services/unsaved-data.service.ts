@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { merge, from } from 'rxjs';
 import { switchMap, shareReplay } from 'rxjs/operators';
 import { TripService } from '@services/sheets/trip.service';
@@ -16,11 +16,10 @@ export interface IUnsavedItems {
 
 @Injectable({ providedIn: 'root' })
 export class UnsavedDataService {
-  constructor(
-    private tripService: TripService,
-    private shiftService: ShiftService,
-    private expensesService: ExpensesService
-  ) {}
+  private tripService = inject(TripService);
+  private shiftService = inject(ShiftService);
+  private expensesService = inject(ExpensesService);
+
 
   /** Reactive stream that emits a boolean whenever any entity's unsaved state changes. */
   readonly unsavedData$ = merge(

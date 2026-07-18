@@ -7,8 +7,10 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
   providedIn: 'root'
 })
 export class AuthGuardService {
+    private authService = inject(AuthGoogleService);
+    private router = inject(Router);
+    private _sheetService = inject(SpreadsheetService);
 
-    constructor(private authService: AuthGoogleService, private router: Router, private _sheetService: SpreadsheetService) {}
 
     /**
      * Route guard flow:

@@ -1,5 +1,5 @@
-import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseFabButtonComponent } from '@components/base';
@@ -14,13 +14,12 @@ export type { ITripsModalData };
   templateUrl: './trips-modal.component.html',
   styleUrls: ['./trips-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatIconModule, BaseFabButtonComponent, TripsQuickViewComponent]
+  imports: [MatIconModule, BaseFabButtonComponent, TripsQuickViewComponent]
 })
 export class TripsModalComponent {
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: ITripsModalData,
-    public dialogRef: MatDialogRef<TripsModalComponent>
-  ) {}
+  data = inject<ITripsModalData>(MAT_DIALOG_DATA);
+  dialogRef = inject<MatDialogRef<TripsModalComponent>>(MatDialogRef);
+
 
   get tripCount(): number {
     return this.data.trips.length;

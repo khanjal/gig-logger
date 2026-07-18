@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -8,10 +8,12 @@ import type { IUpdateDetail, IUpdateEntry } from '@interfaces/update.interface';
   providedIn: 'root'
 })
 export class UpdatesService {
+  private http = inject(HttpClient);
+
   private readonly url = 'assets/updates.json';
   private updatesSubject = new BehaviorSubject<IUpdateEntry[]>([]);
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.loadUpdates();
   }
 

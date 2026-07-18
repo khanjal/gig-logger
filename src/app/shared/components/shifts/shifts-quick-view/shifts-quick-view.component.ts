@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
@@ -35,6 +35,10 @@ import { BaseRectButtonComponent } from '@components/base';
     ],
 })
 export class ShiftsQuickViewComponent implements OnInit {
+  dialog = inject(MatDialog);
+  private shiftService = inject(ShiftService);
+  private _router = inject(Router);
+
   ActionEnum = ActionEnum;
   dateFormats = DATE_FORMATS;
   @Input() shift: IShift = {} as IShift;
@@ -46,12 +50,6 @@ export class ShiftsQuickViewComponent implements OnInit {
 
   isExpanded = false;
   prefers24Hour = false;
-
-  constructor(
-    public dialog: MatDialog,
-    private shiftService: ShiftService,
-    private _router: Router
-  ) {}
 
   ngOnInit() {
     this.prefers24Hour = DateHelper.prefers24Hour();

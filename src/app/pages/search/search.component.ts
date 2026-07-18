@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, computed, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -52,6 +52,11 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, from, startWit
   providers: [CurrencyPipe]
 })
 export class SearchComponent implements OnInit, OnDestroy {
+  private searchService = inject(SearchService);
+  private dropdownDataService = inject(DropdownDataService);
+  private currencyPipe = inject(CurrencyPipe);
+  private logger = inject(LoggerService);
+
   readonly categories: SearchCategory[] = ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
   readonly searchState = createAsyncOperationState();
   readonly allGroupsExpanded = computed(() => {
@@ -111,12 +116,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   expandedGroups = signal(new Set<string>());
   expandedResults = signal(new Set<string>());
 
-  constructor(
-    private searchService: SearchService,
-    private dropdownDataService: DropdownDataService,
-    private currencyPipe: CurrencyPipe,
-    private logger: LoggerService
-  ) {
+  constructor() {
     this.categoryMetadata = this.categories.reduce((acc, category) => {
       acc[category] = {
         icon: this.searchService.getCategoryIcon(category),

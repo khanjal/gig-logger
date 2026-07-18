@@ -1,5 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, inject } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +18,6 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
   selector: 'app-sheet-list',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatCardModule,
     MatIconModule,
@@ -33,15 +32,13 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
   styleUrl: './sheet-list.component.scss'
 })
 export class SheetListComponent implements OnInit {
+  private _gigLoggerService = inject(GigWorkflowService);
+  private _logger = inject(LoggerService);
+  private dialogRef = inject<MatDialogRef<SheetListComponent>>(MatDialogRef);
+
   sheets = signal<ISheetProperties[]>([]);
   selectedSheet = signal<ISheetProperties | null>(null);
   loading = signal(true);
-
-  constructor(
-    private _gigLoggerService: GigWorkflowService,
-    private _logger: LoggerService,
-    private dialogRef: MatDialogRef<SheetListComponent>
-  ) { }
   
   ngOnInit() {
     this.loadSheets();

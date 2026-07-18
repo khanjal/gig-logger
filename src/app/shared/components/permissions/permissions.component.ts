@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
-import { CommonModule } from '@angular/common';
+
 import { BaseCardComponent, BaseRectButtonComponent } from '@components/base';
 import { MatIcon } from '@angular/material/icon';
 
@@ -22,9 +22,12 @@ interface PermissionStatus {
   templateUrl: './permissions.component.html',
   styleUrls: ['./permissions.component.scss'],
   standalone: true,
-  imports: [CommonModule, BaseCardComponent, BaseRectButtonComponent, MatIcon, MatDividerModule]
+  imports: [BaseCardComponent, BaseRectButtonComponent, MatIcon, MatDividerModule]
 })
 export class PermissionsComponent implements OnInit {
+  private logger = inject(LoggerService);
+  private _permissionService = inject(PermissionService);
+
   locationPermission = signal<PermissionStatus>({
     name: 'Location',
     icon: 'location_on',
@@ -42,8 +45,6 @@ export class PermissionsComponent implements OnInit {
     canRequest: false,
     canRevoke: false
   });
-
-  constructor(private logger: LoggerService, private _permissionService: PermissionService) {}
 
   async ngOnInit() {
     this.updateLocationPermissionState(this._permissionService.getLocationState());

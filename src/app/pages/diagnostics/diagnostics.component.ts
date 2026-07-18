@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -44,27 +44,25 @@ import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.compo
 })
 
 export class DiagnosticsComponent implements OnInit {
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+  private _addressService = inject(AddressService);
+  private _placeService = inject(PlaceService);
+  private _nameService = inject(NameService);
+  private _serviceService = inject(ServiceService);
+  private _typeService = inject(TypeService);
+  private _regionService = inject(RegionService);
+  private _logger = inject(LoggerService);
+  private _gigCalculator = inject(GigCalculatorService);
+  private _gigWorkflow = inject(GigWorkflowService);
+  private _uiPreferences = inject(UiPreferencesService);
+
   dataDiagnostics = signal<IDiagnosticItem[]>([]);
   isLoading = signal(false);
   isBulkFixing = signal(false);
   selectedValue: any[] = [];
   selectedAddress: Record<number, string> = {};
   selectedShiftToDelete: Record<number, number> = {};
-
-  constructor(
-    private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _addressService: AddressService,
-    private _placeService: PlaceService,
-    private _nameService: NameService,
-    private _serviceService: ServiceService,
-    private _typeService: TypeService,
-    private _regionService: RegionService,
-    private _logger: LoggerService,
-    private _gigCalculator: GigCalculatorService,
-    private _gigWorkflow: GigWorkflowService,
-    private _uiPreferences: UiPreferencesService
-  ) { }
 
   trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
     return item.name ?? index;

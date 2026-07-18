@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { NgClass, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
@@ -36,10 +36,17 @@ import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],
     standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective, AddressLineBreakPipe]
+    imports: [MatIcon, NgClass, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective, AddressLineBreakPipe]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  private _gigLoggerService = inject(GigWorkflowService);
+  private _tripService = inject(TripService);
+  private _shiftService = inject(ShiftService);
+  private _router = inject(Router);
+
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions = true;
   @Input() inlineMode = false;
@@ -64,15 +71,6 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   get distanceDisplay(): string {
     return UnitHelper.formatDistance(this.trip.distance);
   }
-  
-  constructor(
-        public dialog: MatDialog,
-        private _snackBar: MatSnackBar,
-        private _gigLoggerService: GigWorkflowService,
-        private _tripService: TripService,
-        private _shiftService: ShiftService,
-        private _router: Router,
-      ) { }
       
   /**
    * Convert distance value based on unit preference

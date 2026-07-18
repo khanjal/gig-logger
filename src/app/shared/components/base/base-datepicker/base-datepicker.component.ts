@@ -1,5 +1,5 @@
 import { Component, Input, forwardRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -10,7 +10,6 @@ import { MatDatepickerToggle } from '@angular/material/datepicker';
   selector: 'app-base-datepicker',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
@@ -21,7 +20,7 @@ import { MatDatepickerToggle } from '@angular/material/datepicker';
     MatDatepickerModule,
     MatDatepicker,
     MatDatepickerToggle
-  ],
+],
   templateUrl: './base-datepicker.component.html',
   styleUrl: './base-datepicker.component.scss',
   providers: [

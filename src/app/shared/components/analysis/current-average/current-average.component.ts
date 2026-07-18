@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openSnackbar } from '@utils/snackbar.util';
 import { DateHelper } from '@helpers/date.helper';
 import { CurrentAverageStateService } from '@services/current-average-state.service';
-import { NgIf, CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
@@ -11,11 +11,14 @@ import { MatIcon } from '@angular/material/icon';
     templateUrl: './current-average.component.html',
     styleUrls: ['./current-average.component.scss'],
     standalone: true,
-  imports: [NgIf, MatIcon, CurrencyPipe],
+  imports: [MatIcon, CurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class CurrentAverageComponent {
+  private _snackBar = inject(MatSnackBar);
+  private currentAverageState = inject(CurrentAverageStateService);
+
   private _date: string = DateHelper.toISO();
 
   @Input() set date(value: string) {
@@ -55,10 +58,7 @@ export class CurrentAverageComponent {
   showWeeklyAverage = false;
   showMonthlyAverage = false;
 
-  constructor(
-    private _snackBar: MatSnackBar,
-    private currentAverageState: CurrentAverageStateService
-    ) {
+  constructor() {
       this.currentAverageState.setDate(this._date);
     }
 

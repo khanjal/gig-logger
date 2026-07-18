@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
@@ -23,9 +23,12 @@ import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
     styleUrls: ['./stats.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [CommonModule, MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
+    imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
 })
 export class StatsComponent implements OnInit {
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   private readonly destroyRef = inject(DestroyRef);
   places = signal<IStatItem[]>([]);
@@ -41,11 +44,6 @@ export class StatsComponent implements OnInit {
     start: new FormControl(),
     end: new FormControl(),
   });
-
-  constructor(
-    private _shiftService: ShiftService,
-    private _tripService: TripService
-  ) {}
 
   ngOnInit(): void {
     this.range.valueChanges

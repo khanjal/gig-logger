@@ -1,7 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { CommonModule } from '@angular/common';
+
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
@@ -9,9 +9,12 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
     templateUrl: './confirm-dialog.component.html',
     styleUrls: ['./confirm-dialog.component.scss'],
     standalone: true,
-    imports: [CommonModule, BaseRectButtonComponent]
+    imports: [BaseRectButtonComponent]
 })
 export class ConfirmDialogComponent {
+  dialogRef = inject<MatDialogRef<ConfirmDialogComponent>>(MatDialogRef);
+  data = inject<IConfirmDialog>(MAT_DIALOG_DATA);
+
   title!: string;
   message!: string;
   trueIcon: string | undefined;
@@ -21,8 +24,9 @@ export class ConfirmDialogComponent {
   falseText! :string;
   falseColor: string;
 
-  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: IConfirmDialog) {
+  constructor() {
+    const data = this.data;
+
     // Update view with given values
     this.title = data.title;
     this.message = data.message;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGoogleService } from '@services/auth-google.service';
@@ -21,9 +21,9 @@ const MODULES: any[] = [
   styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnInit {
-  isAuthenticated = false;
+  protected authService = inject(AuthGoogleService);
 
-  constructor(protected authService: AuthGoogleService) {}
+  isAuthenticated = false;
 
   async ngOnInit() {
     // Check authentication state (this may trigger a refresh)

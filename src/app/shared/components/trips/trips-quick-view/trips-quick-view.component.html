@@ -11,18 +11,22 @@
     'stripe-odd': !isEvenStripe && !trip.exclude
   }"
   style="position: relative;"
->
+  >
   <!-- Pattern overlay for disabled/excluded trips -->
-  <div *ngIf="trip.exclude"
-       class="absolute inset-0 z-30 pointer-events-none rounded-xl pattern-overlay-disabled">
-  </div>
+  @if (trip.exclude) {
+    <div
+      class="absolute inset-0 z-30 pointer-events-none rounded-xl pattern-overlay-disabled">
+    </div>
+  }
   <!-- Small badge for excluded trips -->
-  <div *ngIf="trip.exclude"
-       class="absolute z-40 pointer-events-none top-0 right-0 w-28 h-9 flex items-start justify-end">
-    <span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold text-inverse bg-surface-3 shadow border border-soft excluded-badge">
-      Excluded
-    </span>
-  </div>
+  @if (trip.exclude) {
+    <div
+      class="absolute z-40 pointer-events-none top-0 right-0 w-28 h-9 flex items-start justify-end">
+      <span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold text-inverse bg-surface-3 shadow border border-soft excluded-badge">
+        Excluded
+      </span>
+    </div>
+  }
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b border-soft header-stripe"
     [ngClass]="{
@@ -33,7 +37,7 @@
     <div class="mt-1 text-xs text-secondary flex items-center w-full">
       <div class="flex-1 min-w-0 text-left">
         <div class="inline-flex items-center gap-2">
-        <mat-icon class="text-xl flex-shrink-0"
+          <mat-icon class="text-xl flex-shrink-0"
           [ngClass]="{
             'trip-icon-saved': trip.saved,
             'trip-icon-add': !trip.saved && trip.action === 'ADD',
@@ -41,18 +45,20 @@
             'trip-icon-delete': !trip.saved && trip.action === 'DELETE',
             'trip-icon-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE'))
           }">
-          @if (!trip.saved && trip.action === 'ADD') { add }
-          @else if (!trip.saved && trip.action === 'UPDATE') { edit }
-          @else if (!trip.saved && trip.action === 'DELETE') { delete }
-          @else { check_circle }
-        </mat-icon>
-        <span class="text-xs font-bold text-primary font-mono">#{{trip.rowId}}</span>
+            @if (!trip.saved && trip.action === 'ADD') { add }
+              @else if (!trip.saved && trip.action === 'UPDATE') { edit }
+              @else if (!trip.saved && trip.action === 'DELETE') { delete }
+              @else { check_circle }
+            </mat-icon>
+            <span class="text-xs font-bold text-primary font-mono">#{{trip.rowId}}</span>
+          </div>
         </div>
-      </div>
 
-      <div class="flex-shrink-0 px-2 text-center">
-        <span class="font-bold text-primary text-sm sm:text-base inline-flex items-center justify-center max-w-full">
-          <span class="truncate max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
+        <div class="flex-shrink-0 px-2 text-center">
+          <span class="font-bold text-primary text-sm sm:text-base inline-flex items-center justify-center max-w-full">
+            <span class="truncate max-w-full">{{trip.service}}</span>@if (trip.number > 0) {
+            <span>&nbsp;#{{trip.number}}</span>
+          }
         </span>
       </div>
 
@@ -71,146 +77,181 @@
     </div>
 
     <!-- Date/Time/Distance Row -->
-    <div class="mt-1 text-xs text-secondary flex items-center w-full" *ngIf="trip.date || trip.pickupTime || trip.distance">
-      <div class="flex-1 min-w-0 text-left">
-        <span *ngIf="trip.date" class="inline-block px-2 py-0.5 rounded text-xs text-secondary border border-soft">{{ parsedTripDate ? (parsedTripDate | date:dateFormat) : (trip.date | date:dateFormat) }}</span>
-      </div>
-
-      <div class="flex-shrink-0 px-2 text-center">
-        <span class="font-mono text-xs inline-flex items-center justify-center max-w-full"
+    @if (trip.date || trip.pickupTime || trip.distance) {
+      <div class="mt-1 text-xs text-secondary flex items-center w-full">
+        <div class="flex-1 min-w-0 text-left">
+          @if (trip.date) {
+            <span class="inline-block px-2 py-0.5 rounded text-xs text-secondary border border-soft">{{ parsedTripDate ? (parsedTripDate | date:dateFormat) : (trip.date | date:dateFormat) }}</span>
+          }
+        </div>
+        <div class="flex-shrink-0 px-2 text-center">
+          <span class="font-mono text-xs inline-flex items-center justify-center max-w-full"
               [ngClass]="{
                 'text-tertiary': !trip.pickupTime,
                 'text-primary': trip.pickupTime
               }">
-          {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
-        </span>
+            {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
+          </span>
+        </div>
+        <div class="flex-1 min-w-0 text-right">
+          @if (trip.distance) {
+            <span class="font-mono text-xs text-primary">{{trip.distance | number:'1.1'}} mi</span>
+          }
+        </div>
       </div>
-
-      <div class="flex-1 min-w-0 text-right">
-        <span *ngIf="trip.distance" class="font-mono text-xs text-primary">{{trip.distance | number:'1.1'}} mi</span>
-      </div>
-    </div>
+    }
 
     <!-- Place -> Name Row -->
-    <div class="mt-1 text-xs text-secondary flex items-center justify-center min-w-0" *ngIf="trip.place || trip.name">
-      <div class="flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden max-w-full">
-        <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>
-        <span *ngIf="trip.place && trip.name"> → </span>
-        <span *ngIf="trip.name" class="truncate max-w-full">{{trip.name | truncate:40}}</span>
-      </div>
-    </div>
-    <!-- Toggle Button and Chips Row -->
-    <div class="flex items-center justify-between gap-2 mt-1"
-         *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note || trip.tip || trip.bonus || trip.cash || (trip.startOdometer || trip.endOdometer) || trip.startAddress || trip.endAddress">
-      <!-- Chips (left side) -->
-      <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-x-auto h-6" *ngIf="!!trip">
-        <div class="flex items-center gap-1 px-1 overflow-x-auto scrollbar-hide">
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.tip && trip.tip > 0) ? 'text-success' : 'text-tertiary opacity-50'"
-                    [attr.aria-label]="(trip.tip && trip.tip > 0) ? ('Tip: $' + trip.tip) : 'No tip'">monetization_on</mat-icon>
-
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.bonus && trip.bonus > 0) ? 'text-warning' : 'text-tertiary opacity-50'"
-                    [attr.aria-label]="(trip.bonus && trip.bonus > 0) ? ('Bonus: $' + trip.bonus) : 'No bonus'">star</mat-icon>
-
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.cash && trip.cash > 0) ? 'text-info' : 'text-tertiary opacity-50'"
-                    [attr.aria-label]="(trip.cash && trip.cash > 0) ? ('Cash: $' + trip.cash) : 'No cash'">payments</mat-icon>
-
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.startOdometer || trip.endOdometer) ? 'text-error' : 'text-tertiary opacity-50'"
-                    [attr.aria-label]="(trip.startOdometer || trip.endOdometer) ? 'Odometer readings available' : 'No odometer'">speed</mat-icon>
-
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="trip.startAddress ? 'text-info' : 'text-tertiary opacity-50'"
-                    [attr.aria-label]="trip.startAddress ? ('Pickup address: ' + trip.startAddress) : 'No pickup address'">place</mat-icon>
-
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="trip.endAddress ? 'text-info' : 'text-tertiary opacity-50'"
-                    [attr.aria-label]="trip.endAddress ? ('Destination address: ' + trip.endAddress) : 'No destination address'">flag</mat-icon>
-
-          <!-- Note icon: always shown, colored when note exists -->
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="trip.note ? 'text-warning' : 'text-tertiary opacity-50'"
-                    [attr.aria-label]="trip.note ? ('Note: ' + trip.note) : 'No note'">format_quote</mat-icon>
+    @if (trip.place || trip.name) {
+      <div class="mt-1 text-xs text-secondary flex items-center justify-center min-w-0">
+        <div class="flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden max-w-full">
+          @if (trip.place) {
+            <span class="truncate max-w-full">{{trip.place | truncate:40}}</span>
+          }
+          @if (trip.place && trip.name) {
+            <span> → </span>
+          }
+          @if (trip.name) {
+            <span class="truncate max-w-full">{{trip.name | truncate:40}}</span>
+          }
         </div>
       </div>
-      <!-- Toggle Button (right side) -->
-      <div class="focus-within:ring-0 focus-within:outline-none flex-1 flex justify-end">
-        <button class="flex items-center justify-end gap-2 py-1 text-xs text-tertiary hover:text-primary transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
-                (click)="toggleExpansion()" 
-                tabindex="0" 
-                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
-                [title]="isExpanded ? 'Hide details' : 'Show details'"
-                (keydown.enter)="toggleExpansion()" 
-                (keydown.space)="toggleExpansion()">
-          <span class="text-info">{{ isExpanded ? 'Hide' : 'More' }} Details</span>
-          <mat-icon class="text-sm text-info">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </button>
+    }
+    <!-- Toggle Button and Chips Row -->
+    @if (trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note || trip.tip || trip.bonus || trip.cash || (trip.startOdometer || trip.endOdometer) || trip.startAddress || trip.endAddress) {
+      <div class="flex items-center justify-between gap-2 mt-1"
+        >
+        <!-- Chips (left side) -->
+        @if (!!trip) {
+          <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-x-auto h-6">
+            <div class="flex items-center gap-1 px-1 overflow-x-auto scrollbar-hide">
+              <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                [ngClass]="(trip.tip && trip.tip > 0) ? 'text-success' : 'text-tertiary opacity-50'"
+              [attr.aria-label]="(trip.tip && trip.tip > 0) ? ('Tip: $' + trip.tip) : 'No tip'">monetization_on</mat-icon>
+              <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                [ngClass]="(trip.bonus && trip.bonus > 0) ? 'text-warning' : 'text-tertiary opacity-50'"
+              [attr.aria-label]="(trip.bonus && trip.bonus > 0) ? ('Bonus: $' + trip.bonus) : 'No bonus'">star</mat-icon>
+              <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                [ngClass]="(trip.cash && trip.cash > 0) ? 'text-info' : 'text-tertiary opacity-50'"
+              [attr.aria-label]="(trip.cash && trip.cash > 0) ? ('Cash: $' + trip.cash) : 'No cash'">payments</mat-icon>
+              <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                [ngClass]="(trip.startOdometer || trip.endOdometer) ? 'text-error' : 'text-tertiary opacity-50'"
+              [attr.aria-label]="(trip.startOdometer || trip.endOdometer) ? 'Odometer readings available' : 'No odometer'">speed</mat-icon>
+              <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                [ngClass]="trip.startAddress ? 'text-info' : 'text-tertiary opacity-50'"
+              [attr.aria-label]="trip.startAddress ? ('Pickup address: ' + trip.startAddress) : 'No pickup address'">place</mat-icon>
+              <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                [ngClass]="trip.endAddress ? 'text-info' : 'text-tertiary opacity-50'"
+              [attr.aria-label]="trip.endAddress ? ('Destination address: ' + trip.endAddress) : 'No destination address'">flag</mat-icon>
+              <!-- Note icon: always shown, colored when note exists -->
+              <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                [ngClass]="trip.note ? 'text-warning' : 'text-tertiary opacity-50'"
+              [attr.aria-label]="trip.note ? ('Note: ' + trip.note) : 'No note'">format_quote</mat-icon>
+            </div>
+          </div>
+        }
+        <!-- Toggle Button (right side) -->
+        <div class="focus-within:ring-0 focus-within:outline-none flex-1 flex justify-end">
+          <button class="flex items-center justify-end gap-2 py-1 text-xs text-tertiary hover:text-primary transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
+            (click)="toggleExpansion()"
+            tabindex="0"
+            [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+            [title]="isExpanded ? 'Hide details' : 'Show details'"
+            (keydown.enter)="toggleExpansion()"
+            (keydown.space)="toggleExpansion()">
+            <span class="text-info">{{ isExpanded ? 'Hide' : 'More' }} Details</span>
+            <mat-icon class="text-sm text-info">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+        </div>
       </div>
-    </div>
+    }
   </div>
   <!-- Simplified Details Section -->
-  <div class="p-3 bg-surface-2 border-t border-soft" *ngIf="isExpanded">
-    <!-- Quick Stats Row -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="trip.dropoffTime || trip.duration || trip.amountPerTime || (trip.total && trip.distance > 0)">
-      <div *ngIf="trip.dropoffTime" class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
-        <div class="text-xs text-secondary mb-1">Drop Time</div>
-        <div class="font-mono text-sm font-bold text-primary">{{trip.dropoffTime | noseconds:prefers24Hour}}</div>
-      </div>
-      <div *ngIf="trip.duration" class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
-        <div class="text-xs text-secondary mb-1">Duration</div>
-        <div class="font-mono text-sm font-bold text-primary">{{trip.duration | durationFormat}}</div>
-      </div>
-        <div *ngIf="trip.amountPerTime" class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
-        <div class="text-xs text-secondary mb-1">Rate/Hr</div>
-        <div class="text-sm font-bold text-success">${{trip.amountPerTime | number:'1.2-2'}}</div>
-      </div>
-        <div *ngIf="trip.total && trip.distance > 0" class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
-        <div class="text-xs text-secondary mb-1">Rate/Mile</div>
-        <div class="text-sm font-bold text-info">${{(trip.total / trip.distance) | number:'1.2-2'}}</div>
-      </div>
-    </div>
-    <!-- Payment Breakdown -->
-    <div class="mb-4" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
-      <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-        <mat-icon class="text-info text-base">payments</mat-icon>
-        Payment Details
-      </h3>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div *ngIf="trip.pay" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
-          <span class="text-xs text-secondary">Pay</span>
-          <span class="text-sm font-bold text-primary">{{trip.pay | currency}}</span>
+  @if (isExpanded) {
+    <div class="p-3 bg-surface-2 border-t border-soft">
+      <!-- Quick Stats Row -->
+      @if (trip.dropoffTime || trip.duration || trip.amountPerTime || (trip.total && trip.distance > 0)) {
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          @if (trip.dropoffTime) {
+            <div class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
+              <div class="text-xs text-secondary mb-1">Drop Time</div>
+              <div class="font-mono text-sm font-bold text-primary">{{trip.dropoffTime | noseconds:prefers24Hour}}</div>
+            </div>
+          }
+          @if (trip.duration) {
+            <div class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
+              <div class="text-xs text-secondary mb-1">Duration</div>
+              <div class="font-mono text-sm font-bold text-primary">{{trip.duration | durationFormat}}</div>
+            </div>
+          }
+          @if (trip.amountPerTime) {
+            <div class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
+              <div class="text-xs text-secondary mb-1">Rate/Hr</div>
+              <div class="text-sm font-bold text-success">${{trip.amountPerTime | number:'1.2-2'}}</div>
+            </div>
+          }
+          @if (trip.total && trip.distance > 0) {
+            <div class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
+              <div class="text-xs text-secondary mb-1">Rate/Mile</div>
+              <div class="text-sm font-bold text-info">${{(trip.total / trip.distance) | number:'1.2-2'}}</div>
+            </div>
+          }
         </div>
-        <div *ngIf="trip.tip" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
-          <span class="text-xs text-secondary">Tip</span>
-          <span class="text-sm font-bold text-primary">{{trip.tip | currency}}</span>
+      }
+      <!-- Payment Breakdown -->
+      @if (trip.pay || trip.tip || trip.bonus || trip.cash) {
+        <div class="mb-4">
+          <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
+            <mat-icon class="text-info text-base">payments</mat-icon>
+            Payment Details
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            @if (trip.pay) {
+              <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+                <span class="text-xs text-secondary">Pay</span>
+                <span class="text-sm font-bold text-primary">{{trip.pay | currency}}</span>
+              </div>
+            }
+            @if (trip.tip) {
+              <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+                <span class="text-xs text-secondary">Tip</span>
+                <span class="text-sm font-bold text-primary">{{trip.tip | currency}}</span>
+              </div>
+            }
+            @if (trip.bonus) {
+              <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+                <span class="text-xs text-secondary">Bonus</span>
+                <span class="text-sm font-bold text-primary">{{trip.bonus | currency}}</span>
+              </div>
+            }
+            @if (trip.cash) {
+              <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+                <span class="text-xs text-secondary">Cash</span>
+                <span class="text-sm font-bold">{{trip.cash | currency}}</span>
+              </div>
+            }
+          </div>
+          @if (trip.total) {
+            <div class="mt-2 p-2 bg-success-soft rounded border border-success">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-semibold text-success">Total</span>
+                <span class="text-lg font-bold text-success">{{trip.total | currency}}</span>
+              </div>
+            </div>
+          }
         </div>
-        <div *ngIf="trip.bonus" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
-          <span class="text-xs text-secondary">Bonus</span>
-          <span class="text-sm font-bold text-primary">{{trip.bonus | currency}}</span>
-        </div>
-        <div *ngIf="trip.cash" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
-          <span class="text-xs text-secondary">Cash</span>
-          <span class="text-sm font-bold">{{trip.cash | currency}}</span>
-        </div>
-      </div>
-      <div *ngIf="trip.total" class="mt-2 p-2 bg-success-soft rounded border border-success">
-        <div class="flex justify-between items-center">
-          <span class="text-sm font-semibold text-success">Total</span>
-          <span class="text-lg font-bold text-success">{{trip.total | currency}}</span>
-        </div>
-      </div>
-    </div>
-    <!-- Addresses -->
-    <div class="mb-4" *ngIf="trip.startAddress || trip.endAddress">
-      <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-        <mat-icon class="text-success text-base">place</mat-icon>
-        Addresses
-      </h3>
-      <div class="space-y-2">
-        <div *ngIf="trip.startAddress" class="p-2 bg-surface-3 rounded border border-soft">
-          <div class="text-xs text-secondary mb-1">From</div>
+      }
+      <!-- Addresses -->
+      @if (trip.startAddress || trip.endAddress) {
+        <div class="mb-4">
+          <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
+            <mat-icon class="text-success text-base">place</mat-icon>
+            Addresses
+          </h3>
+          <div class="space-y-2">
+            @if (trip.startAddress) {
+              <div class="p-2 bg-surface-3 rounded border border-soft">
+                <div class="text-xs text-secondary mb-1">From</div>
           <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.startAddress" 
              target="_blank" 
              rel="noopener noreferrer"
@@ -219,7 +260,9 @@
             <mat-icon class="text-xs flex-shrink-0">open_in_new</mat-icon>
           </a>
         </div>
-        <div *ngIf="trip.endAddress" class="p-2 bg-surface-3 rounded border border-soft">
+}
+        @if (trip.endAddress) {
+<div class="p-2 bg-surface-3 rounded border border-soft">
           <div class="text-xs text-secondary mb-1">To</div>
           <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.endAddress" 
              target="_blank" 
@@ -229,118 +272,139 @@
             <mat-icon class="text-xs flex-shrink-0">open_in_new</mat-icon>
           </a>
         </div>
+}
       </div>
     </div>
+}
     <!-- Additional Info: Only show if more than just region -->
-    <div class="mb-4" *ngIf="trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type || trip.region">
+    @if (trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type || trip.region) {
+<div class="mb-4">
       <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
         <mat-icon class="text-info text-base">info</mat-icon>
         Trip Info
       </h3>
       <div class="grid grid-cols-2 gap-2">
-        <div *ngIf="trip.orderNumber" class="flex justify-between items-center gap-2 p-2 bg-surface-3 rounded border border-soft min-w-0">
+        @if (trip.orderNumber) {
+<div class="flex justify-between items-center gap-2 p-2 bg-surface-3 rounded border border-soft min-w-0">
           <span class="text-xs text-secondary flex-shrink-0">Order #</span>
           <span class="text-sm font-medium text-primary truncate" [title]="trip.orderNumber">{{trip.orderNumber}}</span>
         </div>
-        <div *ngIf="trip.endUnit" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+}
+        @if (trip.endUnit) {
+<div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
           <span class="text-xs text-secondary">Unit</span>
           <span class="text-sm font-medium text-primary">{{trip.endUnit}}</span>
         </div>
-        <div *ngIf="trip.startOdometer" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+}
+        @if (trip.startOdometer) {
+<div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
           <span class="text-xs text-secondary">Start ODO</span>
           <span class="text-sm font-medium text-primary">{{trip.startOdometer | number:'1.0'}}</span>
         </div>
-        <div *ngIf="trip.endOdometer" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+}
+        @if (trip.endOdometer) {
+<div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
           <span class="text-xs text-secondary">End ODO</span>
           <span class="text-sm font-medium text-primary">{{trip.endOdometer | number:'1.0'}}</span>
         </div>
+}
         <!-- Trip Type (now same width as order # and unit) -->
-        <div *ngIf="trip.type && trip.type !== ''" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
-          <span class="text-xs text-secondary">Type</span>
-          <span class="text-sm font-medium text-primary">{{trip.type}}</span>
+        @if (trip.type && trip.type !== '') {
+              <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+                <span class="text-xs text-secondary">Type</span>
+                <span class="text-sm font-medium text-primary">{{trip.type}}</span>
+              </div>
+            }
+            @if (trip.region) {
+              <div class="flex flex-row items-center gap-2 p-2 bg-surface-3 rounded border border-soft col-span-2">
+                <span class="text-xs text-secondary whitespace-nowrap">Region</span>
+                <span class="text-sm font-medium break-words text-left w-full">{{trip.region}}</span>
+              </div>
+            }
+          </div>
         </div>
-        <div *ngIf="trip.region" class="flex flex-row items-center gap-2 p-2 bg-surface-3 rounded border border-soft col-span-2">
-          <span class="text-xs text-secondary whitespace-nowrap">Region</span>
-          <span class="text-sm font-medium break-words text-left w-full">{{trip.region}}</span>
+      }
+      <!-- Note -->
+      @if (trip.note) {
+        <div class="p-3 bg-warning-soft rounded-lg border border-warning">
+          <h3 class="text-sm font-semibold text-warning mb-2 flex items-center gap-2">
+            <mat-icon class="text-warning text-base">format_quote</mat-icon>
+            Note
+          </h3>
+          <p class="text-sm text-warning italic">{{trip.note}}</p>
         </div>
-      </div>
+      }
     </div>
-    <!-- Note -->
-    <div *ngIf="trip.note" class="p-3 bg-warning-soft rounded-lg border border-warning">
-      <h3 class="text-sm font-semibold text-warning mb-2 flex items-center gap-2">
-        <mat-icon class="text-warning text-base">format_quote</mat-icon>
-        Note
-      </h3>
-      <p class="text-sm text-warning italic">{{trip.note}}</p>
-    </div>
-  </div>
+  }
   <!-- Simplified Action Bar -->
-  <div class="flex items-center justify-between p-3 border-t border-soft actionbar-stripe"
-    *ngIf="showActions"
+  @if (showActions) {
+    <div class="flex items-center justify-between p-3 border-t border-soft actionbar-stripe"
     [ngClass]="{
       'stripe-header-even': isEvenStripe,
       'stripe-header-odd': !isEvenStripe
     }">
-    <!-- Edit Button -->
-    <app-base-rect-button
+      <!-- Edit Button -->
+      <app-base-rect-button
         variant="primary"
         size="sm"
         (clicked)="editTrip()"
         [icon]="'edit'"
         title="Edit Trip"
         [label]="'Edit'">
-    </app-base-rect-button>
-    <!-- Center Action Buttons -->
-    <div class="flex gap-2">
-      <app-base-rect-button
-        variant="secondary"
-        size="sm"
-        (clicked)="setPickupTime()"
-        *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
-        [icon]="'file_upload'"
-        title="Set Pickup Time"
-        [label]="'Pickup'">
-    </app-base-rect-button>
-    <app-base-rect-button
-      variant="secondary"
-      size="sm"
-      (clicked)="setDropoffTime()"
-      *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
-      [icon]="'file_download'"
-      title="Set Dropoff Time"
-      [label]="'Dropoff'">
-    </app-base-rect-button>
-  </div>
-    <!-- Menu Button -->
-    <button mat-icon-button
-            appBaseButton
-            appBaseButtonVariant="icon"
-            appBaseButtonClass="w-10 h-10 bg-surface-2 text-primary border border-soft rounded-lg hover:bg-surface-3 transition"
-            [matMenuTriggerFor]="menu"
-            title="More options">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <!-- Menu -->
-    <mat-menu #menu="matMenu" class="trip-menu">
-      <button mat-menu-item (click)="nextStopTrip()">
-        <mat-icon class="menu-blue">pin_drop</mat-icon>
-        <span>Next Stop</span>
+      </app-base-rect-button>
+      <!-- Center Action Buttons -->
+      <div class="flex gap-2">
+        @if (!trip.pickupTime && !trip.dropoffTime && !trip.exclude) {
+          <app-base-rect-button
+            variant="secondary"
+            size="sm"
+            (clicked)="setPickupTime()"
+            [icon]="'file_upload'"
+            title="Set Pickup Time"
+            [label]="'Pickup'">
+          </app-base-rect-button>
+        }
+        @if (trip.pickupTime && !trip.dropoffTime && !trip.exclude) {
+          <app-base-rect-button
+            variant="secondary"
+            size="sm"
+            (clicked)="setDropoffTime()"
+            [icon]="'file_download'"
+            title="Set Dropoff Time"
+            [label]="'Dropoff'">
+          </app-base-rect-button>
+        }
+      </div>
+      <!-- Menu Button -->
+      <button mat-icon-button
+        appBaseButton
+        appBaseButtonVariant="icon"
+        appBaseButtonClass="w-10 h-10 bg-surface-2 text-primary border border-soft rounded-lg hover:bg-surface-3 transition"
+        [matMenuTriggerFor]="menu"
+        title="More options">
+        <mat-icon>more_vert</mat-icon>
       </button>
-      <button mat-menu-item (click)="splitTrip()">
-        <mat-icon class="menu-orange">call_split</mat-icon>
-        <span>Split</span>
-      </button>
-      <button mat-menu-item (click)="cloneUnsavedTrip()">
-        <mat-icon class="menu-green">content_copy</mat-icon>
-        <span>Clone</span>
-      </button>
-      @if (trip.action != actionEnum.Delete) {
-        <button mat-menu-item (click)="confirmDeleteTripDialog()" title="Delete Trip">
-          <mat-icon class="menu-red">delete</mat-icon>
-          <span>Delete</span>
+      <!-- Menu -->
+      <mat-menu #menu="matMenu" class="trip-menu">
+        <button mat-menu-item (click)="nextStopTrip()">
+          <mat-icon class="menu-blue">pin_drop</mat-icon>
+          <span>Next Stop</span>
         </button>
-      }
-      @else {
+        <button mat-menu-item (click)="splitTrip()">
+          <mat-icon class="menu-orange">call_split</mat-icon>
+          <span>Split</span>
+        </button>
+        <button mat-menu-item (click)="cloneUnsavedTrip()">
+          <mat-icon class="menu-green">content_copy</mat-icon>
+          <span>Clone</span>
+        </button>
+        @if (trip.action != actionEnum.Delete) {
+          <button mat-menu-item (click)="confirmDeleteTripDialog()" title="Delete Trip">
+            <mat-icon class="menu-red">delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        }
+        @else {
         <button mat-menu-item (click)="restoreTrip()">
           <mat-icon class="menu-purple">restore</mat-icon>
           <span>Restore</span>
@@ -348,4 +412,5 @@
       }
     </mat-menu>
   </div>
+}
 </div>

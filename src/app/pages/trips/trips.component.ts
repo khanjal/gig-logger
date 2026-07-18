@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild, signal, computed } from '@angular/core';
-import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, ViewChild, signal, computed, inject } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 
 // Angular Material + Router
 import { ActivatedRoute, Router } from '@angular/router';
@@ -54,10 +54,24 @@ import type { ITrip } from '@interfaces/trip.interface';
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule, BaseRectButtonComponent]
+    imports: [CurrentAverageComponent, TripFormComponent, MatIcon, MatSlideToggle, TripsQuickViewComponent, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule, BaseRectButtonComponent]
 })
 
 export class TripComponent implements OnInit, OnDestroy {
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  private _sheetService = inject(SpreadsheetService);
+  private _tripService = inject(TripService);
+  private _shiftService = inject(ShiftService);
+  private unsavedDataService = inject(UnsavedDataService);
+  private _viewportScroller = inject(ViewportScroller);
+  private _pollingService = inject(PollingService);
+  private _uiPreferences = inject(UiPreferencesService);
+  private logger = inject(LoggerService);
+  private _route = inject(ActivatedRoute);
+  private _router = inject(Router);
+  protected authService = inject(AuthGoogleService);
+
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
@@ -88,21 +102,6 @@ export class TripComponent implements OnInit, OnDestroy {
   trackByTrip(index: number, trip: any): any {
     return trip?.rowId ?? trip?.key ?? index;
   }
-  constructor(
-      public dialog: MatDialog,
-      private _snackBar: MatSnackBar,
-      private _sheetService: SpreadsheetService,
-      private _tripService: TripService,
-      private _shiftService: ShiftService,
-      private unsavedDataService: UnsavedDataService,
-      private _viewportScroller: ViewportScroller,
-      private _pollingService: PollingService,
-      private _uiPreferences: UiPreferencesService,
-      private logger: LoggerService,
-      private _route: ActivatedRoute,
-      private _router: Router,
-      protected authService: AuthGoogleService
-    ) { }
   ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();

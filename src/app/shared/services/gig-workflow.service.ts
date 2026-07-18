@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ApiService } from "./api.service";
 import { DataLoaderService } from "./data/data-loader.service";
 import { DataLinkingService } from "./data/data-linking.service";
@@ -12,13 +12,11 @@ import type { IShift } from "@interfaces/shift.interface";
     providedIn: 'root'
 })
 export class GigWorkflowService {
+    private _apiService = inject(ApiService);
+    private _dataLoader = inject(DataLoaderService);
+    private _dataLinking = inject(DataLinkingService);
+    private _calculator = inject(GigCalculatorService);
 
-    constructor(
-        private _apiService: ApiService,
-        private _dataLoader: DataLoaderService,
-        private _dataLinking: DataLinkingService,
-        private _calculator: GigCalculatorService
-    ) {}
 
     // Auth Methods - Delegate to API Service
     public async setRefreshToken(authToken: string) {

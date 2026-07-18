@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,7 @@ import { BaseFabButtonComponent } from '@components/base';
 @Component({
   selector: 'app-diagnostic-group',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatRadioModule, MatButtonModule, MatIconModule, MatTooltipModule, BaseFabButtonComponent],
+  imports: [FormsModule, MatRadioModule, MatButtonModule, MatIconModule, MatTooltipModule, BaseFabButtonComponent],
   templateUrl: './diagnostic-group.component.html',
   styleUrl: './diagnostic-group.component.scss'
 })

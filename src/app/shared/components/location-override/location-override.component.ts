@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ElementRef, OnInit, ViewChild, signal, inject } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint } from '@angular/material/form-field';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -17,7 +17,6 @@ import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRect
   selector: 'app-location-override',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     BaseCardComponent,
     BaseFabButtonComponent,
@@ -31,11 +30,14 @@ import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRect
     MatHint,
     MatOption,
     MatOptgroup
-  ],
+],
   templateUrl: './location-override.component.html',
   styleUrl: './location-override.component.scss'
 })
 export class LocationOverrideComponent implements OnInit {
+  mockLocationService = inject(MockLocationService);
+  private snackBar = inject(MatSnackBar);
+
   @ViewChild('mockLocationCard') mockLocationCard?: ElementRef<HTMLElement>;
   enabled = signal(false);
   latitude = signal(40.7128);
@@ -45,11 +47,6 @@ export class LocationOverrideComponent implements OnInit {
   selectedPreset = signal<IPresetLocation | null>(null);
   currentRealLocation = signal<{ lat: number; lng: number } | null>(null);
   gettingLocation = signal(false);
-
-  constructor(
-    public mockLocationService: MockLocationService,
-    private snackBar: MatSnackBar
-  ) {}
 
   ngOnInit(): void {
     this.loadSettings();

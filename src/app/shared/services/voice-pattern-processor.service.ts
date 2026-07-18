@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { NumberHelper } from '@helpers/number.helper';
 import { AddressHelper } from '@helpers/address.helper';
@@ -25,8 +25,8 @@ interface PatternMatch {
   providedIn: 'root'
 })
 export class VoicePatternProcessorService {
+  private dropdownDataService = inject(DropdownDataService);
 
-  constructor(private dropdownDataService: DropdownDataService) {}
 
   /**
    * Parse a voice transcript and extract structured data

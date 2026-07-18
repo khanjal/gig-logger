@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import type { IShift } from "@interfaces/shift.interface";
 import type { ITrip } from "@interfaces/trip.interface";
 import type { IWeekday } from "@interfaces/weekday.interface";
@@ -14,13 +14,11 @@ import { LoggerService } from "../logger.service";
     providedIn: 'root'
 })
 export class GigCalculatorService {
+    private _shiftService = inject(ShiftService);
+    private _tripService = inject(TripService);
+    private _weekdayService = inject(WeekdayService);
+    private _logger = inject(LoggerService);
 
-    constructor(
-        private _shiftService: ShiftService,
-        private _tripService: TripService,
-        private _weekdayService: WeekdayService,
-        private _logger: LoggerService
-    ) {}
 
     // ============================================================================
     // TRIP CALCULATIONS

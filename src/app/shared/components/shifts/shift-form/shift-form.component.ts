@@ -41,6 +41,10 @@ interface ITripTotalsViewModel {
   ]
 })
 export class ShiftFormComponent implements OnInit, OnChanges {
+  private shiftService = inject(ShiftService);
+  private tripService = inject(TripService);
+  private logger = inject(LoggerService);
+
   @Input() rowId?: string | null;
   @Output() parentReload = new EventEmitter<any>();
   @Output() editModeExit = new EventEmitter<string>();
@@ -75,12 +79,6 @@ export class ShiftFormComponent implements OnInit, OnChanges {
   maxRowId = 1;
   private hasNewShiftSubscriptions = false;
   private injector = inject(Injector);
-
-  constructor(
-    private shiftService: ShiftService,
-    private tripService: TripService,
-    private logger: LoggerService
-  ) {}
 
   ngOnInit(): void {
     this.scheduleInitialization();

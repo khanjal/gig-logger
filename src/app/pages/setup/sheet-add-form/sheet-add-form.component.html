@@ -1,25 +1,29 @@
 <form class="sheet-form" [formGroup]="sheetForm">
-    <app-base-input 
-      class="field-full-width"
-      label="Sheet ID"
-      type="text"
-      placeholder="https://docs.google.com/spreadsheets/d/{id}/ - Link or ID"
-      formControlName="sheetId"
-      [required]="true"
-      hint="Paste Google Sheets link or ID">
-    </app-base-input>
-    <app-base-input 
+  <app-base-input
+    class="field-full-width"
+    label="Sheet ID"
+    type="text"
+    placeholder="https://docs.google.com/spreadsheets/d/{id}/ - Link or ID"
+    formControlName="sheetId"
+    [required]="true"
+    hint="Paste Google Sheets link or ID">
+  </app-base-input>
+  @if (false) {
+    <app-base-input
       class="field-half-width"
       label="Sheet Name"
       type="text"
       placeholder="Enter Name or Leave Empty"
       formControlName="sheetName"
-      *ngIf="false">
+      >
     </app-base-input>
+  }
 </form>
 
 <div class="row-flex">
   <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetForm.valid || saving()" [loading]="saving()" (clicked)="addSheet()" [label]="'Add'"></app-base-rect-button>
-  <app-base-rect-button variant="secondary" [icon]="'adjust'" [disabled]="saving()" [loading]="saving()" (clicked)="addDemo()" *ngIf="false" [label]="'Demo'"></app-base-rect-button>
-    <app-base-rect-button variant="danger" [icon]="'refresh'" (clicked)="sheetForm.reset()" [label]="'Reset'"></app-base-rect-button>
+  @if (false) {
+    <app-base-rect-button variant="secondary" [icon]="'adjust'" [disabled]="saving()" [loading]="saving()" (clicked)="addDemo()" [label]="'Demo'"></app-base-rect-button>
+  }
+  <app-base-rect-button variant="danger" [icon]="'refresh'" (clicked)="sheetForm.reset()" [label]="'Reset'"></app-base-rect-button>
 </div>

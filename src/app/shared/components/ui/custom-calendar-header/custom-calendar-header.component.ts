@@ -2,13 +2,7 @@
 // https://dev.to/paullaros/using-angular-materials-calendar-with-date-ranges-and-range-presets-221j
 // https://qupaya.com/blog/angular-date-range-picker-with-custom-range-presets/
 
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  OnDestroy,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject } from '@angular/core';
 import {
   DateAdapter,
   MatDateFormats,
@@ -29,14 +23,16 @@ import { MatIcon } from '@angular/material/icon';
     imports: [CustomRangePanelComponent, MatIcon]
 })
 export class CustomCalendarHeaderComponent<D> implements OnDestroy {
+  private calendar = inject<MatCalendar<D>>(MatCalendar);
+  private dateAdapter = inject<DateAdapter<D>>(DateAdapter);
+  private dateFormats = inject<MatDateFormats>(MAT_DATE_FORMATS);
+
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private calendar: MatCalendar<D>, // calendar instance of picker
-    private dateAdapter: DateAdapter<D>, // native or moment date adapter
-    @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats, // for formatting
-    cdr: ChangeDetectorRef
-  ) {
+  constructor() {
+    const calendar = this.calendar;
+    const cdr = inject(ChangeDetectorRef);
+
     // make sure your header stays in sync with the calendar:
     calendar.stateChanges
       .pipe(takeUntil(this.destroy$)) // unsubscribe when destroyed

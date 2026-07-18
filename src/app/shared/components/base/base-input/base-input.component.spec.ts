@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -16,9 +16,10 @@ import { BaseInputComponent } from './base-input.component';
   `
 })
 class HostComponent {
+  private fb = inject(FormBuilder);
+
   form = this.fb.group({ name: ['', Validators.required] });
   submitted = false;
-  constructor(private fb: FormBuilder) {}
   onSubmit() { this.submitted = true; }
 }
 
@@ -32,8 +33,9 @@ class HostComponent {
   `
 })
 class NumberHostComponent {
+  private fb = inject(FormBuilder);
+
   form = this.fb.group({ amount: [null as number | string | null] });
-  constructor(private fb: FormBuilder) {}
 }
 
 describe('BaseInputComponent (integration)', () => {

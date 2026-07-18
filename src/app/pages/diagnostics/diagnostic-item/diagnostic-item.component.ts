@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -10,7 +10,7 @@ import { BaseFabButtonComponent } from '@components/base';
 @Component({
   selector: 'app-diagnostic-item',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule, DurationFormatPipe, BaseFabButtonComponent],
+  imports: [FormsModule, MatIconModule, MatTooltipModule, DurationFormatPipe, BaseFabButtonComponent],
   templateUrl: './diagnostic-item.component.html',
   styleUrl: './diagnostic-item.component.scss'
 })

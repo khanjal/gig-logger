@@ -1,6 +1,6 @@
 // Angular core imports
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal, OnInit, OnChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal, OnInit, OnChanges, inject } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material imports
@@ -71,6 +71,19 @@ import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType }
 })
 
 export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
+  dialog = inject(MatDialog);
+  private _addressService = inject(AddressService);
+  private _nameService = inject(NameService);
+  private _placeService = inject(PlaceService);
+  private _regionService = inject(RegionService);
+  private _serviceService = inject(ServiceService);
+  private _typeService = inject(TypeService);
+  private _serverGooglePlacesService = inject(ServerGooglePlacesService);
+  private logger = inject(LoggerService);
+  private _dropdownDataService = inject(DropdownDataService);
+  private _permissionService = inject(PermissionService);
+  private _mockLocationService = inject(MockLocationService);
+
   @Input() enableBottomPadding = false;
   // #region ViewChild, Inputs, Outputs, Form
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
@@ -131,23 +144,6 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
   setDisabledState?(isDisabled: boolean): void {}
-  // #endregion
-
-  // #region Lifecycle
-  constructor(
-    public dialog: MatDialog,
-    private _addressService: AddressService,
-    private _nameService: NameService,
-    private _placeService: PlaceService,
-    private _regionService: RegionService,
-    private _serviceService: ServiceService,
-    private _typeService: TypeService,
-    private _serverGooglePlacesService: ServerGooglePlacesService,
-    private logger: LoggerService,
-    private _dropdownDataService: DropdownDataService,
-    private _permissionService: PermissionService,
-    private _mockLocationService: MockLocationService
-  ) { }
 
   async ngOnInit(): Promise<void> {
     this.validateSearchType();

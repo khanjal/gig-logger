@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewInit, OnChanges, OnDestroy, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { ButtonVariant, ButtonSize, FabStyle } from '@interfaces/button.interface';
@@ -47,6 +47,9 @@ export type { ButtonVariant, ButtonSize, FabStyle };
  * Emits `clicked` when activated (unless `disabled` or `loading`).
  */
 export class BaseButtonComponent implements AfterViewInit, OnChanges, OnDestroy {
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
+
   /** Button variant style */
   @Input() variant: ButtonVariant = 'primary';
 
@@ -100,7 +103,7 @@ export class BaseButtonComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   private resizeHandler = () => this.updateIconOnlyClass();
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {
+  constructor() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.resizeHandler);
     }

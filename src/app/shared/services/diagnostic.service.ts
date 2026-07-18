@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
@@ -6,7 +6,8 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
   providedIn: 'root'
 })
 export class DiagnosticService {
-  constructor(private logger: LoggerService) {}
+  private logger = inject(LoggerService);
+
 
   public runStartupDiagnostics(): void {
     this.logger.info('Running startup diagnostics...');

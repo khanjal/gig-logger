@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
@@ -22,12 +22,16 @@ const DARK_THEME_COLOR = '#0b1221';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
+  private logger = inject(LoggerService);
+
   private readonly preference$ = new BehaviorSubject<ThemePreference>('system');
   private readonly resolved$ = new BehaviorSubject<ResolvedTheme>('light');
   private mediaQuery: MediaQueryList | null = null;
   private readonly documentRef: Document;
 
-  constructor(@Inject(DOCUMENT) documentRef: Document, private logger: LoggerService) {
+  constructor() {
+    const documentRef = inject<Document>(DOCUMENT);
+
     this.documentRef = documentRef;
     const initialPreference = this.getStoredPreference() ?? 'system';
     this.applyTheme(initialPreference, false);

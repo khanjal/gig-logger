@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { firstValueFrom } from "rxjs";
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
@@ -15,6 +15,10 @@ import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
     providedIn: 'root'
 })
 export class ApiService {
+    private _http = inject(HttpClient);
+    private _secureCookieStorage = inject(SecureCookieStorageService);
+    private logger = inject(LoggerService);
+
     private apiUrl = environment.gigLoggerApi;
 
     // API Endpoints Constants
@@ -34,13 +38,7 @@ export class ApiService {
         SHEETS_HEALTH: '/sheets/health',
         SHEETS_DEMO_DATA: '/sheets/demo',
         SHEETS_CHECK: '/sheets/check',
-    } as const;
-
-    constructor(
-        private _http: HttpClient,
-        private _secureCookieStorage: SecureCookieStorageService,
-        private logger: LoggerService
-    ) {}    // Centralized error handler
+    } as const;    // Centralized error handler
     private handleError(operation: string, error: any): void {
         this.logger.error(`${operation} failed`, {
             message: error.message || 'Unknown error',

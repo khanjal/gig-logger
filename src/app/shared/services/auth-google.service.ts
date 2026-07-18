@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { authConfig } from './auth.config';
@@ -14,17 +14,17 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
   providedIn: 'root',
 })
 export class AuthGoogleService {
+  private oAuthService = inject(OAuthService);
+  private logger = inject(LoggerService);
+  private secureCookieStorage = inject(SecureCookieStorageService);
+  private gigWorkflowService = inject(GigWorkflowService);
+  private http = inject(HttpClient);
+
   public profile$ = new BehaviorSubject<UserProfile | null>(null);
   private isInitialized = false;
   private readonly IS_AUTHENTICATED_KEY = SESSION_CONSTANTS.IS_AUTHENTICATED;
 
-  constructor(
-    private oAuthService: OAuthService,
-    private logger: LoggerService,
-    private secureCookieStorage: SecureCookieStorageService,
-    private gigWorkflowService: GigWorkflowService,
-    private http: HttpClient
-  ) {    
+  constructor() {    
     this.oAuthService.setStorage(this.secureCookieStorage);
     this.initConfiguration().catch(error => {
       this.logger.error('Failed to initialize auth configuration', error);

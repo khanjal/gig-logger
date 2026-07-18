@@ -7,22 +7,28 @@
       'text-error': serviceWorkerStatus() !== 'Active' && !serviceWorkerStatus().includes('Update')
     }"
     class="font-semibold text-primary"
-  >
+    >
     {{ serviceWorkerStatus() }}
   </strong>
 </div>
 <div class="flex flex-row items-center gap-4">
   <div class="flex-1">
-    <app-base-rect-button *ngIf="showInstallButton()" variant="secondary" [icon]="'get_app'" [fullWidth]="true" (clicked)="installApp()">
-      Install App
-    </app-base-rect-button>
+    @if (showInstallButton()) {
+      <app-base-rect-button variant="secondary" [icon]="'get_app'" [fullWidth]="true" (clicked)="installApp()">
+        Install App
+      </app-base-rect-button>
+    }
   </div>
   <div class="flex-1 flex justify-end gap-2">
-    <app-base-rect-button *ngIf="isUpdateAvailable()" variant="primary" [icon]="'update'" (clicked)="updateApp()">
-      Update App
-    </app-base-rect-button>
-    <app-base-rect-button *ngIf="!isUpdateAvailable()" variant="primary" [icon]="'refresh'" [disabled]="!isOnline()" [title]="!isOnline() ? 'Cache reset requires internet connectivity' : 'Reset cached data'" (clicked)="forceCacheUpdate()">
-      Reset Cache
-    </app-base-rect-button>
+    @if (isUpdateAvailable()) {
+      <app-base-rect-button variant="primary" [icon]="'update'" (clicked)="updateApp()">
+        Update App
+      </app-base-rect-button>
+    }
+    @if (!isUpdateAvailable()) {
+      <app-base-rect-button variant="primary" [icon]="'refresh'" [disabled]="!isOnline()" [title]="!isOnline() ? 'Cache reset requires internet connectivity' : 'Reset cached data'" (clicked)="forceCacheUpdate()">
+        Reset Cache
+      </app-base-rect-button>
+    }
   </div>
 </div>

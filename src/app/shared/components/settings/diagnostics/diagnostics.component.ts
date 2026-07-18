@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,20 +29,20 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, BaseRectButtonComponent],
+  imports: [MatCardModule, MatListModule, MatIconModule, BaseRectButtonComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
 export class DiagnosticsComponent implements OnInit {
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+  private _addressService = inject(AddressService);
+  private _placeService = inject(PlaceService);
+  private _nameService = inject(NameService);
+  private _logger = inject(LoggerService);
+
   dataDiagnostics: DiagnosticItem[] = [];
-  isLoading = false; constructor(
-    private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _addressService: AddressService,
-    private _placeService: PlaceService,
-    private _nameService: NameService,
-    private _logger: LoggerService
-  ) { }
+  isLoading = false;
   ngOnInit() {
     // Diagnostics will only run when the user clicks the "Run Diagnostics" button
   }

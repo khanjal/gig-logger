@@ -1,5 +1,5 @@
 // Angular imports
-import { Component, ElementRef, Inject, Input, ViewChild, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
@@ -19,7 +19,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { LoggerService } from '@services/logger.service';
-import { NgFor, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import type { ISheet } from '@interfaces/sheet.interface';
@@ -56,9 +56,17 @@ interface DataSyncConfig {
     templateUrl: './data-sync-modal.component.html',
     styleUrls: ['./data-sync-modal.component.scss'],
     standalone: true,
-    imports: [NgFor, NgClass, BaseRectButtonComponent]
+    imports: [NgClass, BaseRectButtonComponent]
 })
 export class DataSyncModalComponent implements OnInit, OnDestroy {
+    config = inject<DataSyncConfig | SyncType>(MAT_DIALOG_DATA);
+    dialogRef = inject<MatDialogRef<DataSyncModalComponent>>(MatDialogRef);
+    private _gigLoggerService = inject(GigWorkflowService);
+    private _sheetService = inject(SpreadsheetService);
+    private _unsavedDataService = inject(UnsavedDataService);
+    private _timerService = inject(TimerService);
+    private _logger = inject(LoggerService);
+
     @ViewChild('terminal', { static: false }) terminalElement!: ElementRef;
     
     // Configuration inputs
@@ -95,15 +103,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         return 'created and loaded';
     }
     
-    constructor(
-        @Inject(MAT_DIALOG_DATA) public config: DataSyncConfig | SyncType,
-        public dialogRef: MatDialogRef<DataSyncModalComponent>,
-        private _gigLoggerService: GigWorkflowService,
-        private _sheetService: SpreadsheetService,
-        private _unsavedDataService: UnsavedDataService,
-        private _timerService: TimerService,
-        private _logger: LoggerService
-    ) { 
+    constructor() {
+        const config = this.config;
+ 
         // Support both old string format and new config object format
         if (typeof config === 'string') {
             this.type = config;

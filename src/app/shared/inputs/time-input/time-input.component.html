@@ -1,39 +1,41 @@
-<mat-form-field 
-    [ngClass]="['rg-field-shell', fieldClass]" 
-    appearance="fill">
-    <mat-label>{{ label }}</mat-label>
-    <input 
-        matInput 
-        [ngxMatTimepicker]="timePicker" 
-        [value]="value"
-        [placeholder]="placeholder"
-        readonly>
+<mat-form-field
+  [ngClass]="['rg-field-shell', fieldClass]"
+  appearance="fill">
+  <mat-label>{{ label }}</mat-label>
+  <input
+    matInput
+    [ngxMatTimepicker]="timePicker"
+    [value]="value"
+    [placeholder]="placeholder"
+    readonly>
     <ngx-mat-timepicker #timePicker (timeSet)="onTimeChange($event)"></ngx-mat-timepicker>
-    
+
     <div matSuffix class="time-actions">
-        <app-base-field-button 
-            *ngIf="!value"
-            [fab]="true" 
-            fabStyle="mini"
-            type="button"
-            [icon]="'schedule'"
-            [iconColor]="'var(--primary-500)'"
-            (clicked)="setCurrentTime()"
-            [disabled]="disabled"
-            matTooltip="Set current time"
-            class="current-time-btn">
+      @if (!value) {
+        <app-base-field-button
+          [fab]="true"
+          fabStyle="mini"
+          type="button"
+          [icon]="'schedule'"
+          [iconColor]="'var(--primary-500)'"
+          (clicked)="setCurrentTime()"
+          [disabled]="disabled"
+          matTooltip="Set current time"
+          class="current-time-btn">
         </app-base-field-button>
-        <app-base-field-button 
-            *ngIf="value"
-            [fab]="true" 
-            fabStyle="mini"
-            type="button"
-            [icon]="'clear'"
-            [iconColor]="'var(--error-500)'"
-            (clicked)="clearTime()"
-            [disabled]="disabled"
-            matTooltip="Clear time"
-            class="clear-time-btn">
+      }
+      @if (value) {
+        <app-base-field-button
+          [fab]="true"
+          fabStyle="mini"
+          type="button"
+          [icon]="'clear'"
+          [iconColor]="'var(--error-500)'"
+          (clicked)="clearTime()"
+          [disabled]="disabled"
+          matTooltip="Clear time"
+          class="clear-time-btn">
         </app-base-field-button>
+      }
     </div>
-</mat-form-field>
+  </mat-form-field>

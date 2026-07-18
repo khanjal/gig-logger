@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+
+import { Component, EventEmitter, Output, signal, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -16,26 +16,23 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-sheet-demo',
   standalone: true,
   imports: [
-    CommonModule,
     MatIconModule,
-    MatProgressSpinnerModule, 
+    MatProgressSpinnerModule,
     BaseRectButtonComponent
-  ],
+],
   templateUrl: './sheet-demo.component.html',
   styleUrl: './sheet-demo.component.scss'
 })
 
 export class SheetDemoComponent {
+  private _dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  private _logger = inject(LoggerService);
+  protected authService = inject(AuthGoogleService);
+
   @Output() parentReload = new EventEmitter<any>();
 
   creatingDemo = signal(false);
-
-  constructor(
-    private _dialog: MatDialog,
-    private _snackBar: MatSnackBar,
-    private _logger: LoggerService,
-    protected authService: AuthGoogleService
-  ) { }
 
   async createDemoSheet() {
     const canSync = await this.authService.canSync();

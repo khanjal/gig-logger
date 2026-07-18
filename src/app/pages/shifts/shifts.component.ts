@@ -14,7 +14,7 @@ import type { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -31,9 +31,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent, BaseFabButtonComponent, BaseRectButtonComponent]
+    imports: [NgClass, ShiftsQuickViewComponent, ShiftFormComponent, BaseFabButtonComponent, BaseRectButtonComponent]
 })
 export class ShiftsComponent implements OnInit {
+  dialog = inject(MatDialog);
+  private _shiftService = inject(ShiftService);
+  private _sheetService = inject(SpreadsheetService);
+  private unsavedDataService = inject(UnsavedDataService);
+  private _snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  protected authService = inject(AuthGoogleService);
+
   private static readonly SCROLL_THRESHOLD_PX = 200;
   protected readonly uiMessages = UI_MESSAGES;
   private readonly destroyRef = inject(DestroyRef);
@@ -52,18 +61,7 @@ export class ShiftsComponent implements OnInit {
   defaultSheet = signal<ISpreadsheet | undefined>(undefined);
   demoSheetAttached = signal(false);
 
-  editId = signal<string | null>(null); // ID of the shift being edited, if any
-
-  constructor(
-    public dialog: MatDialog, 
-    private _shiftService: ShiftService,
-    private _sheetService: SpreadsheetService,
-    private unsavedDataService: UnsavedDataService,
-    private _snackBar: MatSnackBar,
-    private router: Router, 
-    private route: ActivatedRoute,
-    protected authService: AuthGoogleService
-  ) { }
+  editId = signal<string | null>(null);
 
   trackByShift(index: number, shift: IShift): any {
     return shift?.rowId ?? shift?.key ?? index;

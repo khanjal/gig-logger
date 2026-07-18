@@ -8,19 +8,17 @@ import { openSnackbar } from '@utils/snackbar.util';
 import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
 import type { ISheet } from '@interfaces/sheet.interface';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpreadsheetService {
-    spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
+    private _snackBar = inject(MatSnackBar);
+    private _gigLoggerService = inject(GigWorkflowService);
+    private _logger = inject(LoggerService);
 
-    constructor(
-        private _snackBar: MatSnackBar,
-        private _gigLoggerService: GigWorkflowService,
-        private _logger: LoggerService
-    ) { }
+    spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
     
     public async add(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.add(spreadsheet);

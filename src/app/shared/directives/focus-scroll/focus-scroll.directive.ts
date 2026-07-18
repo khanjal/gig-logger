@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ViewportService } from '@services/viewport.service';
 
@@ -7,6 +7,10 @@ import { ViewportService } from '@services/viewport.service';
   standalone: true
 })
 export class FocusScrollDirective implements OnDestroy {
+  private el = inject(ElementRef);
+  private ngZone = inject(NgZone);
+  private viewport = inject(ViewportService);
+
   @Input() enableBottomPadding = false;
   @Input() delayDropdownOnMobile = true;
   @Input() suppressDropdownAfterSelection = false;
@@ -27,8 +31,6 @@ export class FocusScrollDirective implements OnDestroy {
   private previousBodyPadding: string | null = null;
   private baselineBodyPadding = 0;
   private paddingApplied = 0;
-
-  constructor(private el: ElementRef, private ngZone: NgZone, private viewport: ViewportService) {}
 
   @HostListener('focus')
   onFocus() {

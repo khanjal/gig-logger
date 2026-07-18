@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { PlaceService } from '@services/sheets/place.service';
@@ -18,6 +18,14 @@ import type { DropdownType, IDropdownData } from '@interfaces/dropdown-data.inte
   providedIn: 'root'
 })
 export class DropdownDataService {
+  private _serviceService = inject(ServiceService);
+  private _typeService = inject(TypeService);
+  private _placeService = inject(PlaceService);
+  private _addressService = inject(AddressService);
+  private _regionService = inject(RegionService);
+  private _nameService = inject(NameService);
+  private logger = inject(LoggerService);
+
   private cachedData: IDropdownData | null = null;
   
   // Canonical lists from static JSON files (fallback for proper casing)
@@ -26,15 +34,7 @@ export class DropdownDataService {
   private canonicalPlaces: string[] = [];
   private canonicalLoaded = false;
 
-  constructor(
-    private _serviceService: ServiceService,
-    private _typeService: TypeService,
-    private _placeService: PlaceService,
-    private _addressService: AddressService,
-    private _regionService: RegionService,
-    private _nameService: NameService,
-    private logger: LoggerService
-  ) {
+  constructor() {
     this.loadCanonicalLists();
   }
 
