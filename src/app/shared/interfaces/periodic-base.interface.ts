@@ -1,4 +1,4 @@
-import type { IAmountPer } from "./amount-per.interface"
+import type { IAmountPer } from "@interfaces/amount-per.interface"
 
 export interface IPeriodicBase extends IAmountPer {
     trips: number

@@ -1,5 +1,5 @@
-import { IActionRecord } from "./action-record.interface";
-import { IAmount } from "./amount.interface";
+import { IActionRecord } from "@interfaces/action-record.interface";
+import { IAmount } from "@interfaces/amount.interface";
 
 export interface ITrip extends IAmount, IActionRecord {
     id?: number;

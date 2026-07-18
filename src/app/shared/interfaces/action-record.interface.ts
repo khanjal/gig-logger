@@ -1,4 +1,4 @@
-import type { IRowState } from './row-state.interface';
+import type { IRowState } from '@interfaces/row-state.interface';
 
 export interface IActionRecord extends IRowState {
   action: string;

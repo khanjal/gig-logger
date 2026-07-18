@@ -1,5 +1,5 @@
-import { IAmount } from "./amount.interface";
-import { IRowState } from "./row-state.interface";
+import { IAmount } from "@interfaces/amount.interface";
+import { IRowState } from "@interfaces/row-state.interface";
 
 export interface IType extends IAmount, IRowState {
     id?: number;

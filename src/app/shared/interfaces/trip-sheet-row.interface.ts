@@ -1,4 +1,4 @@
-import { ITrip } from './trip.interface';
+import { ITrip } from '@interfaces/trip.interface';
 
 /**
  * Wire-format for a trip row when saving to Google Sheets.

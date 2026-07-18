@@ -1,5 +1,5 @@
-import { IActionRecord } from "./action-record.interface";
-import { IAmountPer } from "./amount-per.interface";
+import { IActionRecord } from "@interfaces/action-record.interface";
+import { IAmountPer } from "@interfaces/amount-per.interface";
 
 export interface IShift extends IAmountPer, IActionRecord {
     id?: number;

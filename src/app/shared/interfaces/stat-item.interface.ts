@@ -1,4 +1,4 @@
-import { IAmountPer } from "./amount-per.interface";
+import { IAmountPer } from "@interfaces/amount-per.interface";
 
 export interface IStatItem extends IAmountPer {
     name: string;

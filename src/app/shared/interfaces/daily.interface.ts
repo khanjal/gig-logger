@@ -1,4 +1,4 @@
-import type { IPeriodicBase } from "./periodic-base.interface";
+import type { IPeriodicBase } from "@interfaces/periodic-base.interface";
 
 export interface IDaily extends IPeriodicBase {
     rowId: number;

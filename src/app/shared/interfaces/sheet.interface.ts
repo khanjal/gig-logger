@@ -1,20 +1,20 @@
-import { IAddress } from "./address.interface";
-import { IDaily } from "./daily.interface";
-import { IExpense } from "./expense.interface";
-import { IMessage } from "./message.interface";
-import { IMonthly } from "./monthly.interface";
-import { IName } from "./name.interface";
-import { IPlace } from "./place.interface";
-import { IRegion } from "./region.interface";
-import { IService } from "./service.interface";
-import { ISetup } from "./setup.interface";
-import { ISheetProperties } from "./sheet-properties.interface";
-import { IShift } from "./shift.interface";
-import { ITrip } from "./trip.interface";
-import { IType } from "./type.interface";
-import { IWeekday } from "./weekday.interface";
-import { IWeekly } from "./weekly.interface";
-import { IYearly } from "./yearly.interface";
+import { IAddress } from "@interfaces/address.interface";
+import { IDaily } from "@interfaces/daily.interface";
+import { IExpense } from "@interfaces/expense.interface";
+import { IMessage } from "@interfaces/message.interface";
+import { IMonthly } from "@interfaces/monthly.interface";
+import { IName } from "@interfaces/name.interface";
+import { IPlace } from "@interfaces/place.interface";
+import { IRegion } from "@interfaces/region.interface";
+import { IService } from "@interfaces/service.interface";
+import { ISetup } from "@interfaces/setup.interface";
+import { ISheetProperties } from "@interfaces/sheet-properties.interface";
+import { IShift } from "@interfaces/shift.interface";
+import { ITrip } from "@interfaces/trip.interface";
+import { IType } from "@interfaces/type.interface";
+import { IWeekday } from "@interfaces/weekday.interface";
+import { IWeekly } from "@interfaces/weekly.interface";
+import { IYearly } from "@interfaces/yearly.interface";
 
 export interface ISheet {
     properties: ISheetProperties;

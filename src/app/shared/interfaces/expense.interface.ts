@@ -1,4 +1,4 @@
-import { IActionRecord } from './action-record.interface';
+import { IActionRecord } from '@interfaces/action-record.interface';
 
 export interface IExpense extends IActionRecord {
   id?: number; // Auto-incremented by Dexie

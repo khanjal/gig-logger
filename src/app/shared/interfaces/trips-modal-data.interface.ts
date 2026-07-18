@@ -1,4 +1,4 @@
-import { ITrip } from './trip.interface';
+import { ITrip } from '@interfaces/trip.interface';
 
 /**
  * Trips modal data interface for passing trip data to the modal.

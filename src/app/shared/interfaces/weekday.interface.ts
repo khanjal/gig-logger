@@ -1,4 +1,4 @@
-import { IPeriodicBase } from "./periodic-base.interface";
+import { IPeriodicBase } from "@interfaces/periodic-base.interface";
 
 export interface IWeekday extends IPeriodicBase {
     id: number;
