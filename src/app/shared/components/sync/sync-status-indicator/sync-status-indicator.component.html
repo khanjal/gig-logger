@@ -54,7 +54,8 @@
         <app-quick-controls
           [hasUnsavedChanges]="hasUnsavedChanges()"
           [status]="syncState()?.status || 'idle'"
-          [autoSaveEnabled]="autoSaveEnabled()"
+            [autoSaveEnabled]="autoSaveEnabled()"
+            [syncAvailable]="isSignedIn()"
           [themePreference]="themePreference()"
           (save)="forceSync()"
           (refresh)="updateFromSpreadsheet()"

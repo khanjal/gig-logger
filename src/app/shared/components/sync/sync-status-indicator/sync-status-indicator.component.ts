@@ -50,6 +50,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   unsavedCounts = signal<{ trips: number; shifts: number; expenses: number; total: number }>({ trips: 0, shifts: 0, expenses: 0, total: 0 });
   menuOpen = signal(false);
   autoSaveEnabled = signal(false);
+  isSignedIn = signal<boolean>(false);
   themePreference = signal<ThemePreference>('system');
   overlayPositions: ConnectedPosition[] = [
     { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetX: 0, offsetY: 6 },
@@ -97,6 +98,24 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         this.autoSaveEnabled.set(enabled);
       });
 
+    // Track auth state (immediate sync-capable check + profile updates)
+    try {
+      this.isSignedIn.set(this.authService.isAuthenticatedSync());
+    } catch (err) {
+      this.isSignedIn.set(false);
+    }
+
+    this.authService.profile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(profile => {
+        this.isSignedIn.set(!!profile);
+      });
+
+    // Perform an async authenticated check to pick up refreshed tokens
+    this.authService.isAuthenticated()
+      .then(auth => this.isSignedIn.set(!!auth))
+      .catch(() => this.isSignedIn.set(false));
+
     // Update time display and check for unsaved changes every 5 seconds for better responsiveness
     this.intervalId = window.setInterval(() => {
       this.updateTimeSinceLastSync();
@@ -108,6 +127,18 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   async toggleAutoSave(enabled: boolean): Promise<void> {
+    // Prevent enabling auto-save when user isn't signed in/can't sync
+    if (enabled) {
+      const canSync = await this.authService.canSync();
+      if (!canSync) {
+        openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+        // Ensure UI reflects disabled state
+        this.autoSaveEnabled.set(false);
+        await this.uiPreferences.setPolling(false);
+        return;
+      }
+    }
+
     this.autoSaveEnabled.set(enabled);
     await this.uiPreferences.setPolling(enabled);
   }
@@ -201,8 +232,11 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   getStatusIcon(): string {
+    // If signed out, show sync as off
+    if (!this.isSignedIn()) return 'cloud_off';
+
     if (!this.syncState()) return 'cloud_off';
-    
+
     // Check if auto-sync is disabled
     if (!this.autoSaveEnabled() && this.syncState()!.status === 'idle') {
       return 'sync_disabled';
@@ -222,17 +256,23 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   getStatusClass(): string {
+    // Signed-out state should appear disabled
+    if (!this.isSignedIn()) return 'status-disabled';
+
     if (!this.syncState()) return 'status-idle';
-    
+
     // Check if auto-sync is disabled
     if (!this.autoSaveEnabled() && this.syncState()!.status === 'idle') {
       return 'status-disabled';
     }
-    
+
     return `status-${this.syncState()!.status}`;
   }
 
   getTooltipText(): string {
+    // When not signed in, guide user to sign in for sync
+    if (!this.isSignedIn()) return 'Sign in to enable sync';
+
     if (!this.syncState()) return 'Sync status unknown';
 
     // Check if auto-sync is disabled
@@ -254,13 +294,15 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
   
   getStatusText(): string {
+    if (!this.isSignedIn()) return 'Signed out';
+
     if (!this.syncState()) return 'Unknown';
-    
+
     // Check if auto-sync is disabled
     if (!this.autoSaveEnabled() && this.syncState()!.status === 'idle') {
       return 'Disabled';
     }
-    
+
     return this.syncState()!.message || 'Ready';
   }
 
@@ -278,6 +320,10 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   getNextCheckText(): string {
+    if (!this.isSignedIn()) {
+      return 'Sign in to sync';
+    }
+
     if (!this.autoSaveEnabled()) {
       return '-';
     }
