@@ -418,30 +418,30 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
 
   private async getFilteredResults(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
-      case 'Address':
+      case 'Address': {
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
-        // For Address, do not auto-trigger Google predictions
         if (addressResults.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
           this.showGoogleMapsIcon.set(true);
         } else {
           this.showGoogleMapsIcon.set(false);
         }
         return addressResults;
-      case 'Name':
+      }
+      case 'Name': {
         const names = await this._filterName(value);
-        const nameItems = this.mapNamesToSearchItems(names);
-        return nameItems;
-      case 'Place':
+        return this.mapNamesToSearchItems(names);
+      }
+      case 'Place': {
         const places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
         placeItems = await this.appendDropdownMatches(placeItems, 'Place', value);
-        // For Place, do not auto-trigger Google predictions
         if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
           this.showGoogleMapsIcon.set(true);
         } else {
           this.showGoogleMapsIcon.set(false);
         }
         return placeItems;
+      }
       case 'Region':
         return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
       case 'Service':

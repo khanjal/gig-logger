@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private logger = inject(LoggerService);
   private themeService = inject(ThemeService);
 
-  @Output() error = new EventEmitter<Error>();
+  @Output() headerError = new EventEmitter<Error>();
   
   defaultSheet = signal<ISpreadsheet | undefined>(undefined);
   isAuthenticated = signal(false);
@@ -134,7 +134,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       await this.updateUnsavedCounts();
     } catch (error) {
       this.logger.error('Error during header initialization:', error);
-      this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
+      this.headerError.emit(error instanceof Error ? error : new Error('Header initialization failed'));
     } finally {
       this.setLoadingState(false);
     }
@@ -178,7 +178,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       ]);
     } catch (error) {
       this.logger.error('Error loading header data:', error);
-      this.error.emit(error instanceof Error ? error : new Error('Header data loading failed'));
+      this.headerError.emit(error instanceof Error ? error : new Error('Header data loading failed'));
       // Don't throw - allow app to continue with degraded functionality
     } finally {
       this.setLoadingState(false);

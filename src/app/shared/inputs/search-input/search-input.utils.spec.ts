@@ -7,7 +7,7 @@ describe('search-input.utils', () => {
 
   describe('createSearchItem', () => {
     it('throws when item is invalid', () => {
-      // @ts-ignore - passing invalid value intentionally
+      // @ts-expect-error - passing invalid value intentionally
       expect(() => createSearchItem(null, 'name')).toThrowError(/Invalid item provided/);
     });
 

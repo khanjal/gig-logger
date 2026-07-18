@@ -8,14 +8,14 @@ export class BaseButtonDirective implements OnChanges, OnDestroy {
   private el = inject(ElementRef);
   private renderer = inject(Renderer2);
 
-  @Input('appBaseButtonVariant') variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
-  @Input('appBaseButtonFab') fab = false;
-  @Input('appBaseButtonFabStyle') fabStyle: 'regular' | 'mini' = 'regular';
-  @Input('appBaseButtonLoading') loading = false;
-  @Input('appBaseButtonDisabled') disabled = false;
-  @Input('appBaseButtonClass') extraClass = '';
+  @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
+  @Input() fab = false;
+  @Input() fabStyle: 'regular' | 'mini' = 'regular';
+  @Input() loading = false;
+  @Input() disabled = false;
+  @Input() extraClass = '';
 
-  @Output('appBaseButtonClicked') clicked = new EventEmitter<void>();
+  @Output() clicked = new EventEmitter<void>();
 
   private host: HTMLElement;
 

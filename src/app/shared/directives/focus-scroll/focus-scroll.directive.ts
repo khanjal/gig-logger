@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { ViewportService } from '@services/viewport.service';
 
 @Directive({
-  selector: '[focusScroll]',
+  selector: '[appFocusScroll]',
   standalone: true
 })
 export class FocusScrollDirective implements OnDestroy {
