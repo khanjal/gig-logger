@@ -13,11 +13,11 @@
     @if (!isEditMode()) {
       <app-current-average class="absolute top-0 right-0 z-10 m-4 sm:pr-0 md:pr-10"></app-current-average>
     }
-    <trip-form
+    <app-trip-form
       (editModeExit)="exitEditMode($event)"
       [isInEditMode]="isEditMode()"
       id="tripForm">
-    </trip-form>
+    </app-trip-form>
   </div>
 
   @if (!isEditMode() && demoSheetAttached()) {

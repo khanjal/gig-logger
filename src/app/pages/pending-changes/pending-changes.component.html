@@ -28,7 +28,7 @@
       @if (trips().length > 0) {
         <div>
           @for (t of trips(); track (trackByTrip($index, t)); let i = $index) {
-            <trips-quick-view [trip]="t" [index]="i" [showActions]="true" [inlineMode]="true" (parentReload)="load()" (editClicked)="openTripEditor($event)"></trips-quick-view>
+            <app-trips-quick-view [trip]="t" [index]="i" [showActions]="true" [inlineMode]="true" (parentReload)="load()" (editClicked)="openTripEditor($event)"></app-trips-quick-view>
           }
         </div>
       } @else {

@@ -398,7 +398,7 @@
           <mat-icon class="menu-green">content_copy</mat-icon>
           <span>Clone</span>
         </button>
-        @if (trip.action != actionEnum.Delete) {
+        @if (trip.action !== actionEnum.Delete) {
           <button mat-menu-item (click)="confirmDeleteTripDialog()" title="Delete Trip">
             <mat-icon class="menu-red">delete</mat-icon>
             <span>Delete</span>

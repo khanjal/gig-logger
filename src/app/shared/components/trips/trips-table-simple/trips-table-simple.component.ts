@@ -8,7 +8,7 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
-    selector: 'trips-table-simple',
+    selector: 'app-trips-table-simple',
     templateUrl: './trips-table-simple.component.html',
     styleUrls: ['./trips-table-simple.component.scss'],
     standalone: true,

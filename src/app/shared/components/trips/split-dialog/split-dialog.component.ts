@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
-  selector: 'split-dialog',
+  selector: 'app-split-dialog',
   standalone: true,
   imports: [MatRadioModule, FormsModule, BaseRectButtonComponent],
   templateUrl: './split-dialog.component.html',

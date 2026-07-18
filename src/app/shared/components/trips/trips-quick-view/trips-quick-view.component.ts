@@ -32,7 +32,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
 
 @Component({
-    selector: 'trips-quick-view',
+    selector: 'app-trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],
     standalone: true,

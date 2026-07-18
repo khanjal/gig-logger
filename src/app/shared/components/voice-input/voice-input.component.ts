@@ -9,7 +9,7 @@ import { MatIcon } from '@angular/material/icon';
 import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
 
 @Component({
-  selector: 'voice-input',
+  selector: 'app-voice-input',
   templateUrl: './voice-input.component.html',
   styleUrls: ['./voice-input.component.scss'],
   standalone: true,

@@ -70,7 +70,7 @@ interface IShiftSummaryOption {
 const NEW_SHIFT_VALUE = 'new';
 
 @Component({
-    selector: 'trip-form',
+    selector: 'app-trip-form',
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,

@@ -8,7 +8,7 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 
 @Component({
-    selector: 'sheet-add-form',
+    selector: 'app-sheet-add-form',
     templateUrl: './sheet-add-form.component.html',
     styleUrls: ['./sheet-add-form.component.scss'],
     standalone: true,

@@ -29,7 +29,7 @@ interface ITripTotalsViewModel {
 }
 
 @Component({
-  selector: 'shift-form',
+  selector: 'app-shift-form',
   templateUrl: './shift-form.component.html',
   styleUrls: ['./shift-form.component.scss'],
   standalone: true,

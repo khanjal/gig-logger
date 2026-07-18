@@ -53,11 +53,11 @@
 
   @if (showAddForm() || editId()) {
     <div>
-      <shift-form
+      <app-shift-form
         [rowId]="editId()"
         (parentReload)="handleParentReload()"
         (editModeExit)="exitEditMode($event)">
-      </shift-form>
+      </app-shift-form>
     </div>
   }
 
@@ -81,7 +81,7 @@
           [id]="shift.rowId"
             [ngClass]="{
               'shift-card': true,
-              'shift-card-disabled': shift.action == actionEnum.Delete
+              'shift-card-disabled': shift.action === actionEnum.Delete
             }"
           [class.mt-4]="isFirst"
           >
