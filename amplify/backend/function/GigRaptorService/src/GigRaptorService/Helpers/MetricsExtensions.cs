@@ -31,14 +31,14 @@ public static class MetricsExtensions
         finally
         {
             stopwatch.Stop();
-            
+
             // Track metrics without blocking (fire and forget)
             _ = Task.Run(async () =>
             {
                 try
                 {
                     await metricsService.TrackSheetsOperationAsync(operationName, stopwatch.Elapsed, success);
-                    
+
                     if (!string.IsNullOrEmpty(userId))
                     {
                         await metricsService.TrackUserActivityAsync(userId, operationName);
@@ -77,14 +77,14 @@ public static class MetricsExtensions
         finally
         {
             stopwatch.Stop();
-            
+
             // Track metrics without blocking (fire and forget)
             _ = Task.Run(async () =>
             {
                 try
                 {
                     await metricsService.TrackSheetsOperationAsync(operationName, stopwatch.Elapsed, success);
-                    
+
                     if (!string.IsNullOrEmpty(userId))
                     {
                         await metricsService.TrackUserActivityAsync(userId, operationName);

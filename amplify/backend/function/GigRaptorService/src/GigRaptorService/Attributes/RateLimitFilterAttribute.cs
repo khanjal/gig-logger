@@ -56,7 +56,7 @@ namespace GigRaptorService.Attributes
             context.HttpContext.Items["AuthenticatedUserId"] = userId;
 
             string actionName = context.ActionDescriptor.DisplayName ?? "Unknown";
-            
+
             // Check each identifier independently for rate limits
             bool isLimited = false;
             string limitedBy = string.Empty;
@@ -89,7 +89,7 @@ namespace GigRaptorService.Attributes
                 var accessTokenHash = CreateHash(accessToken.Substring(0, Math.Min(50, accessToken.Length)));
                 var accessTokenKey = $"token:{accessTokenHash}:{_apiType}:{actionName}";
                 var accessTokenCount = _cache.Get<int>(accessTokenKey);
-                
+
                 if (accessTokenCount >= _limit)
                 {
                     isLimited = true;
@@ -109,7 +109,7 @@ namespace GigRaptorService.Attributes
                 var refreshTokenHash = CreateHash(refreshToken.Substring(0, Math.Min(50, refreshToken.Length)));
                 var refreshTokenKey = $"refresh:{refreshTokenHash}:{_apiType}:{actionName}";
                 var refreshTokenCount = _cache.Get<int>(refreshTokenKey);
-                
+
                 if (refreshTokenCount >= _limit)
                 {
                     isLimited = true;
@@ -150,8 +150,8 @@ namespace GigRaptorService.Attributes
 
                         // Log with details about which action and identifier triggered the rate limit
                         logger.LogWarning(
-                            "Rate limit exceeded for {ApiType} API on {Action}. User {UserId} limited by {LimitType}: {Identifier}. Limit: {Limit}/{Duration}s", 
-                            _apiType, 
+                            "Rate limit exceeded for {ApiType} API on {Action}. User {UserId} limited by {LimitType}: {Identifier}. Limit: {Limit}/{Duration}s",
+                            _apiType,
                             actionName,
                             userId.Substring(0, Math.Min(8, userId.Length)) + "...",
                             limitedBy,
@@ -188,17 +188,17 @@ namespace GigRaptorService.Attributes
             var tokenUserId = GetUserIdFromToken(context);
             if (!string.IsNullOrWhiteSpace(tokenUserId))
                 return tokenUserId;
-            
+
             // Priority 2: Try UserId header (set by frontend)
             var headerUserId = context.Request.Headers["UserId"].ToString();
             if (!string.IsNullOrWhiteSpace(headerUserId))
                 return headerUserId;
-            
+
             // Priority 3: Try to extract from request body (for JSON payloads)
             var bodyUserId = await GetUserIdFromRequestBodyAsync(context);
             if (!string.IsNullOrWhiteSpace(bodyUserId))
                 return bodyUserId;
-            
+
             return string.Empty;
         }
 
@@ -241,19 +241,19 @@ namespace GigRaptorService.Attributes
                 var authHeader = context.Request.Headers["Authorization"].ToString();
                 if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
                     return string.Empty;
-                    
+
                 var token = authHeader.Substring("Bearer ".Length).Trim();
-                
+
                 // Parse the JWT to extract user ID
                 var handler = new JwtSecurityTokenHandler();
                 if (!handler.CanReadToken(token)) return string.Empty;
-                
+
                 var jwt = handler.ReadJwtToken(token);
-                
+
                 // Try to get user ID from various possible claims
                 // Google typically uses 'sub' or 'email' as identifiers
-                return jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value ?? 
-                       jwt.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? 
+                return jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value ??
+                       jwt.Claims.FirstOrDefault(c => c.Type == "email")?.Value ??
                        jwt.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value ??
                        string.Empty;
             }
@@ -274,14 +274,14 @@ namespace GigRaptorService.Attributes
                 {
                     return authHeader.Substring("Bearer ".Length).Trim();
                 }
-                
+
                 // Then check for access_token cookie
                 var accessTokenCookie = context.Request.Cookies[AccessTokenCookieName];
                 if (!string.IsNullOrEmpty(accessTokenCookie))
                 {
                     return accessTokenCookie;
                 }
-                
+
                 return string.Empty;
             }
             catch

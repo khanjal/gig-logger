@@ -20,8 +20,8 @@ public class GooglePlacesService : IGooglePlacesService
     private readonly ILogger<GooglePlacesService>? _logger;
 
     public GooglePlacesService(
-        HttpClient httpClient, 
-        IConfiguration configuration, 
+        HttpClient httpClient,
+        IConfiguration configuration,
         DynamoDbRateLimiter rateLimiter,
         ILogger<GooglePlacesService>? logger = null)
     {
@@ -75,7 +75,7 @@ public class GooglePlacesService : IGooglePlacesService
                     }
                 };
             }
-            
+
             var requestBody = new
             {
                 textQuery = query,
@@ -100,10 +100,10 @@ public class GooglePlacesService : IGooglePlacesService
             };
             request.Headers.Add("X-Goog-Api-Key", _apiKey);
             request.Headers.Add("X-Goog-FieldMask", "places.id,places.displayName,places.formattedAddress,places.types");
-            
+
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 _logger?.LogError("Google Places API error: {Status} - {Content}", response.StatusCode, responseContent);
@@ -119,11 +119,11 @@ public class GooglePlacesService : IGooglePlacesService
             }
 
             var results = new List<AutocompleteResult>();
-            
+
             foreach (var place in googleResponse.Places)
             {
                 if (place?.DisplayName?.Text == null) continue;
-                
+
                 results.Add(new AutocompleteResult
                 {
                     Place = place.DisplayName.Text,
@@ -169,10 +169,10 @@ public class GooglePlacesService : IGooglePlacesService
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add("X-Goog-Api-Key", _apiKey);
             request.Headers.Add("X-Goog-FieldMask", "id,displayName,formattedAddress,addressComponents,location");
-            
+
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 _logger?.LogError("Google Places API error for place details: {Status} - {Content}", response.StatusCode, responseContent);
@@ -181,7 +181,7 @@ public class GooglePlacesService : IGooglePlacesService
 
             var place = JsonSerializer.Deserialize<PlaceDetailsResult>(responseContent);
 
-            if (place == null) 
+            if (place == null)
             {
                 _logger?.LogInformation("No place details returned for place ID: {PlaceId}", placeId);
                 return null;

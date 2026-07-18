@@ -20,7 +20,7 @@ public class Circle
 {
     [JsonPropertyName("center")]
     public LatLngLiteral? Center { get; set; }
-    
+
     [JsonPropertyName("radius")]
     public double Radius { get; set; }
 }

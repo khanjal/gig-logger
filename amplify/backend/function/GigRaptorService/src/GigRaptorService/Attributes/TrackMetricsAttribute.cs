@@ -11,7 +11,7 @@ public class TrackMetricsAttribute : ActionFilterAttribute
 {
     private readonly string? _customEndpointName;
     private readonly bool _trackUserActivity;
-    
+
     public TrackMetricsAttribute(string? customEndpointName = null, bool trackUserActivity = true)
     {
         _customEndpointName = customEndpointName;
@@ -23,7 +23,7 @@ public class TrackMetricsAttribute : ActionFilterAttribute
         var stopwatch = Stopwatch.StartNew();
         context.HttpContext.Items["MetricsStopwatch"] = stopwatch;
         context.HttpContext.Items["MetricsStartTime"] = DateTime.UtcNow;
-        
+
         base.OnActionExecuting(context);
     }
 
@@ -34,7 +34,7 @@ public class TrackMetricsAttribute : ActionFilterAttribute
         var success = context.Exception == null && context.HttpContext.Response.StatusCode < 400;
 
         stopwatch?.Stop();
-        
+
         // Track metrics in background
         _ = Task.Run(async () =>
         {
@@ -42,15 +42,15 @@ public class TrackMetricsAttribute : ActionFilterAttribute
             {
                 var metricsService = context.HttpContext.RequestServices.GetService<IMetricsService>();
                 var logger = context.HttpContext.RequestServices.GetService<ILogger<TrackMetricsAttribute>>();
-                
+
                 if (metricsService != null && stopwatch != null)
                 {
                     await metricsService.TrackApiCallAsync(endpointName, stopwatch.Elapsed, success);
-                    
+
                     // Log the API metrics for visibility
-                    logger?.LogInformation("📊 API metrics sent for {EndpointName}: success={Success}, duration={Duration:F4}ms", 
+                    logger?.LogInformation("📊 API metrics sent for {EndpointName}: success={Success}, duration={Duration:F4}ms",
                         endpointName, success, stopwatch.Elapsed.TotalMilliseconds);
-                    
+
                     if (_trackUserActivity)
                     {
                         var userId = GetUserId(context.HttpContext);
@@ -75,7 +75,7 @@ public class TrackMetricsAttribute : ActionFilterAttribute
     {
         var controllerName = context.RouteData.Values["controller"]?.ToString()?.ToLower() ?? "unknown";
         var actionName = context.RouteData.Values["action"]?.ToString()?.ToLower() ?? "unknown";
-        
+
         return $"{controllerName}-{actionName}";
     }
 

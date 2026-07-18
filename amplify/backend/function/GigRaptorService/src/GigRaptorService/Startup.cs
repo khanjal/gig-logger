@@ -69,37 +69,37 @@ public class Startup
 
         services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
-        
+
         // Register GoogleOAuthService as scoped to prevent cross-request data leakage
         services.AddScoped<GoogleOAuthService>();
-        
+
         // Register LazyS3Service as a singleton since it uses lazy initialization
         services.AddSingleton<IS3Service, LazyS3Service>();
 
         // Register HTTP client factory
         services.AddHttpClient();
-        
+
         // Register Google Places service with DynamoDB rate limiter
         services.AddSingleton<DynamoDbRateLimiter>(sp =>
         {
             var dynamoDbClient = sp.GetRequiredService<Lazy<IAmazonDynamoDB>>();
             return new DynamoDbRateLimiter(dynamoDbClient, "UserApiLimits", 1000, TimeSpan.FromDays(30)); // 1000 requests per month
         });
-        
+
         services.AddScoped<IGooglePlacesService, GooglePlacesService>();
 
         // Register AWS services with default options
         // This helps with credentials and region configuration for all AWS services
         var awsOptions = Configuration.GetAWSOptions();
-        
+
         // Set specific region to match updateLambda.bat
         awsOptions.Region = Amazon.RegionEndpoint.USEast1;
-        
+
         // Add AWS default options first
         services.AddDefaultAWSOptions(awsOptions);
-        
+
         // Use lazy initialization for AWS clients via factory pattern
-        services.AddSingleton<IAmazonS3>(sp => 
+        services.AddSingleton<IAmazonS3>(sp =>
         {
             var s3Config = new AmazonS3Config
             {
@@ -108,29 +108,29 @@ public class Startup
             };
             return new AmazonS3Client(s3Config);
         });
-        
+
         // Add DynamoDB client with lazy initialization
-        services.AddSingleton<Lazy<IAmazonDynamoDB>>(sp => 
-            new Lazy<IAmazonDynamoDB>(() => 
-                new AmazonDynamoDBClient(new AmazonDynamoDBConfig 
-                { 
-                    RegionEndpoint = Amazon.RegionEndpoint.USEast1 
+        services.AddSingleton<Lazy<IAmazonDynamoDB>>(sp =>
+            new Lazy<IAmazonDynamoDB>(() =>
+                new AmazonDynamoDBClient(new AmazonDynamoDBConfig
+                {
+                    RegionEndpoint = Amazon.RegionEndpoint.USEast1
                 }),
                 LazyThreadSafetyMode.ExecutionAndPublication
             )
         );
-        
+
         // Add CloudWatch client for metrics
-        services.AddSingleton<IAmazonCloudWatch>(sp => 
-            new AmazonCloudWatchClient(new AmazonCloudWatchConfig 
-            { 
-                RegionEndpoint = Amazon.RegionEndpoint.USEast1 
+        services.AddSingleton<IAmazonCloudWatch>(sp =>
+            new AmazonCloudWatchClient(new AmazonCloudWatchConfig
+            {
+                RegionEndpoint = Amazon.RegionEndpoint.USEast1
             })
         );
-        
+
         // Add metrics service
         services.AddSingleton<IMetricsService, MetricsService>();
-        
+
         // Add logging
         services.AddLogging(builder =>
         {

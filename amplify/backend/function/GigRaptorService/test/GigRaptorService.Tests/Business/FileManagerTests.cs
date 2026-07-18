@@ -12,7 +12,7 @@ public class FileManagerTests
         var manager = new FileManager("test-token");
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => 
+        await Assert.ThrowsAsync<ArgumentException>(() =>
             manager.CreateSheet(""));
     }
 
@@ -23,7 +23,7 @@ public class FileManagerTests
         var manager = new FileManager("test-token");
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => 
+        await Assert.ThrowsAsync<ArgumentException>(() =>
             manager.CreateSheet(null!));
     }
 
@@ -34,7 +34,7 @@ public class FileManagerTests
         var manager = new FileManager("test-token");
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => 
+        await Assert.ThrowsAsync<ArgumentException>(() =>
             manager.CreateSheet("   "));
     }
 }
