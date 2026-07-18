@@ -3,6 +3,7 @@ import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import type { IExpense } from '@interfaces/entities/expense.interface';
 import { CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -62,6 +63,7 @@ export class ExpensesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private expensesService = inject(ExpensesService);
   private unsavedDataService = inject(UnsavedDataService);
+  private route = inject(ActivatedRoute);
   dialog = inject(MatDialog);
   private _snackBar = inject(MatSnackBar);
   protected authService = inject(AuthGoogleService);
@@ -83,9 +85,16 @@ export class ExpensesComponent implements OnInit {
   saving = signal(false);
   actionEnum = ActionEnum;
   maxRowId = signal(1);
+  private pendingEditRowId?: number;
   private readonly destroyRef = inject(DestroyRef);
 
   async ngOnInit() {
+    // Deep link from the pending-changes page: open a specific expense for edit.
+    const editParam = this.route.snapshot.queryParams['edit'];
+    if (editParam !== undefined && editParam !== null && editParam !== '' && !Number.isNaN(Number(editParam))) {
+      this.pendingEditRowId = Number(editParam);
+    }
+
     this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
     const nextRowId = this.maxRowId() + 1;
     this.expenseForm = this.fb.group({
@@ -163,6 +172,24 @@ export class ExpensesComponent implements OnInit {
     if (normalizedExpenses.length === 0) {
       this.showAddForm.set(true);
     }
+
+    this.maybeOpenPendingEdit();
+  }
+
+  /**
+   * If the page was opened with an `?edit=<rowId>` deep link (from pending
+   * changes), open that expense in the inline editor once it has loaded.
+   */
+  private maybeOpenPendingEdit(): void {
+    if (this.pendingEditRowId === undefined) return;
+    const match = this.expenses().find(e => e.rowId === this.pendingEditRowId);
+    if (!match) return;
+
+    this.pendingEditRowId = undefined;
+    this.editExpense(match);
+    setTimeout(() => {
+      document.getElementById('expenses-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 
   async addExpense() {

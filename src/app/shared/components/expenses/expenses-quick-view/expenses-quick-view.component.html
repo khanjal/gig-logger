@@ -1,0 +1,104 @@
+<!-- Mobile-First Expense Quick View (matches trips/shifts card style) -->
+<div class="bg-surface rounded-xl mb-4 overflow-hidden expense-card"
+  [ngClass]="{
+    'opacity-60 bg-surface-2': expense.action === ActionEnum.Delete,
+    'expense-border-saved': expense.saved,
+    'expense-border-add': !expense.saved && expense.action === ActionEnum.Add,
+    'expense-border-update': !expense.saved && expense.action === ActionEnum.Update,
+    'expense-border-delete': !expense.saved && expense.action === ActionEnum.Delete,
+    'expense-border-other': !expense.saved && (!expense.action || (expense.action !== ActionEnum.Add && expense.action !== ActionEnum.Update && expense.action !== ActionEnum.Delete))
+  }">
+  <!-- Header Row -->
+  <div class="p-3 border-b border-soft">
+    <div class="flex items-center min-w-0 w-full gap-2">
+      <!-- Status Icon + Row ID -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <mat-icon class="text-xl flex-shrink-0"
+          [ngClass]="{
+            'text-tertiary': expense.saved,
+            'text-success': !expense.saved && expense.action === ActionEnum.Add,
+            'text-info': !expense.saved && expense.action === ActionEnum.Update,
+            'text-error': !expense.saved && expense.action === ActionEnum.Delete,
+            'text-warning': !expense.saved && (!expense.action || (expense.action !== ActionEnum.Add && expense.action !== ActionEnum.Update && expense.action !== ActionEnum.Delete))
+          }">
+          @if (!expense.saved && expense.action === ActionEnum.Add) { add }
+          @else if (!expense.saved && expense.action === ActionEnum.Update) { edit }
+          @else if (!expense.saved && expense.action === ActionEnum.Delete) { delete }
+          @else { check_circle }
+        </mat-icon>
+        <span class="text-base font-bold text-info font-mono">#{{expense.rowId}}</span>
+      </div>
+
+      <!-- Name -->
+      <div class="flex-1 min-w-0 text-center px-2">
+        <span class="font-bold text-primary text-sm sm:text-base truncate inline-block max-w-full">{{ expense.name || 'Expense' }}</span>
+      </div>
+
+      <!-- Amount -->
+      <div class="flex-shrink-0 text-right">
+        <span class="font-bold text-sm sm:text-base text-primary">{{ expense.amount | currency }}</span>
+      </div>
+    </div>
+
+    <!-- Second Line: Date + Category -->
+    <div class="mt-1 text-xs text-secondary flex items-center justify-between gap-2 w-full">
+      <span class="flex items-center gap-1">
+        <mat-icon class="text-info text-base">event</mat-icon>
+        <span class="font-medium whitespace-nowrap">@if (expense.date) { {{ expense.date | date:dateFormats.SHORT_DATE_WITH_YEAR }} }</span>
+      </span>
+      @if (expense.category) {
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-3 text-secondary border border-soft max-w-full min-w-0">
+          <mat-icon class="text-tertiary text-sm flex-shrink-0">sell</mat-icon>
+          <span class="truncate">{{ expense.category }}</span>
+        </span>
+      }
+    </div>
+
+    <!-- Note -->
+    @if (expense.note) {
+      <div class="mt-2 p-2 bg-warning-soft rounded border border-warning">
+        <p class="text-sm text-warning italic break-words">{{ expense.note }}</p>
+      </div>
+    }
+  </div>
+
+  <!-- Action Bar -->
+  <div class="flex items-center justify-between p-3 border-t border-soft">
+    <!-- Edit Button -->
+    <app-base-rect-button
+      variant="primary"
+      size="sm"
+      [icon]="'edit'"
+      [label]="'Edit'"
+      (clicked)="editExpense()"
+      [disabled]="!canEditExpense()"
+      [attr.aria-label]="'Edit expense'"
+      [attr.title]="'Edit expense'">
+    </app-base-rect-button>
+
+    <div class="flex gap-2"></div>
+
+    <!-- Delete / Restore Button -->
+    @if (expense.action !== ActionEnum.Delete) {
+      <app-base-rect-button
+        variant="danger"
+        size="sm"
+        [icon]="'delete'"
+        [label]="'Delete'"
+        (clicked)="confirmDeleteExpenseDialog()"
+        [attr.aria-label]="'Delete expense'"
+        [attr.title]="'Delete expense'">
+      </app-base-rect-button>
+    } @else {
+      <app-base-rect-button
+        variant="secondary"
+        size="sm"
+        [icon]="'restore'"
+        [label]="'Restore'"
+        (clicked)="restoreExpense()"
+        [attr.aria-label]="'Restore expense'"
+        [attr.title]="'Restore expense'">
+      </app-base-rect-button>
+    }
+  </div>
+</div>

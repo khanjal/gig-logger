@@ -3,37 +3,55 @@
     <h2 class="text-lg font-semibold">Pending Changes</h2>
   </div>
 
-  <mat-accordion multi="false">
-    <mat-expansion-panel id="shifts-panel" [expanded]="expandedShifts()">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Shifts ({{ shifts().length || 0 }})</mat-panel-title>
-      </mat-expansion-panel-header>
-
+  @if (shifts().length > 0 || trips().length > 0 || expenses().length > 0) {
+    <mat-accordion multi="false">
       @if (shifts().length > 0) {
-        <div>
-          @for (s of shifts(); track (trackByShift($index, s)); let i = $index) {
-            <app-shifts-quick-view [shift]="s" [index]="i" [isDuplicate]="!!s.key && duplicateShiftKeys().has(s.key)" [inlineMode]="true" (parentReload)="load()" (edit)="openShiftEditor($event)"></app-shifts-quick-view>
-          }
-        </div>
-      } @else {
-        <div class="p-4 text-sm no-pending">No pending shifts</div>
-      }
-    </mat-expansion-panel>
+        <mat-expansion-panel id="shifts-panel" [expanded]="expandedShifts()">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Shifts ({{ shifts().length }})</mat-panel-title>
+          </mat-expansion-panel-header>
 
-    <mat-expansion-panel id="trips-panel" [expanded]="expandedTrips()">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Trips ({{ trips().length || 0 }})</mat-panel-title>
-      </mat-expansion-panel-header>
+          <div>
+            @for (s of shifts(); track (trackByShift($index, s)); let i = $index) {
+              <app-shifts-quick-view [shift]="s" [index]="i" [isDuplicate]="!!s.key && duplicateShiftKeys().has(s.key)" [inlineMode]="true" (parentReload)="load()" (edit)="openShiftEditor($event)"></app-shifts-quick-view>
+            }
+          </div>
+        </mat-expansion-panel>
+      }
 
       @if (trips().length > 0) {
-        <div>
-          @for (t of trips(); track (trackByTrip($index, t)); let i = $index) {
-            <app-trips-quick-view [trip]="t" [index]="i" [showActions]="true" [inlineMode]="true" (parentReload)="load()" (editClicked)="openTripEditor($event)"></app-trips-quick-view>
-          }
-        </div>
-      } @else {
-        <div class="p-4 text-sm no-pending">No pending trips</div>
+        <mat-expansion-panel id="trips-panel" [expanded]="expandedTrips()">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Trips ({{ trips().length }})</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div>
+            @for (t of trips(); track (trackByTrip($index, t)); let i = $index) {
+              <app-trips-quick-view [trip]="t" [index]="i" [showActions]="true" [inlineMode]="true" (parentReload)="load()" (editClicked)="openTripEditor($event)"></app-trips-quick-view>
+            }
+          </div>
+        </mat-expansion-panel>
       }
-    </mat-expansion-panel>
-  </mat-accordion>
+
+      @if (expenses().length > 0) {
+        <mat-expansion-panel id="expenses-panel" [expanded]="expandedExpenses()">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Expenses ({{ expenses().length }})</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div>
+            @for (e of expenses(); track (trackByExpense($index, e)); let i = $index) {
+              <app-expenses-quick-view [expense]="e" [index]="i" [inlineMode]="true" (parentReload)="load()" (edit)="openExpenseEditor($event)"></app-expenses-quick-view>
+            }
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  } @else {
+    <div class="flex flex-col items-center justify-center text-center py-16 px-4 no-pending">
+      <mat-icon class="text-success mb-3 all-caught-up-icon">check_circle</mat-icon>
+      <p class="text-lg font-semibold text-primary">You're all caught up</p>
+      <p class="text-sm text-secondary mt-1">No pending changes to save.</p>
+    </div>
+  }
 </div>

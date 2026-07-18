@@ -1,0 +1,21 @@
+// Expense Quick View Component Styles
+// Action-coded left border, matching trips/shifts quick views.
+.expense-border-saved {
+  border: 2px solid var(--color-border-dark);
+}
+.expense-border-add {
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--success-500);
+}
+.expense-border-update {
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--primary-600);
+}
+.expense-border-delete {
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--error-500);
+}
+.expense-border-other {
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--warning-500);
+}
