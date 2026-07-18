@@ -3,7 +3,7 @@ import { Subject, Subscription } from 'rxjs';
 
 export function subscribeControlStatus(control: FormControl | AbstractControl | null | undefined, stateChanges: Subject<void>): Subscription | undefined {
   try {
-    return (control as any)?.statusChanges?.subscribe(() => stateChanges.next());
+    return control?.statusChanges?.subscribe(() => stateChanges.next());
   } catch {
     return undefined;
   }

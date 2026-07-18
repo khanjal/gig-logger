@@ -28,7 +28,7 @@ export class SheetLinkComponent {
   private dialog = inject(MatDialog);
   private _logger = inject(LoggerService);
 
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
   readonly sheetLinkState = createAsyncOperationState();
 
   async openCreateSheetDialog() {

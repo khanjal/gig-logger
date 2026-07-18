@@ -191,7 +191,7 @@ describe('CommonService', () => {
         icon: 'directions_car'
       };
 
-      service.onHeaderLinkUpdate.subscribe(message => {
+      service.onHeaderLinkUpdate.subscribe((message: any) => {
         if (message.url === '/trips') {
           expect(message.url).toBe('/trips');
           expect(message.label).toBe('Trips');
@@ -262,7 +262,7 @@ describe('CommonService', () => {
         }
       };
 
-      service.onHeaderLinkUpdate.subscribe(message => {
+      service.onHeaderLinkUpdate.subscribe((message: any) => {
         if (message.navigation) {
           expect(message.navigation.main.link).toBe('/home');
           expect(message.navigation.sub.length).toBe(2);

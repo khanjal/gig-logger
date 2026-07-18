@@ -63,7 +63,7 @@ export class ShiftsComponent implements OnInit {
 
   editId = signal<string | null>(null);
 
-  trackByShift(index: number, shift: IShift): any {
+  trackByShift(index: number, shift: IShift): string | number {
     return shift?.rowId ?? shift?.key ?? index;
   }
 

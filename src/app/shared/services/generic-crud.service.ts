@@ -153,9 +153,9 @@ export class GenericCrudService<T> implements ICrudService<T> {
                     .map(g => {
                         const filtered: T[] = [];
                         for (let i = 0; i < g.items.length; i++) {
-                            const ai = normalizeValue((g.items[i] as any)[field]);
+                            const ai = normalizeValue(g.items[i][field]);
                             for (let j = i + 1; j < g.items.length; j++) {
-                                const bj = normalizeValue((g.items[j] as any)[field]);
+                                const bj = normalizeValue(g.items[j][field]);
                                 if (comparator(ai, bj)) {
                                     // push both ensuring uniqueness
                                     if (!filtered.includes(g.items[i])) filtered.push(g.items[i]);

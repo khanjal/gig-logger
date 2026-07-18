@@ -41,9 +41,10 @@ export class DataLoaderService {
     private _logger = inject(LoggerService);
 
 
-    private handleError(operation: string, error: any): void {
+    private handleError(operation: string, error: unknown): void {
+        const err = error as { message?: string } | null | undefined;
         this._logger.error(`${operation} failed`, {
-            message: error.message || 'Unknown error',
+            message: err?.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
         });

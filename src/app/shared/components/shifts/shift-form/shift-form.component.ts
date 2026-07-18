@@ -46,7 +46,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
   private logger = inject(LoggerService);
 
   @Input() rowId?: string | null;
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<void>();
   @Output() editModeExit = new EventEmitter<string>();
 
   shiftForm = new FormGroup({

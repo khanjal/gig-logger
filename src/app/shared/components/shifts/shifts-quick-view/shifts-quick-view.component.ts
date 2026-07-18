@@ -45,7 +45,7 @@ export class ShiftsQuickViewComponent implements OnInit {
   @Input() index!: number;
   @Input() inlineMode = false;
   @Input() isDuplicate = false;
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<void>();
   @Output() edit = new EventEmitter<IShift>();
 
   isExpanded = false;

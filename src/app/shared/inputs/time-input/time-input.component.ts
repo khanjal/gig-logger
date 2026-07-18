@@ -64,18 +64,19 @@ export class TimeInputComponent implements ControlValueAccessor {
     this.timeChanged.emit('');
   }
 
-  onTimeChange(event: any) {
+  onTimeChange(event: unknown) {
     // Handle different event types from ngx-mat-timepicker
     let timeValue: string;
-    
-    if (event?.target?.value) {
-      timeValue = event.target.value;
+
+    const eventObj = event as { target?: { value?: string }; value?: string } | null | undefined;
+    if (eventObj?.target?.value) {
+      timeValue = eventObj.target.value;
     } else if (typeof event === 'string') {
       timeValue = event;
-    } else if (event && typeof event === 'object' && event.value) {
-      timeValue = event.value;
+    } else if (eventObj && typeof eventObj === 'object' && eventObj.value) {
+      timeValue = eventObj.value;
     } else {
-      timeValue = event || '';
+      timeValue = (event as string) || '';
     }
     
     this.value = timeValue;

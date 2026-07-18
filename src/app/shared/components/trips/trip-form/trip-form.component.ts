@@ -441,8 +441,8 @@ export class TripFormComponent implements OnInit {
     const service = getValueOrFallback(shift, shifts, 'service');
     const region = getValueOrFallback(shift, shifts, 'region');
     
-    this.tripForm.controls.service.setValue(service);
-    this.tripForm.controls.region.setValue(region);
+    this.tripForm.controls.service.setValue(service ?? null);
+    this.tripForm.controls.region.setValue(region ?? null);
 
     this.tripForm.controls.service.updateValueAndValidity();
   }
@@ -565,11 +565,11 @@ export class TripFormComponent implements OnInit {
     // Use helper to get values with fallback
     if (!this.tripForm.controls.startAddress.value) {
       const startAddress = getValueOrFallback(recentTrip, recentTrips, 'startAddress');
-      this.tripForm.controls.startAddress.setValue(startAddress);
+      this.tripForm.controls.startAddress.setValue(startAddress ?? null);
     }
 
     const type = getValueOrFallback(recentTrip, recentTrips, 'type');
-    this.tripForm.controls.type.setValue(type);
+    this.tripForm.controls.type.setValue(type ?? null);
 
     if (!this.showPickupAddress) {
       this.togglePickupAddress();

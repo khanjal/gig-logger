@@ -2,7 +2,7 @@ import { Component, Input, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepicker, MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 
 @Component({
@@ -97,7 +97,7 @@ export class BaseDatepickerComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  onDateChange(event: any): void {
+  onDateChange(event: MatDatepickerInputEvent<Date>): void {
     this.value = event.value;
     this.onChange(this.value);
   }

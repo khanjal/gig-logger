@@ -37,7 +37,7 @@ export class ShiftTripsTableComponent implements OnInit, OnChanges {
   trips = signal<ITrip[]>([]);
   private loadToken = 0;
 
-  trackByTrip(index: number, t: ITrip): any {
+  trackByTrip(index: number, t: ITrip): number {
     return t?.id ?? t?.rowId ?? index;
   }
 

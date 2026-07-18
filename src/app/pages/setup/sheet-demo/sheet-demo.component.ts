@@ -29,7 +29,7 @@ export class SheetDemoComponent {
   private _logger = inject(LoggerService);
   protected authService = inject(AuthGoogleService);
 
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
 
   creatingDemo = signal(false);
 

@@ -428,7 +428,7 @@ export class ServerGooglePlacesService {
     );
   }
 
-  private handleError(error: any): void {
+  private handleError(error: unknown): void {
     this.logger.error('Server Google Places API Error:', error);
     
     if (error instanceof HttpErrorResponse) {

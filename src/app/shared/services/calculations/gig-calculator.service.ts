@@ -276,9 +276,10 @@ export class GigCalculatorService {
             .reduce((acc, value) => acc + value, 0);
     }
 
-    private handleError(operation: string, error: any): void {
+    private handleError(operation: string, error: unknown): void {
+        const err = error as { message?: string } | null | undefined;
         this._logger.error(`${operation} failed`, {
-            message: error.message || 'Unknown error',
+            message: err?.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
         });

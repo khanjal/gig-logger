@@ -16,7 +16,7 @@ import { BaseInputComponent } from '@components/base/base-input/base-input.compo
 export class SheetAddFormComponent implements OnInit {
   private _spreadsheetService = inject(SpreadsheetService);
 
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<void>();
   private demoSheetId = environment.demoSheet;
   
   sheetForm = new FormGroup({

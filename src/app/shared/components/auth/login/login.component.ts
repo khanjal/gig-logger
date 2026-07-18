@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Type, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { BaseRectButtonComponent, BaseCardComponent } from '@components/base';
 
-const MODULES: any[] = [
+const MODULES: Type<unknown>[] = [
   CommonModule,
   FormsModule,
   ReactiveFormsModule,

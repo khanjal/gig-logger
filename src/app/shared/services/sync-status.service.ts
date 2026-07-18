@@ -20,7 +20,7 @@ export class SyncStatusService implements OnDestroy {
   private syncStateSubject = new BehaviorSubject<ISyncState>(this.DEFAULT_STATE);
   private messagesSubject = new BehaviorSubject<ISyncMessage[]>([]);
   private lastSuccessfulSyncSubject = new BehaviorSubject<Date | null>(null);
-  private countdownTimer: any = null;
+  private countdownTimer: ReturnType<typeof setInterval> | null = null;
 
   // Public observables
   public readonly syncState$: Observable<ISyncState> = this.syncStateSubject.asObservable();
