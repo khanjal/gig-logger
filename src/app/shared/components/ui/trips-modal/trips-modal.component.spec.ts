@@ -1,3 +1,5 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TripsModalComponent } from './trips-modal.component';
 
 describe('TripsModalComponent trackByTrip', () => {
@@ -19,8 +21,6 @@ describe('TripsModalComponent trackByTrip', () => {
     expect(res).toBe(6);
   });
 });
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 describe('TripsModalComponent', () => {
   let component: TripsModalComponent;

@@ -1,4 +1,7 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TripsTableBasicComponent } from './trips-table-basic.component';
+import { DateHelper } from '@helpers/date.helper';
+import type { ITrip } from '@interfaces/trip.interface';
 
 describe('TripsTableBasicComponent trackByTrip', () => {
   it('returns id when present', () => {
@@ -13,10 +16,6 @@ describe('TripsTableBasicComponent trackByTrip', () => {
     expect(res).toBe(8);
   });
 });
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { DateHelper } from '@helpers/date.helper';
-import type { ITrip } from '@interfaces/trip.interface';
 
 describe('TripsTableBasicComponent', () => {
   let component: TripsTableBasicComponent;

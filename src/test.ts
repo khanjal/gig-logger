@@ -1,8 +1,8 @@
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
-// Test harness migrated toward zoneless testing. Runtime zone.js imports
-// are intentionally omitted. Test-time zone helpers previously imported
-// here (zone.js, zone.js/testing) are removed as part of GH #461.
+// Test harness is being migrated toward zoneless testing. Runtime zone.js imports
+// are intentionally omitted from the app. Test-time zone helpers are kept below
+// to support legacy helpers like fakeAsync() until tests are fully migrated (see GH #461).
 import { provideZonelessChangeDetection } from '@angular/core';
 // Provide Zone runtime for the testing helpers that expect global `Zone`.
 import 'zone.js';

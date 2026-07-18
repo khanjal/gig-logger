@@ -1,3 +1,19 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
+import { TripComponent } from './trips.component';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { GigWorkflowService } from '@services/gig-workflow.service';
+import { BehaviorSubject, Subject, of } from 'rxjs';
+import { PollingService } from '@services/polling.service';
+import { ViewportScroller } from '@angular/common';
+import { SpreadsheetService } from '@services/spreadsheet.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+import { ExpensesService } from '@services/sheets/expenses.service';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { DateHelper } from '@helpers/date.helper';
+
 describe('TripComponent trackByTrip', () => {
   it('returns rowId when present', () => {
     const trip = { rowId: 123 } as any;
@@ -17,22 +33,6 @@ describe('TripComponent trackByTrip', () => {
     expect(res).toBe(7);
   });
 });
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { commonTestingImports, commonTestingProviders } from '@test-harness';
-import { TripComponent } from './trips.component';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { GigWorkflowService } from '@services/gig-workflow.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { PollingService } from '@services/polling.service';
-import { ViewportScroller } from '@angular/common';
-import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ShiftService } from '@services/sheets/shift.service';
-import { TripService } from '@services/sheets/trip.service';
-import { ExpensesService } from '@services/sheets/expenses.service';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { of } from 'rxjs';
-import { DateHelper } from '@helpers/date.helper';
 
 describe('TripComponent', () => {
   let component: TripComponent;
