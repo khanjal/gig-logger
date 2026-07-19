@@ -10,6 +10,9 @@ namespace GigRaptorService.Controllers;
 [Route("[controller]")]
 public class SheetsController : ControllerBase
 {
+    private const int MaxTripsPerSave = 10000;
+    private const int MaxSheetNamesPerRequest = 50;
+
     private readonly IConfiguration _configuration;
     private readonly IMetricsService _metricsService;
     private readonly ILogger<SheetsController> _logger;
@@ -79,6 +82,11 @@ public class SheetsController : ControllerBase
     [TrackMetrics("sheets-multiple")]
     public async Task<SheetResponse> GetMultiple([FromQuery(Name = "names")] string[] sheetNames, [FromHeader] SheetHeaders headers)
     {
+        if (sheetNames == null || sheetNames.Length == 0)
+            throw new ArgumentException("At least one sheet name must be provided.");
+        if (sheetNames.Length > MaxSheetNamesPerRequest)
+            throw new ArgumentException($"Too many sheet names requested (max {MaxSheetNamesPerRequest}).");
+
         InitializeSheetmanager(headers);
         return await _sheetmanager!.GetSheets(sheetNames);
     }
@@ -110,8 +118,19 @@ public class SheetsController : ControllerBase
     [TrackMetrics("sheets-save")]
     public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity, [FromHeader] SheetHeaders headers)
     {
+        ValidateSaveRequest(sheetEntity);
         InitializeSheetmanager(headers, sheetEntity.Properties.Id);
         return await _sheetmanager!.SaveData(sheetEntity);
+    }
+
+    private static void ValidateSaveRequest(SheetEntity? sheetEntity)
+    {
+        if (sheetEntity == null)
+            throw new ArgumentException("Request body is required for Save.");
+        if (sheetEntity.Properties == null)
+            throw new ArgumentException("SheetEntity.Properties is required for Save.");
+        if (sheetEntity.Trips != null && sheetEntity.Trips.Count > MaxTripsPerSave)
+            throw new ArgumentException($"Too many trips in a single request (max {MaxTripsPerSave}).");
     }
 
     [HttpPost("demo")]
