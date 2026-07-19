@@ -1,0 +1,25 @@
+name: Lambda Lint
+
+on:
+  push:
+    paths:
+      - 'amplify/backend/function/GigRaptorService/**'
+      - '.github/workflows/lambda-lint.yml'
+      - '.github/actions/setup-dotnet-env/**'
+  pull_request:
+    paths:
+      - 'amplify/backend/function/GigRaptorService/**'
+      - '.github/workflows/lambda-lint.yml'
+      - '.github/actions/setup-dotnet-env/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-dotnet-env
+        with:
+          solution-path: amplify/backend/function/GigRaptorService/GigRaptorService.sln
+
+      - name: Check formatting
+        run: dotnet format amplify/backend/function/GigRaptorService/GigRaptorService.sln --verify-no-changes

@@ -4,17 +4,16 @@ on:
   push:
     paths:
       - 'amplify/backend/function/GigRaptorService/**'
-      - '.github/workflows/lambda-tests.yml'
+      - '.github/workflows/lambda-test.yml'
       - '.github/actions/setup-dotnet-env/**'
   pull_request:
     paths:
       - 'amplify/backend/function/GigRaptorService/**'
-      - '.github/workflows/lambda-tests.yml'
+      - '.github/workflows/lambda-test.yml'
       - '.github/actions/setup-dotnet-env/**'
 
 jobs:
   test:
-    name: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,15 +35,3 @@ jobs:
           flags: lambda
           name: lambda-coverage
           fail_ci_if_error: false
-
-  lint:
-    name: lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-dotnet-env
-        with:
-          solution-path: amplify/backend/function/GigRaptorService/GigRaptorService.sln
-
-      - name: Check formatting
-        run: dotnet format amplify/backend/function/GigRaptorService/GigRaptorService.sln --verify-no-changes
