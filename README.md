@@ -22,7 +22,7 @@
 ## Overview
 Raptor Gig is a mobile-first PWA designed to help gig workers log their work efficiently. It provides a user-friendly interface for tracking trips, shifts, and earnings, along with detailed statistics and insights. Data is synced to Google Sheets via AWS Amplify and C# Lambda functions.
 
-**Tech stack**: Angular 20, Tailwind CSS, Angular Material, Dexie.js (IndexedDB), AWS Amplify, C# Lambda, Google Sheets API
+**Tech stack**: Angular 21, Tailwind CSS, Angular Material, Dexie.js (IndexedDB), AWS Amplify, C# Lambda, Google Sheets API
 
 ## Features
 - Log trips and shifts
