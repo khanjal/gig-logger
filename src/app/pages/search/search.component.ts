@@ -73,7 +73,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   });
   searchTerm = signal('');
   isSearching = this.searchState.isLoading;
-  hasSearched = this.searchState.hasCompleted;
+  hasSearched = this.searchState.hasStarted;
   showFilters = signal(false);
   /** Collapse state for the entire search form (keeps summary visible) */
   isSearchCollapsed = signal(false);

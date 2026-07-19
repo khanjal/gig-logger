@@ -6,7 +6,7 @@ describe('createAsyncOperationState', () => {
 
     expect(state.status()).toBe('idle');
     expect(state.errorMessage()).toBeNull();
-    expect(state.hasCompleted()).toBeFalse();
+    expect(state.hasStarted()).toBeFalse();
     expect(state.isLoading()).toBeFalse();
     expect(state.isSuccess()).toBeFalse();
     expect(state.hasError()).toBeFalse();
@@ -19,7 +19,7 @@ describe('createAsyncOperationState', () => {
 
     expect(state.status()).toBe('loading');
     expect(state.isLoading()).toBeTrue();
-    expect(state.hasCompleted()).toBeTrue();
+    expect(state.hasStarted()).toBeTrue();
     expect(state.errorMessage()).toBeNull();
   });
 
@@ -43,7 +43,7 @@ describe('createAsyncOperationState', () => {
     expect(state.status()).toBe('error');
     expect(state.hasError()).toBeTrue();
     expect(state.errorMessage()).toBe('Search failed');
-    expect(state.hasCompleted()).toBeTrue();
+    expect(state.hasStarted()).toBeTrue();
   });
 
   it('reset returns state to idle defaults', () => {
@@ -54,7 +54,7 @@ describe('createAsyncOperationState', () => {
 
     expect(state.status()).toBe('idle');
     expect(state.errorMessage()).toBeNull();
-    expect(state.hasCompleted()).toBeFalse();
+    expect(state.hasStarted()).toBeFalse();
     expect(state.isLoading()).toBeFalse();
   });
 });

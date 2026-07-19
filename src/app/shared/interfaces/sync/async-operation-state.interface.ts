@@ -5,7 +5,7 @@ export type AsyncOperationStatus = 'idle' | 'loading' | 'success' | 'error';
 export interface IAsyncOperationState {
   status: WritableSignal<AsyncOperationStatus>;
   errorMessage: WritableSignal<string | null>;
-  hasCompleted: WritableSignal<boolean>;
+  hasStarted: WritableSignal<boolean>;
   isLoading: Signal<boolean>;
   isSuccess: Signal<boolean>;
   hasError: Signal<boolean>;
