@@ -1,5 +1,6 @@
 import type { ComponentFixture} from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { DiagnosticsComponent } from './diagnostics.component';
 import { ActionEnum } from '@enums/action.enum';
 import { DiagnosticHelper } from '@helpers/diagnostic.helper';
@@ -43,7 +44,7 @@ describe('DiagnosticsComponent', () => {
     serviceService = jasmine.createSpyObj('ServiceService', ['list', 'findDuplicates']);
     typeService = jasmine.createSpyObj('TypeService', ['findDuplicates']);
     regionService = jasmine.createSpyObj('RegionService', ['findDuplicates']);
-    loggerService = jasmine.createSpyObj('LoggerService', ['debug', 'info']);
+    loggerService = jasmine.createSpyObj('LoggerService', ['debug', 'info', 'error']);
     gigCalculator = jasmine.createSpyObj('GigCalculatorService', ['updateTripDuration']);
     gigWorkflow = jasmine.createSpyObj('GigWorkflowService', ['calculateShiftTotals']);
 
@@ -81,7 +82,7 @@ describe('DiagnosticsComponent', () => {
     TestBed.overrideProvider(ShiftService, { useValue: shiftService });
 
     await TestBed.configureTestingModule({
-      imports: [...commonTestingImports, DiagnosticsComponent],
+      imports: [...commonTestingImports, MatSnackBarModule, DiagnosticsComponent],
       providers: [
         ...commonTestingProviders,
         { provide: ShiftService, useValue: shiftService },
@@ -113,8 +114,20 @@ describe('DiagnosticsComponent', () => {
     await component.runDiagnostics();
 
     expect(component.isLoading()).toBeFalse();
+    expect(component.hasError()).toBeFalse();
     expect(component.dataDiagnostics().length).toBe(12);
     expect(component.getTotalIssues()).toBe(0);
+  });
+
+  it('runDiagnostics should surface an error state and log when a check fails', async () => {
+    const failure = new Error('boom');
+    shiftService.list.and.returnValue(Promise.reject(failure));
+
+    await component.runDiagnostics();
+
+    expect(component.isLoading()).toBeFalse();
+    expect(component.hasError()).toBeTrue();
+    expect(loggerService.error).toHaveBeenCalledWith('Failed to run diagnostics', failure);
   });
 
   it('getCountBySeverity should sum matching severities', () => {

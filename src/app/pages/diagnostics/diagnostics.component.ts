@@ -10,14 +10,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { BaseRectButtonComponent, BaseFabButtonComponent } from '@components/base';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { DiagnosticHelper } from '@helpers/diagnostic.helper';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 import { updateAction } from '@utils/action.utils';
+import { openSnackbar } from '@utils/snackbar.util';
 import { ActionEnum } from '@enums/action.enum';
+import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
@@ -57,9 +61,13 @@ export class DiagnosticsComponent implements OnInit {
   private _gigCalculator = inject(GigCalculatorService);
   private _gigWorkflow = inject(GigWorkflowService);
   private _uiPreferences = inject(UiPreferencesService);
+  private _snackBar = inject(MatSnackBar);
+
+  private readonly _diagnosticsState = createAsyncOperationState();
+  public readonly isLoading = this._diagnosticsState.isLoading;
+  public readonly hasError = this._diagnosticsState.hasError;
 
   public dataDiagnostics = signal<IDiagnosticItem[]>([]);
-  public isLoading = signal(false);
   public isBulkFixing = signal(false);
   public selectedValue: (IDiagnosticRecord | undefined)[] = [];
   public selectedAddress: Record<number, string> = {};
@@ -85,14 +93,17 @@ export class DiagnosticsComponent implements OnInit {
   }
 
   public async runDiagnostics() {
-    this.isLoading.set(true);
+    this._diagnosticsState.setLoading();
     this.dataDiagnostics.set([]);
     this.selectedValue = [];
 
     try {
       await this.checkDataIntegrity();
-    } finally {
-      this.isLoading.set(false);
+      this._diagnosticsState.setSuccess();
+    } catch (error) {
+      this._logger.error('Failed to run diagnostics', error);
+      this._diagnosticsState.setError();
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DIAGNOSTICS_CHECK_FAILED);
     }
   }
 

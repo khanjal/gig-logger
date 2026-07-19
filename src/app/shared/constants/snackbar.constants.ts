@@ -57,7 +57,10 @@ export const SNACKBAR_MESSAGES = {
   // Auto-save / polling
   AUTO_SAVE_COMPLETED_WITH_ERRORS: 'Auto-save completed with errors',
   AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED: 'Auto-save skipped: not authenticated',
-  AUTO_SAVE_FAILED_UNSAVED: 'Auto-save failed - data remains unsaved'
+  AUTO_SAVE_FAILED_UNSAVED: 'Auto-save failed - data remains unsaved',
+
+  // Diagnostics
+  DIAGNOSTICS_CHECK_FAILED: 'Failed to run diagnostics. Please try again.'
 };
 
 export const SNACKBAR_DEFAULT_ACTION = 'Dismiss';
