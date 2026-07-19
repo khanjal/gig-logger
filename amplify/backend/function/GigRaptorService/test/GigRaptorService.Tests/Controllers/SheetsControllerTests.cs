@@ -57,6 +57,33 @@ public class SheetsControllerTests
     }
 
     [Fact]
+    public async Task GetAll_Failure_LogsStartAndErrorWithCorrelationId()
+    {
+        // Arrange
+        var headers = new SheetHeaders { SheetId = null, Authorization = "Bearer test-token" };
+
+        // Act
+        await Assert.ThrowsAsync<Exception>(() => _controller.GetAll(headers));
+
+        // Assert: the LogActionAsync wrapper should have logged a start (Information)
+        // and a failure (Error) for this action, each tagged with a correlation id.
+        VerifyLogContains(LogLevel.Information, "GetAll started");
+        VerifyLogContains(LogLevel.Error, "GetAll failed");
+    }
+
+    private void VerifyLogContains(LogLevel level, string messageFragment)
+    {
+        _loggerMock.Verify(
+            logger => logger.Log(
+                level,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains(messageFragment)),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.AtLeastOnce);
+    }
+
+    [Fact]
     public async Task GetSingle_MissingSheetId_ThrowsException()
     {
         // Arrange
