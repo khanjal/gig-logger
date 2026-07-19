@@ -2,11 +2,16 @@
 
 ## Status
 
+**Frontend:**
 [![Build](https://github.com/khanjal/gig-logger/actions/workflows/build.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/build.yml)
 [![Lint](https://github.com/khanjal/gig-logger/actions/workflows/lint.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/lint.yml)
-[![Frontend Tests](https://github.com/khanjal/gig-logger/actions/workflows/test.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/test.yml)
-[![Lambda Tests](https://github.com/khanjal/gig-logger/actions/workflows/lambda-test.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/lambda-test.yml)
-[![Lambda Lint](https://github.com/khanjal/gig-logger/actions/workflows/lambda-lint.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/lambda-lint.yml)
+[![Tests](https://github.com/khanjal/gig-logger/actions/workflows/test.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/test.yml)
+
+**Backend (Lambda):**
+[![Tests](https://github.com/khanjal/gig-logger/actions/workflows/lambda-test.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/lambda-test.yml)
+[![Lint](https://github.com/khanjal/gig-logger/actions/workflows/lambda-lint.yml/badge.svg)](https://github.com/khanjal/gig-logger/actions/workflows/lambda-lint.yml)
+
+**Project:**
 [![codecov](https://codecov.io/gh/khanjal/gig-logger/graph/badge.svg)](https://codecov.io/gh/khanjal/gig-logger)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
