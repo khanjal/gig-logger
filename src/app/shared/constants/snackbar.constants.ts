@@ -60,7 +60,10 @@ export const SNACKBAR_MESSAGES = {
   AUTO_SAVE_FAILED_UNSAVED: 'Auto-save failed - data remains unsaved',
 
   // Diagnostics
-  DIAGNOSTICS_CHECK_FAILED: 'Failed to run diagnostics. Please try again.'
+  DIAGNOSTICS_CHECK_FAILED: 'Failed to run diagnostics. Please try again.',
+
+  // Trip editing
+  TRIP_EDIT_LOAD_FAILED: 'Failed to load trip for editing. Please try again.'
 };
 
 export const SNACKBAR_DEFAULT_ACTION = 'Dismiss';

@@ -1,5 +1,6 @@
 import type { ComponentFixture} from '@angular/core/testing';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { LoggerService } from '@services/logger.service';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { TripComponent } from './trips.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -12,7 +13,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { DateHelper } from '@helpers/date.helper';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 import type { IShift } from '@interfaces/entities/shift.interface';
@@ -171,4 +172,31 @@ describe('TripComponent', () => {
     expect(component.todaysTrips().map(trip => trip.rowId)).toEqual([8, 4]);
     expect(component.yesterdaysTrips().map(trip => trip.rowId)).toEqual([2]);
   });
+
+  it('load shows the spinner immediately and clears it after the transition delay', fakeAsync(() => {
+    component.load();
+    expect(component.isLoading()).toBeTrue();
+
+    tick(400);
+    expect(component.isLoading()).toBeFalse();
+    expect(component.hasLoadError()).toBeFalse();
+  }));
+
+  it('loadTripForEditing surfaces an error, notifies the user, and redirects on failure', fakeAsync(() => {
+    const failure = new Error('boom');
+    mockTripService.getByRowId.and.returnValue(Promise.reject(failure));
+    const router = TestBed.inject(Router);
+    const logger = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
+    spyOn(router, 'navigate');
+
+    component.editingTripId.set('5');
+    component.loadTripForEditing();
+    tick();
+    tick(200);
+
+    expect(component.isLoading()).toBeFalse();
+    expect(component.hasLoadError()).toBeTrue();
+    expect(logger.error).toHaveBeenCalledWith('Error loading trip for editing:', failure);
+    expect(router.navigate).toHaveBeenCalledWith(['/trips']);
+  }));
 });

@@ -17,6 +17,7 @@ import { openSnackbar } from '@utils/snackbar.util';
 
 // Helpers / enums
 import { DateHelper } from '@helpers/date.helper';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 import { ActionEnum } from '@enums/action.enum';
 
 // Services
@@ -85,7 +86,12 @@ export class TripComponent implements OnInit, OnDestroy {
   // Edit mode properties
   public isEditMode = signal(false);
   public editingTripId = signal<string | null>(null);
-  public isLoading = signal(false); // General loading overlay state
+
+  // Shared by load() and loadTripForEditing() — the two are mutually exclusive
+  // (load() bails out while editingTripId() is set), so one status is safe here.
+  private readonly _pageLoadState = createAsyncOperationState();
+  public isLoading = this._pageLoadState.isLoading;
+  public hasLoadError = this._pageLoadState.hasError;
 
   public savedTrips: ITrip[] = [];
   public todaysTrips = signal<ITrip[]>([]);
@@ -174,17 +180,23 @@ export class TripComponent implements OnInit, OnDestroy {
     // Prevent reload if editing form
     if (this.editingTripId()) return;
     if (showSpinner) {
-      this.isLoading.set(true);
+      this._pageLoadState.setLoading();
     }
+    let loadError: unknown;
     try {
       this.scheduleTripsTableReload();
       this.scheduleTripFormReload();
     } catch (error) {
+      loadError = error;
       this.logger.error('Failed to load trips page data', error);
     } finally {
       if (showSpinner) {
         setTimeout(() => {
-          this.isLoading.set(false);
+          if (loadError) {
+            this._pageLoadState.setError();
+          } else {
+            this._pageLoadState.setSuccess();
+          }
         }, 400);
       }
     }
@@ -395,9 +407,10 @@ export class TripComponent implements OnInit, OnDestroy {
 
   public async loadTripForEditing() {
     if (!this.editingTripId()) return;
-    
-    this.isLoading.set(true);
-    
+
+    this._pageLoadState.setLoading();
+    let loadError: unknown;
+
     try {
       const tripId = parseInt(this.editingTripId()!);
       const trip = await this._tripService.getByRowId(tripId);
@@ -406,13 +419,19 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.tripForm.load();
       }
     } catch (error) {
+      loadError = error;
       this.logger.error('Error loading trip for editing:', error);
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_EDIT_LOAD_FAILED);
       this._router.navigate(['/trips']);
     }
-    
+
     // Small delay for smooth transition
     setTimeout(() => {
-      this.isLoading.set(false);
+      if (loadError) {
+        this._pageLoadState.setError();
+      } else {
+        this._pageLoadState.setSuccess();
+      }
     }, 200);
   }
   
