@@ -675,17 +675,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if all groups are expanded
-   */
-  areAllGroupsExpanded(): boolean {
-    return this.allGroupsExpanded();
-  }
-
-  /**
    * Toggle all groups between expanded and collapsed
    */
   toggleAllGroups(): void {
-    if (this.areAllGroupsExpanded()) {
+    if (this.allGroupsExpanded()) {
       this.collapseAll();
     } else {
       this.expandAll();
