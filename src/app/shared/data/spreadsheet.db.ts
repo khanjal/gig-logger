@@ -1,6 +1,7 @@
 import type { IAddress } from '@interfaces/entities/address.interface';
 import type { IDaily } from '@interfaces/sheets/daily.interface';
 import type { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { ILocation } from '@interfaces/entities/location.interface';
 import type { IMonthly } from '@interfaces/sheets/monthly.interface';
 import type { IName } from '@interfaces/entities/name.interface';
 import type { IPlace } from '@interfaces/entities/place.interface';
@@ -85,11 +86,20 @@ const SCHEMA_V3 = {
     yearly: '++id, year'
 };
 
+// Version 4: deliveries is now loaded directly from the server-computed Deliveries sheet
+// (RaptorSheets.Gig) instead of being derived client-side; added a matching locations
+// table backed by the new server-computed Locations sheet.
+const SCHEMA_V4 = {
+    ...SCHEMA_V3,
+    locations: '++id, place, address'
+};
+
 export class AppDB extends Dexie {
     public addresses!: Table<IAddress, number>;
     public daily!: Table<IDaily, number>;
     public deliveries!: Table<IDelivery, number>;
     public expenses!: Table<IExpense, number>;
+    public locations!: Table<ILocation, number>;
     public monthly!: Table<IMonthly, number>;
     public names!: Table<IName, number>;
     public places!: Table<IPlace, number>;
@@ -109,6 +119,7 @@ export class AppDB extends Dexie {
         this.version(1).stores(SCHEMA_V1);
         this.version(2).stores(SCHEMA_V2);
         this.version(3).stores(SCHEMA_V3);
+        this.version(4).stores(SCHEMA_V4);
 
         // Fires when db.delete() can't complete because another connection
         // (typically another open tab of this app) is still holding the

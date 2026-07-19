@@ -15,6 +15,7 @@ import { openSnackbar } from '@utils/snackbar.util';
 // Application-specific imports - Interfaces
 import type { IAddress } from '@interfaces/entities/address.interface';
 import type { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { ILocation } from '@interfaces/entities/location.interface';
 import type { IName } from '@interfaces/entities/name.interface';
 import type { IPlace } from '@interfaces/entities/place.interface';
 import type { IShift } from '@interfaces/entities/shift.interface';
@@ -23,8 +24,9 @@ import type { IVoiceParseResult } from '@interfaces/external/voice-parse-result.
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
-import { DeliveryService } from '@services/delivery.service';
+import { DeliveryService } from '@services/sheets/delivery.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
+import { LocationService } from '@services/sheets/location.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -69,6 +71,11 @@ interface IShiftSummaryOption {
   subtitle: string;
 }
 
+// IDelivery is now a pure server-computed aggregate (RaptorSheets.Gig Deliveries sheet) with no
+// per-trip detail, so the trip-history mini table needs a live lookup against the already-loaded
+// local Trips list attached alongside it.
+type IDeliveryWithTrips = IDelivery & { tripsList: ITrip[] };
+
 const NEW_SHIFT_VALUE = 'new';
 
 @Component({
@@ -85,6 +92,7 @@ export class TripFormComponent implements OnInit {
   private _addressService = inject(AddressService);
   private _deliveryService = inject(DeliveryService);
   private _gigLoggerService = inject(GigWorkflowService);
+  private _locationService = inject(LocationService);
   private _nameService = inject(NameService);
   private _placeService = inject(PlaceService);
   private _shiftService = inject(ShiftService);
@@ -153,13 +161,13 @@ export class TripFormComponent implements OnInit {
   public showTimes = false;
 
   public selectedAddress: IAddress | undefined;
-  public selectedAddressDeliveries: IDelivery[] = [];
-  
+  public selectedAddressDeliveries: IDeliveryWithTrips[] = [];
+
   public selectedName: IName | undefined;
-  public selectedNameDeliveries: IDelivery[] = [];
+  public selectedNameDeliveries: IDeliveryWithTrips[] = [];
   
   public selectedPlace: IPlace | undefined;
-  public selectedPlaceAddresses: IAddress[] = [];
+  public selectedPlaceAddresses: ILocation[] = [];
 
   public shifts: IShift[] = [];
   public shiftOptions = signal<IShiftSummaryOption[]>([]);
@@ -487,9 +495,11 @@ export class TripFormComponent implements OnInit {
     const nextAddressDeliveries = await this._deliveryService.filter("address", address);
     sort(nextAddressDeliveries, 'name');
 
+    const nextAddressDeliveriesWithTrips = await this.attachTripsToDeliveries(nextAddressDeliveries);
+
     await this.deferListBindingUpdate(() => {
       this.selectedAddress = nextSelectedAddress;
-      this.selectedAddressDeliveries = nextAddressDeliveries;
+      this.selectedAddressDeliveries = nextAddressDeliveriesWithTrips;
     });
   }
 
@@ -507,9 +517,22 @@ export class TripFormComponent implements OnInit {
     const nextNameDeliveries = await this._deliveryService.filter("name", name);
     sort(nextNameDeliveries, 'address');
 
+    const nextNameDeliveriesWithTrips = await this.attachTripsToDeliveries(nextNameDeliveries);
+
     await this.deferListBindingUpdate(() => {
       this.selectedName = nextSelectedName;
-      this.selectedNameDeliveries = nextNameDeliveries;
+      this.selectedNameDeliveries = nextNameDeliveriesWithTrips;
+    });
+  }
+
+  // Attaches the matching Trips (by Name+Address) to each delivery aggregate, for the
+  // trip-history mini table - IDelivery itself no longer carries per-trip detail.
+  private async attachTripsToDeliveries(deliveries: IDelivery[]): Promise<IDeliveryWithTrips[]> {
+    const allTrips = await this._tripService.list();
+    return deliveries.map(delivery => {
+      const tripsList = allTrips.filter((t: ITrip) => t.name === delivery.name && t.endAddress === delivery.address);
+      sort(tripsList, '-key');
+      return { ...delivery, tripsList };
     });
   }
 
@@ -546,9 +569,11 @@ export class TripFormComponent implements OnInit {
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-    const nextSelectedPlaceAddresses = nextSelectedPlace?.addresses?.filter(address =>
-      new Date(address.lastTrip) >= oneYearAgo
-    ) ?? [];
+    // Address breakdown now comes from the server-computed Locations sheet (RaptorSheets.Gig)
+    const placeLocations = await this._locationService.query('place', nextSelectedPlace.place);
+    const nextSelectedPlaceAddresses = placeLocations.filter(location =>
+      location.lastTrip && new Date(location.lastTrip) >= oneYearAgo
+    );
 
     await this.deferListBindingUpdate(() => {
       this.selectedPlaceAddresses = nextSelectedPlaceAddresses;

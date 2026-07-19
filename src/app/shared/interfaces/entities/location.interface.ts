@@ -1,5 +1,5 @@
-export interface IDelivery {
-    name: string
+export interface ILocation {
+    place: string
     address: string
     trips: number
     pay: number

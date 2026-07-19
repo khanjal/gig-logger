@@ -34,7 +34,6 @@ export class PlaceService extends GenericCrudService<IPlace> {
 
             if (remotePlace) {
                 place.id = remotePlace.id;
-                place.addresses.push(...remotePlace.addresses);
                 place.bonus += remotePlace.bonus;
                 place.cash += remotePlace.cash;
                 place.pay += remotePlace.pay;

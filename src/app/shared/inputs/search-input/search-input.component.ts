@@ -24,6 +24,8 @@ import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.dire
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
+import { DeliveryService } from '@services/sheets/delivery.service';
+import { LocationService } from '@services/sheets/location.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
@@ -75,6 +77,8 @@ import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType }
 export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   public dialog = inject(MatDialog);
   private _addressService = inject(AddressService);
+  private _deliveryService = inject(DeliveryService);
+  private _locationService = inject(LocationService);
   private _nameService = inject(NameService);
   private _placeService = inject(PlaceService);
   private _regionService = inject(RegionService);
@@ -431,11 +435,11 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
       }
       case 'Name': {
         const names = await this._filterName(value);
-        return this.mapNamesToSearchItems(names);
+        return await this.mapNamesToSearchItems(names);
       }
       case 'Place': {
         const places = await this._filterPlace(value);
-        let placeItems = this.mapPlacesToSearchItems(places);
+        let placeItems = await this.mapPlacesToSearchItems(places);
         placeItems = await this.appendDropdownMatches(placeItems, 'Place', value);
         if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
           this.showGoogleMapsIcon.set(true);
@@ -670,7 +674,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     return false;
   }
 
-  private mapPlacesToSearchItems(places: IPlace[]): ISearchItem[] {
+  private async mapPlacesToSearchItems(places: IPlace[]): Promise<ISearchItem[]> {
     const items: ISearchItem[] = [];
     for (const place of places) {
       // Always add a base item without address
@@ -681,22 +685,24 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
         value: place.place,
         trips: place.trips
       });
-      if (Array.isArray(place.addresses) && place.addresses.length > 0) {
-        // Sort addresses by lastTrip descending (most recent first)
-        const sortedAddresses = [...place.addresses].sort((a, b) => {
+
+      // Address breakdown now comes from the server-computed Locations sheet (RaptorSheets.Gig)
+      const locations = await this._locationService.query('place', place.place);
+      if (locations.length > 0) {
+        // Sort by lastTrip descending (most recent first)
+        const sortedLocations = [...locations].sort((a, b) => {
           const dateA = a.lastTrip ? new Date(a.lastTrip).getTime() : 0;
           const dateB = b.lastTrip ? new Date(b.lastTrip).getTime() : 0;
           return dateB - dateA;
         });
-        for (const address of sortedAddresses) {
-          const trips = typeof address.trips === 'number' ? address.trips : place.trips;
+        for (const location of sortedLocations) {
           items.push({
             id: place.id,
             name: place.place,
             saved: place.saved,
             value: place.place,
-            trips: trips,
-            address: address.address
+            trips: location.trips,
+            address: location.address
           });
         }
       }
@@ -704,7 +710,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     return items;
   }
 
-  private mapNamesToSearchItems(names: IName[]): ISearchItem[] {
+  private async mapNamesToSearchItems(names: IName[]): Promise<ISearchItem[]> {
     const items: ISearchItem[] = [];
     for (const name of names) {
       // Always add a base item without address
@@ -715,17 +721,18 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
         trips: name.trips,
         value: name.name
       });
-      if (Array.isArray(name.addresses) && name.addresses.length > 0) {
-        for (const address of name.addresses) {
-          items.push({
-            id: name.id,
-            name: name.name,
-            saved: name.saved,
-            value: name.name,
-            trips: name.trips,
-            address: address // address is a string
-          });
-        }
+
+      // Address breakdown now comes from the server-computed Deliveries sheet (RaptorSheets.Gig)
+      const deliveries = await this._deliveryService.query('name', name.name);
+      for (const delivery of deliveries) {
+        items.push({
+          id: name.id,
+          name: name.name,
+          saved: name.saved,
+          value: name.name,
+          trips: delivery.trips,
+          address: delivery.address
+        });
       }
     }
     return items;

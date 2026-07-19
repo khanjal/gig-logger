@@ -41,22 +41,6 @@ export class NameService extends GenericCrudService<IName> {
                 remoteName.total += name.total;
                 remoteName.trips += name.trips;
 
-                if (!remoteName.addresses) {
-                    remoteName.addresses = [];
-                }
-
-                if (name.addresses) {
-                    remoteName.addresses.push(...name.addresses);
-                }
-
-                if (!remoteName.notes) {
-                    remoteName.notes = [];
-                }
-
-                if (name.notes) {
-                    remoteName.notes.push(...name.notes);
-                }
-
                 // Replace with merged name
                 names[i] = remoteName;
             }

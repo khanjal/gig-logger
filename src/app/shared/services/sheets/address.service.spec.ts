@@ -11,8 +11,6 @@ describe('AddressService', () => {
     rowId: overrides.rowId ?? 1,
     saved: overrides.saved ?? true,
     address: overrides.address ?? '123 Main St',
-    names: overrides.names ?? [],
-    notes: overrides.notes ?? [],
     trips: overrides.trips ?? 5,
     firstTrip: overrides.firstTrip ?? '2024-01-01',
     lastTrip: overrides.lastTrip ?? '2024-12-01',
@@ -150,16 +148,14 @@ describe('AddressService', () => {
       address: '123 Main St',
       pay: 100,
       tip: 20,
-      trips: 5,
-      names: ['John']
+      trips: 5
     });
     const newAddress = makeAddress({
       id: undefined,
       address: '123 Main St',
       pay: 50,
       tip: 10,
-      trips: 3,
-      names: ['Jane']
+      trips: 3
     });
 
     // Use callFake to return fresh chain for each where() call
@@ -176,8 +172,6 @@ describe('AddressService', () => {
     // Should merge: existing + new values
     expect(putArg[0].pay).toBe(150); // 100 + 50
     expect(putArg[0].tip).toBe(30); // 20 + 10
-    expect(putArg[0].names).toContain('John');
-    expect(putArg[0].names).toContain('Jane');
   });
 
   it('appends new addresses without duplicates', async () => {
@@ -216,32 +210,6 @@ describe('AddressService', () => {
     await service.append([addr1, addr2, addr3]);
 
     expect(spreadsheetDB.addresses.bulkPut).toHaveBeenCalled();
-  });
-
-  it('accumulates notes when merging duplicate addresses', async () => {
-    const existingAddress = makeAddress({
-      id: 1,
-      address: '123 Main St',
-      notes: [{ date: '2024-01-01', text: 'Gated' }]
-    });
-    const newAddress = makeAddress({
-      id: undefined,
-      address: '123 Main St',
-      notes: [{ date: '2024-01-02', text: 'Dogs' }]
-    });
-
-    // Use callFake to return fresh chain for each where() call
-    (spreadsheetDB.addresses.where as jasmine.Spy).and.callFake(() => ({
-      anyOfIgnoreCase: jasmine.createSpy('anyOfIgnoreCase').and.returnValue({
-        first: jasmine.createSpy('first').and.resolveTo(existingAddress)
-      })
-    }));
-
-    await service.append([newAddress]);
-
-    const putArg = (spreadsheetDB.addresses.bulkPut as jasmine.Spy).calls.mostRecent().args[0];
-    // Should merge notes from both addresses
-    expect(putArg[0].notes.length).toBe(2);
   });
 
   it('queries addresses by field and value', async () => {

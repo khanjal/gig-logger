@@ -39,22 +39,6 @@ export class AddressService extends GenericCrudService<IAddress> {
                 existingAddress.total += address.total;
                 existingAddress.trips += address.trips;
 
-                if (!existingAddress.names) {
-                    existingAddress.names = [];
-                }
-
-                if (address.names) {
-                    existingAddress.names.push(...address.names);
-                }
-
-                if (!existingAddress.notes) {
-                    existingAddress.notes = [];
-                }
-
-                if (address.notes) {
-                    existingAddress.notes.push(...address.notes);
-                }
-
                 // Replace with merged address
                 addresses[i] = existingAddress;
             }

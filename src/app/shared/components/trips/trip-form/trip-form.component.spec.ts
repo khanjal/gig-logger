@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ViewportScroller } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AddressService } from '@services/sheets/address.service';
-import { DeliveryService } from '@services/delivery.service';
+import { DeliveryService } from '@services/sheets/delivery.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';

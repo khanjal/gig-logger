@@ -11,8 +11,6 @@ describe('NameService', () => {
     rowId: overrides.rowId ?? 1,
     saved: overrides.saved ?? true,
     name: overrides.name ?? 'John Doe',
-    addresses: overrides.addresses ?? [],
-    notes: overrides.notes ?? [],
     trips: overrides.trips ?? 5,
     pay: overrides.pay ?? 50,
     tip: overrides.tip ?? 10,
@@ -134,8 +132,7 @@ describe('NameService', () => {
         name: 'John Doe',
         pay: 100,
         tip: 20,
-        trips: 5,
-        addresses: ['123 Main St']
+        trips: 5
       })
     ];
     const newName = makeName({
@@ -143,8 +140,7 @@ describe('NameService', () => {
       name: 'John Doe',
       pay: 50,
       tip: 10,
-      trips: 3,
-      addresses: ['456 Oak Ave']
+      trips: 3
     });
 
     (spreadsheetDB.names.toArray as jasmine.Spy).and.resolveTo(existingNames);
@@ -156,8 +152,6 @@ describe('NameService', () => {
     expect(putArg[0].id).toBe(1);
     expect(putArg[0].pay).toBe(150); // 100 + 50
     expect(putArg[0].tip).toBe(30); // 20 + 10
-    expect(putArg[0].addresses).toContain('123 Main St');
-    expect(putArg[0].addresses).toContain('456 Oak Ave');
   });
 
   it('appends new names without duplicates', async () => {
@@ -176,27 +170,5 @@ describe('NameService', () => {
     const putArg = (spreadsheetDB.names.bulkPut as jasmine.Spy).calls.mostRecent().args[0];
     expect(putArg[0].id).toBeUndefined();
     expect(putArg[0].name).toBe('New Person');
-  });
-
-  it('accumulates notes when merging duplicate names', async () => {
-    const existingNames = [
-      makeName({
-        id: 1,
-        name: 'John Doe',
-        notes: [{ date: '2024-01-01', text: 'Good tipper' }]
-      })
-    ];
-    const newName = makeName({
-      id: undefined,
-      name: 'John Doe',
-      notes: [{ date: '2024-01-02', text: 'Prefers contactless' }]
-    });
-
-    (spreadsheetDB.names.toArray as jasmine.Spy).and.resolveTo(existingNames);
-
-    await service.append([newName]);
-
-    const putArg = (spreadsheetDB.names.bulkPut as jasmine.Spy).calls.mostRecent().args[0];
-    expect(putArg[0].notes.length).toBe(2);
   });
 });

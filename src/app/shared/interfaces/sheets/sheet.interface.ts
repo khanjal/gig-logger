@@ -1,6 +1,8 @@
 import type { IAddress } from "@interfaces/entities/address.interface";
 import type { IDaily } from "@interfaces/sheets/daily.interface";
+import type { IDelivery } from "@interfaces/entities/delivery.interface";
 import type { IExpense } from "@interfaces/entities/expense.interface";
+import type { ILocation } from "@interfaces/entities/location.interface";
 import type { IMessage } from "@interfaces/sheets/message.interface";
 import type { IMonthly } from "@interfaces/sheets/monthly.interface";
 import type { IName } from "@interfaces/entities/name.interface";
@@ -20,7 +22,9 @@ export interface ISheet {
     properties: ISheetProperties;
     addresses: IAddress[];
     daily: IDaily[];
+    deliveries: IDelivery[];
     expenses: IExpense[];
+    locations: ILocation[];
     monthly: IMonthly[];
     names: IName[];
     places: IPlace[];

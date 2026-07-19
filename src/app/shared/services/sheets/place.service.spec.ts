@@ -11,8 +11,6 @@ describe('PlaceService', () => {
     rowId: overrides.rowId ?? 1,
     saved: overrides.saved ?? true,
     place: overrides.place ?? 'Target',
-    addresses: overrides.addresses ?? [],
-    types: overrides.types ?? [],
     trips: overrides.trips ?? 5,
     pay: overrides.pay ?? 50,
     tip: overrides.tip ?? 10,

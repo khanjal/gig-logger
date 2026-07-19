@@ -25,6 +25,7 @@ import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
+import { LocationService } from '@services/sheets/location.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { ServiceService } from '@services/sheets/service.service';
@@ -52,6 +53,7 @@ export class DiagnosticsComponent implements OnInit {
   private _shiftService = inject(ShiftService);
   private _tripService = inject(TripService);
   private _addressService = inject(AddressService);
+  private _locationService = inject(LocationService);
   private _placeService = inject(PlaceService);
   private _nameService = inject(NameService);
   private _serviceService = inject(ServiceService);
@@ -111,7 +113,7 @@ export class DiagnosticsComponent implements OnInit {
     const diagnostics: IDiagnosticItem[] = [];
     const shifts = await this._shiftService.list();
     const trips = await this._tripService.list();
-    const places = await this._placeService.list();
+    const locations = await this._locationService.list();
 
     // Duplicate shifts via shared utility (same key)
     const shiftGroups = await this._shiftService.findDuplicates('key', { mode: 'equals', caseInsensitive: false, normalize: true });
@@ -299,7 +301,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for trips with place but no start address
-    const tripsWithPlaceNoAddress = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, this.selectedAddress);
+    const tripsWithPlaceNoAddress = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, locations, this.selectedAddress);
     this._logger.debug('Trips with place but no address found:', tripsWithPlaceNoAddress);
     diagnostics.push({
       name: 'Trip Places Missing Address',

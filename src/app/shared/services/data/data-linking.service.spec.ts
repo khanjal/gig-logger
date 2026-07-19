@@ -7,17 +7,8 @@ import { RegionService } from '../sheets/region.service';
 import { ServiceService } from '../sheets/service.service';
 import { TripService } from '../sheets/trip.service';
 import { TypeService } from '../sheets/type.service';
-import { DeliveryService } from '../delivery.service';
 import { LoggerService } from '../logger.service';
 import type { ITrip } from '@interfaces/entities/trip.interface';
-import type { IDelivery } from '@interfaces/entities/delivery.interface';
-import type { IAddress } from '@interfaces/entities/address.interface';
-
-interface DataLinkingServicePrivates {
-  linkNameData(): Promise<void>;
-  linkAddressData(): Promise<void>;
-  linkPlaceData(): Promise<void>;
-}
 
 const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
   id: overrides.id ?? 1,
@@ -61,18 +52,16 @@ describe('DataLinkingService', () => {
   let serviceSpy: jasmine.SpyObj<ServiceService>;
   let tripSpy: jasmine.SpyObj<TripService>;
   let typeSpy: jasmine.SpyObj<TypeService>;
-  let deliverySpy: jasmine.SpyObj<DeliveryService>;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(() => {
-    addressSpy = jasmine.createSpyObj('AddressService', ['list', 'append', 'update', 'deleteUnsaved', 'find', 'add']);
-    nameSpy = jasmine.createSpyObj('NameService', ['list', 'append', 'update', 'deleteUnsaved', 'find', 'add']);
-    placeSpy = jasmine.createSpyObj('PlaceService', ['list', 'update', 'deleteUnsaved', 'find', 'add']);
+    addressSpy = jasmine.createSpyObj('AddressService', ['deleteUnsaved', 'find', 'add']);
+    nameSpy = jasmine.createSpyObj('NameService', ['deleteUnsaved', 'find', 'add']);
+    placeSpy = jasmine.createSpyObj('PlaceService', ['deleteUnsaved', 'find', 'add']);
     regionSpy = jasmine.createSpyObj('RegionService', ['deleteUnsaved', 'find', 'add']);
     serviceSpy = jasmine.createSpyObj('ServiceService', ['deleteUnsaved', 'find', 'add']);
-    tripSpy = jasmine.createSpyObj('TripService', ['list', 'getPreviousDays']);
+    tripSpy = jasmine.createSpyObj('TripService', ['getPreviousDays']);
     typeSpy = jasmine.createSpyObj('TypeService', ['deleteUnsaved', 'find', 'add']);
-    deliverySpy = jasmine.createSpyObj('DeliveryService', ['list', 'load']);
     loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'debug', 'warn']);
 
     TestBed.configureTestingModule({
@@ -85,7 +74,6 @@ describe('DataLinkingService', () => {
         { provide: ServiceService, useValue: serviceSpy },
         { provide: TripService, useValue: tripSpy },
         { provide: TypeService, useValue: typeSpy },
-        { provide: DeliveryService, useValue: deliverySpy },
         { provide: LoggerService, useValue: loggerSpy },
       ]
     });
@@ -95,51 +83,6 @@ describe('DataLinkingService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  describe('linkDeliveries', () => {
-    it('merges existing deliveries and updates totals', async () => {
-      const existing: IDelivery[] = [{
-        address: '456 B St',
-        name: 'John',
-        bonus: 0,
-        cash: 0,
-        pay: 0,
-        tip: 0,
-        trips: [],
-        total: 0,
-        visits: 0,
-        dates: [],
-        places: [],
-        services: [],
-        units: [],
-        notes: []
-      } as IDelivery];
-      deliverySpy.list.and.returnValue(Promise.resolve(existing));
-
-      const trips = [makeTrip()];
-
-      await service.linkDeliveries(trips);
-
-      expect(deliverySpy.load).toHaveBeenCalled();
-      const updated = deliverySpy.load.calls.mostRecent().args[0][0];
-      expect(updated.pay).toBeGreaterThan(0);
-      expect(updated.visits).toBe(1);
-      expect(updated.trips.length).toBe(1);
-      expect(updated.dates.length).toBe(1);
-    });
-
-    it('creates new delivery when none exists', async () => {
-      deliverySpy.list.and.returnValue(Promise.resolve([]));
-      const trips = [makeTrip()];
-
-      await service.linkDeliveries(trips);
-
-      expect(deliverySpy.load).toHaveBeenCalled();
-      const deliveriesArg = deliverySpy.load.calls.mostRecent().args[0];
-      expect(deliveriesArg.length).toBe(1);
-      expect(deliveriesArg[0].address).toBe('456 B St');
-    });
   });
 
   describe('updateAncillaryInfo', () => {
@@ -170,59 +113,6 @@ describe('DataLinkingService', () => {
       expect(regionSpy.add).toHaveBeenCalled();
       expect(serviceSpy.add).toHaveBeenCalled();
       expect(typeSpy.add).toHaveBeenCalled();
-    });
-  });
-
-  describe('linkAllData', () => {
-    it('runs linkNameData, linkAddressData, and linkPlaceData', async () => {
-      const linkName = spyOn(service as unknown as DataLinkingServicePrivates, 'linkNameData').and.returnValue(Promise.resolve());
-      const linkAddr = spyOn(service as unknown as DataLinkingServicePrivates, 'linkAddressData').and.returnValue(Promise.resolve());
-      const linkPlace = spyOn(service as unknown as DataLinkingServicePrivates, 'linkPlaceData').and.returnValue(Promise.resolve());
-
-      await service.linkAllData();
-
-      expect(linkName).toHaveBeenCalled();
-      expect(linkAddr).toHaveBeenCalled();
-      expect(linkPlace).toHaveBeenCalled();
-    });
-  });
-
-  describe('linkAddressData', () => {
-    it('updates addresses with linked names/notes without append re-aggregation', async () => {
-      const address = {
-        id: 10,
-        address: '456 B St',
-        names: [],
-        notes: [],
-        trips: 3,
-        pay: 100,
-        tip: 20,
-        bonus: 0,
-        cash: 0,
-        total: 120,
-        rowId: 10,
-        saved: true,
-      } as unknown as IAddress;
-
-      const trip = makeTrip({
-        endAddress: '456 B St',
-        name: 'John',
-        note: 'Leave at door',
-        total: 25,
-      });
-
-      addressSpy.list.and.returnValue(Promise.resolve([address]));
-      tripSpy.list.and.returnValue(Promise.resolve([trip]));
-
-      await (service as unknown as DataLinkingServicePrivates).linkAddressData();
-
-      expect(addressSpy.update).toHaveBeenCalled();
-      expect(addressSpy.append).not.toHaveBeenCalled();
-
-      const updatedAddress = addressSpy.update.calls.mostRecent().args[0][0] as IAddress;
-      expect(updatedAddress.names).toContain('John');
-      expect(updatedAddress.notes.length).toBe(1);
-      expect(updatedAddress.trips).toBe(3);
     });
   });
 });

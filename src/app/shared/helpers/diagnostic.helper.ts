@@ -2,7 +2,7 @@ import type { TripService } from '@services/sheets/trip.service';
 import type { ShiftService } from '@services/sheets/shift.service';
 import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
-import type { IPlace } from '@interfaces/entities/place.interface';
+import type { ILocation } from '@interfaces/entities/location.interface';
 import type { IDiagnosticItem, IDiagnosticRecord, IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/stats/diagnostic.interface';
 
 export class DiagnosticHelper {
@@ -45,7 +45,7 @@ export class DiagnosticHelper {
    */
   public static findTripsWithPlaceNoAddress(
     trips: ITrip[],
-    places: IPlace[],
+    locations: ILocation[],
     selectedAddress: Record<number, string>
   ): (ITrip & { availableAddresses: string[] })[] {
     // Validate selectedAddress parameter
@@ -53,22 +53,26 @@ export class DiagnosticHelper {
       throw new Error('selectedAddress parameter must be a valid object');
     }
 
-    const placeMap = new Map<string, IPlace>();
-    places.forEach(p => placeMap.set(p.place, p));
+    // Address breakdown now comes from the server-computed Locations sheet (RaptorSheets.Gig)
+    const addressesByPlace = new Map<string, string[]>();
+    for (const location of locations) {
+      const existing = addressesByPlace.get(location.place) || [];
+      existing.push(location.address);
+      addressesByPlace.set(location.place, existing);
+    }
 
     return trips.filter(trip => {
       const hasPlace = trip.place && trip.place.trim().length > 0;
       const hasStartAddress = trip.startAddress && trip.startAddress.trim().length > 0;
       return hasPlace && !hasStartAddress;
     }).map(trip => {
-      const place = placeMap.get(trip.place);
-      const availableAddresses = place?.addresses?.map(a => a.address) || [];
-      
+      const availableAddresses = addressesByPlace.get(trip.place) || [];
+
       // Auto-select if only one address available
       if (availableAddresses.length === 1) {
         selectedAddress[trip.rowId] = availableAddresses[0];
       }
-      
+
       return {
         ...trip,
         availableAddresses

@@ -116,7 +116,7 @@ describe('GigWorkflowService', () => {
     it('delegates getSheetData to ApiService', async () => {
       const sheetData: ISheet = {
         properties: { id: 'id', name: 'name' },
-        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+        addresses: [], daily: [], deliveries: [], expenses: [], locations: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
       };
       mockApiService.getSheetData.and.returnValue(Promise.resolve(sheetData));
 
@@ -169,7 +169,7 @@ describe('GigWorkflowService', () => {
     it('delegates loadData to DataLoaderService', async () => {
       const sheetData: ISheet = {
         properties: { id: 'id', name: 'name' },
-        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+        addresses: [], daily: [], deliveries: [], expenses: [], locations: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
       };
       mockDataLoader.loadData.and.returnValue(Promise.resolve());
 
@@ -181,7 +181,7 @@ describe('GigWorkflowService', () => {
     it('delegates appendData to DataLoaderService', async () => {
       const sheetData: ISheet = {
         properties: { id: 'id', name: 'name' },
-        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+        addresses: [], daily: [], deliveries: [], expenses: [], locations: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
       };
       mockDataLoader.appendData.and.returnValue(Promise.resolve());
 
