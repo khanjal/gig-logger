@@ -155,7 +155,7 @@
       <div class="my-5">
         <app-base-accordion>
           <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
-            @for (delivery of selectedNameDeliveries; track delivery) {
+            @for (delivery of selectedNameDeliveries; track delivery.address) {
               <div class="flex flex-col gap-1">
                 @if (!delivery.address) {
                   <div class="text-secondary font-medium">
@@ -193,7 +193,7 @@
       <div class="my-5">
         <app-base-accordion>
           <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
-            @for (delivery of selectedAddressDeliveries; track delivery) {
+            @for (delivery of selectedAddressDeliveries; track delivery.name) {
               <div class="flex flex-col gap-1">
                 @if (!delivery.name) {
                   <div class="text-secondary font-medium">
