@@ -1,6 +1,6 @@
-import { IAmount } from "@interfaces/sheets/amount.interface";
-import { INote } from "@interfaces/entities/note.interface";
-import { IRowState } from "@interfaces/sheets/row-state.interface";
+import type { IAmount } from "@interfaces/sheets/amount.interface";
+import type { INote } from "@interfaces/entities/note.interface";
+import type { IRowState } from "@interfaces/sheets/row-state.interface";
 
 export interface IName extends IAmount, IRowState {
     id?: number;

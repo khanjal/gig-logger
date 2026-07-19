@@ -4,10 +4,10 @@ import { ApiService } from './api.service';
 import { DataLoaderService } from './data/data-loader.service';
 import { DataLinkingService } from './data/data-linking.service';
 import { GigCalculatorService } from './calculations/gig-calculator.service';
-import { ISheet } from '@interfaces/sheets/sheet.interface';
-import { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
-import { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
-import { IShift } from '@interfaces/entities/shift.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
+import type { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 import type { IAuthTokenResponse } from '@interfaces/auth/auth-token-response.interface';
 

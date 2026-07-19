@@ -1,6 +1,7 @@
 // Angular core imports
 import { ViewportScroller, CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, signal, ViewChild, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, signal, ViewChild, inject } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -39,7 +40,7 @@ import { TripHelper } from '@helpers/trip.helper';
 import { getValueOrFallback } from '@helpers/array.helper';
 
 // Application-specific imports - Types
-import { TripFormValue } from '@form-types/trip-form.types';
+import type { TripFormValue } from '@form-types/trip-form.types';
 
 // Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';

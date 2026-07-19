@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { spreadsheetDB } from "@data/spreadsheet.db";
-import { IRating } from "@interfaces/entities/rating.interface";
+import type { IRating } from "@interfaces/entities/rating.interface";
 import { liveQuery } from "dexie";
 
 @Injectable({

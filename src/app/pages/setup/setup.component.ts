@@ -1,5 +1,6 @@
 // Angular Core
-import { Component, signal, ViewChild, OnInit, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, signal, ViewChild, inject } from '@angular/core';
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';

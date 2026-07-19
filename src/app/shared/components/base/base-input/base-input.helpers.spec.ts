@@ -1,4 +1,5 @@
-import { FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
+import type { AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { subscribeControlStatus, firstErrorMessage, controlHasError } from './base-input.helpers';
 

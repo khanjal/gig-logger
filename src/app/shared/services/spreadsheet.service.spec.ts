@@ -5,8 +5,8 @@ import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
 import { localDB } from '@data/local.db';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
-import { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 
 describe('SpreadsheetService', () => {

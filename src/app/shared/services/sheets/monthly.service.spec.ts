@@ -1,6 +1,6 @@
 import { MonthlyService } from './monthly.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IMonthly } from '@interfaces/sheets/monthly.interface';
+import type { IMonthly } from '@interfaces/sheets/monthly.interface';
 
 const makeMonthly = (overrides: Partial<IMonthly> = {}): IMonthly => ({
   rowId: overrides.rowId ?? 1,

@@ -1,5 +1,5 @@
-import { TripService } from '@services/sheets/trip.service';
-import { ShiftService } from '@services/sheets/shift.service';
+import type { TripService } from '@services/sheets/trip.service';
+import type { ShiftService } from '@services/sheets/shift.service';
 import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 import type { IPlace } from '@interfaces/entities/place.interface';

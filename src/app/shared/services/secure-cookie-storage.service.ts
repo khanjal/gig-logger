@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OAuthStorage } from 'angular-oauth2-oidc';
+import type { OAuthStorage } from 'angular-oauth2-oidc';
 
 @Injectable({
   providedIn: 'root'

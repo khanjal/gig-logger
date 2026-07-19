@@ -1,9 +1,11 @@
 // Angular imports
-import { Component, ElementRef, ViewChild, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import type { ElementRef, OnInit, OnDestroy} from '@angular/core';
+import { Component, ViewChild, signal, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
-import { map, Subscription, timer } from 'rxjs';
+import type { Subscription} from 'rxjs';
+import { map, timer } from 'rxjs';
 
 // Application-specific imports - Helpers
 import { DateHelper } from '@helpers/date.helper';

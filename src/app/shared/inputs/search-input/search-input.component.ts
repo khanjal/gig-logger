@@ -1,11 +1,12 @@
 // Angular core imports
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal, OnInit, OnChanges, inject } from '@angular/core';
+import type { ElementRef, OnDestroy, OnInit, OnChanges} from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, Output, ViewChild, signal, inject } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material imports
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { MatOptionSelectionChange } from '@angular/material/core';
+import type { MatOptionSelectionChange } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,7 +39,8 @@ import { DropdownDataService } from '@services/dropdown-data.service';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 
 // RxJS imports
-import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
+import type { Observable, Subscription } from 'rxjs';
+import { switchMap, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
 

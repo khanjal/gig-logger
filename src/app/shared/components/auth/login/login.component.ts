@@ -1,4 +1,5 @@
-import { Component, OnInit, Type, inject } from '@angular/core';
+import type { OnInit, Type} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGoogleService } from '@services/auth-google.service';

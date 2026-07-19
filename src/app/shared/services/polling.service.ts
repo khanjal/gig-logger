@@ -1,4 +1,5 @@
-import { EventEmitter, Injectable, OnDestroy, Output, inject } from '@angular/core';
+import type { OnDestroy} from '@angular/core';
+import { EventEmitter, Injectable, Output, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
@@ -10,7 +11,8 @@ import { SyncStatusService } from './sync-status.service';
 import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import type { Subscription } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { AuthGoogleService } from './auth-google.service';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute

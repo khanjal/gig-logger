@@ -1,7 +1,8 @@
 import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
-import Dexie, { Table } from 'dexie';
+import type { Table } from 'dexie';
+import Dexie from 'dexie';
 
 
 export class AppDB extends Dexie {

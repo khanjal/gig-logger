@@ -1,7 +1,9 @@
 // Imports
-import { Component, DestroyRef, OnInit, inject, signal, ViewEncapsulation } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, DestroyRef, inject, signal, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
+import type { ChartOptions, ChartData} from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
 import type { IShift } from '@interfaces/entities/shift.interface';
 import { ThemeService } from '@services/theme.service';
@@ -12,7 +14,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
-import ChartDataLabels, { Context as DataLabelsContext } from 'chartjs-plugin-datalabels';
+import type { Context as DataLabelsContext } from 'chartjs-plugin-datalabels';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
 import { combineLatest, from, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';

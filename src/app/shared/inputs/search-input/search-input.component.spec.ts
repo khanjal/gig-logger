@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 
 import { SearchInputComponent } from './search-input.component';
@@ -20,7 +21,7 @@ import type { IName } from '@interfaces/entities/name.interface';
 import type { IAutocompleteResult } from '@interfaces/external/google-places.interface';
 import type { IService } from '@interfaces/entities/service.interface';
 import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
-import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import type { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 // Exposes the private/internal surface of SearchInputComponent that these
 // class-only tests exercise directly, to avoid `any` casts.

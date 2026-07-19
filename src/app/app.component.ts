@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import type { OnInit, OnDestroy} from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { HeaderComponent } from './shared/header/header.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import { Subscription } from 'rxjs';
+import type { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 

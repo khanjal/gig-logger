@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { BaseDatepickerComponent } from './base-datepicker.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import type { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 describe('BaseDatepickerComponent', () => {
   let component: BaseDatepickerComponent;

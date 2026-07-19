@@ -2,10 +2,12 @@
 // https://dev.to/paullaros/using-angular-materials-calendar-with-date-ranges-and-range-presets-221j
 // https://qupaya.com/blog/angular-date-range-picker-with-custom-range-presets/
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject } from '@angular/core';
+import type { OnDestroy} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
+import type {
+  MatDateFormats} from '@angular/material/core';
 import {
   DateAdapter,
-  MatDateFormats,
   MAT_DATE_FORMATS,
 } from '@angular/material/core';
 import { MatCalendar } from '@angular/material/datepicker';

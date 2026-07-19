@@ -1,5 +1,6 @@
 import { Component, Input, inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormGroupDirective } from '@angular/forms';
+import type { ControlValueAccessor} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, NgControl, FormGroupDirective } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';

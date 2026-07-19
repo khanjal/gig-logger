@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import type { CanActivateFn } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthGoogleService } from '../services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 

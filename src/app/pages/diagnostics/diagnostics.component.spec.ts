@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { DiagnosticsComponent } from './diagnostics.component';
 import { ActionEnum } from '@enums/action.enum';
 import { DiagnosticHelper } from '@helpers/diagnostic.helper';

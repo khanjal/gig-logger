@@ -9,8 +9,8 @@ import { TripService } from '../sheets/trip.service';
 import { TypeService } from '../sheets/type.service';
 import { DeliveryService } from '../delivery.service';
 import { LoggerService } from '../logger.service';
-import { ITrip } from '@interfaces/entities/trip.interface';
-import { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IDelivery } from '@interfaces/entities/delivery.interface';
 import type { IAddress } from '@interfaces/entities/address.interface';
 
 interface DataLinkingServicePrivates {

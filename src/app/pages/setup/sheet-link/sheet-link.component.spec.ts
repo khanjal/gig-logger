@@ -1,10 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { SheetLinkComponent } from './sheet-link.component';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '@services/logger.service';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import type { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';

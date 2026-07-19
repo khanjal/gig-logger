@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthGuardService } from './auth-guard.service';
 import { AuthGoogleService } from '../services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
 describe('AuthGuardService', () => {
   let service: AuthGuardService;

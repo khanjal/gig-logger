@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { DeliveryService } from './delivery.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { IDelivery } from '@interfaces/entities/delivery.interface';
 
 describe('DeliveryService', () => {
   let service: DeliveryService;

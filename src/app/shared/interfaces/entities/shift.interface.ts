@@ -1,5 +1,5 @@
-import { IActionRecord } from "@interfaces/sheets/action-record.interface";
-import { IAmountPer } from "@interfaces/sheets/amount-per.interface";
+import type { IActionRecord } from "@interfaces/sheets/action-record.interface";
+import type { IAmountPer } from "@interfaces/sheets/amount-per.interface";
 
 export interface IShift extends IAmountPer, IActionRecord {
     id?: number;

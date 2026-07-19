@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { DateHelper } from '@helpers/date.helper';

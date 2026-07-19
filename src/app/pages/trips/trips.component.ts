@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild, signal, computed, inject } from '@angular/core';
+import type { OnDestroy, OnInit} from '@angular/core';
+import { Component, ViewChild, signal, computed, inject } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 
 // Angular Material + Router

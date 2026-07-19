@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthGoogleService } from './auth-google.service';
-import { OAuthService, OAuthSuccessEvent } from 'angular-oauth2-oidc';
+import type { OAuthSuccessEvent } from 'angular-oauth2-oidc';
+import { OAuthService } from 'angular-oauth2-oidc';
 import type { IAuthTokenResponse } from '@interfaces/auth/auth-token-response.interface';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';

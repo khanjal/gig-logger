@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import type { OnInit, OnDestroy} from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
 import { AppUpdateService } from '@services/app-update.service';
-import { Subscription } from 'rxjs';
+import type { Subscription } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import type { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
 import type { IBeforeInstallPromptEvent } from '@interfaces/external/before-install-prompt-event.interface';

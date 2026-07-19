@@ -1,4 +1,5 @@
-import { Component, OnInit, effect, signal, computed, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, effect, signal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';

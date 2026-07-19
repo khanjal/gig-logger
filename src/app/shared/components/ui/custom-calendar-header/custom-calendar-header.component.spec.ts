@@ -1,5 +1,6 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { CustomCalendarHeaderComponent } from './custom-calendar-header.component';

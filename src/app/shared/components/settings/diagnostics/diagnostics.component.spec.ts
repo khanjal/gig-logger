@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { DiagnosticsComponent } from './diagnostics.component';
 import type { IShift } from '@interfaces/entities/shift.interface';

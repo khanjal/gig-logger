@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { TripsTableGroupComponent } from './trips-table-group.component';
 import { TripService } from '@services/sheets/trip.service';

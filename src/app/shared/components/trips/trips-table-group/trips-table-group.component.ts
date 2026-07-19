@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges, Injector, inject, runInInjectionContext, afterNextRender } from '@angular/core';
+import type { OnChanges, OnInit, AfterViewInit, QueryList, ElementRef, SimpleChanges} from '@angular/core';
+import { ChangeDetectorRef, ChangeDetectionStrategy, Component, Input, ViewChildren, Injector, inject, runInInjectionContext, afterNextRender } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { TripService } from '@services/sheets/trip.service';

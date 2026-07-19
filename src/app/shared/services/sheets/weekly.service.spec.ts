@@ -1,6 +1,6 @@
 import { WeeklyService } from './weekly.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IWeekly } from '@interfaces/sheets/weekly.interface';
+import type { IWeekly } from '@interfaces/sheets/weekly.interface';
 
 const makeWeekly = (overrides: Partial<IWeekly> = {}): IWeekly => ({
   rowId: overrides.rowId ?? 1,

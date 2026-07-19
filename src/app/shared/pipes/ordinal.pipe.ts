@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
 
 @Pipe({ name: 'ordinal', standalone: true })
 export class OrdinalPipe implements PipeTransform {

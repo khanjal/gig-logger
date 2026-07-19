@@ -15,7 +15,8 @@ import type { IWeekday } from '@interfaces/sheets/weekday.interface';
 import type { IWeekly } from '@interfaces/sheets/weekly.interface';
 import type { IYearly } from '@interfaces/sheets/yearly.interface';
 import type { IExpense } from '@interfaces/entities/expense.interface';
-import Dexie, { Table } from 'dexie';
+import type { Table } from 'dexie';
+import Dexie from 'dexie';
 
 // https://dexie.org/docs/Tutorial/Angular
 

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { TripComponent } from './pages/trips/trips.component';
 import { SetupComponent } from './pages/setup/setup.component';

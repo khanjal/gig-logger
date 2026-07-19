@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import type { OnInit, OnDestroy} from '@angular/core';
+import { Component, EventEmitter, Output, signal, inject } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';

@@ -13,7 +13,7 @@ import { TripService } from "@services/sheets/trip.service";
 import { TypeService } from "@services/sheets/type.service";
 import { DeliveryService } from "@services/delivery.service";
 import { LoggerService } from "@services/logger.service";
-import { GenericCrudService } from "@services/generic-crud.service";
+import type { GenericCrudService } from "@services/generic-crud.service";
 import { sort } from "@helpers/sort.helper";
 import { groupBy, uniquePush } from "@helpers/array.helper";
 

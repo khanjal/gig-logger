@@ -1,7 +1,7 @@
 import { TripHelper } from './trip.helper';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 import type { IShift } from '@interfaces/entities/shift.interface';
-import { TripFormValue } from '../types/trip-form.types';
+import type { TripFormValue } from '../types/trip-form.types';
 import { ActionEnum } from '../enums/action.enum';
 
 describe('TripHelper', () => {

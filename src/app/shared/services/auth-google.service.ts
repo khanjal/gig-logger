@@ -4,7 +4,7 @@ import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { authConfig } from './auth.config';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
-import { UserProfile } from '@interfaces/auth/user-profile.interface';
+import type { UserProfile } from '@interfaces/auth/user-profile.interface';
 import { GigWorkflowService } from './gig-workflow.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';

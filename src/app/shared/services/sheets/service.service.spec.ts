@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ServiceService } from './service.service';
-import { IService } from '@interfaces/entities/service.interface';
+import type { IService } from '@interfaces/entities/service.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('ServiceService', () => {

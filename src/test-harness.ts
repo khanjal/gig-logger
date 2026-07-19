@@ -7,7 +7,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { SwUpdate } from '@angular/service-worker';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ActivatedRoute } from '@angular/router';
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { of, Subject, BehaviorSubject } from 'rxjs';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';

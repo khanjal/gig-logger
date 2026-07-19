@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { TripsQuickViewComponent } from './trips-quick-view.component';
@@ -9,8 +10,8 @@ import { GigWorkflowService } from '@services/gig-workflow.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { ITrip } from '@interfaces/entities/trip.interface';
+import type { MatDialog } from '@angular/material/dialog';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import type { IShift } from '@interfaces/entities/shift.interface';
 
 describe('TripsQuickViewComponent', () => {

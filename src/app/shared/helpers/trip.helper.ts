@@ -4,7 +4,7 @@ import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
-import { TripFormValue } from '@form-types/trip-form.types';
+import type { TripFormValue } from '@form-types/trip-form.types';
 
 export class TripHelper {
     /**

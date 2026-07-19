@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ITrip } from '@interfaces/entities/trip.interface';
-import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search/search-result.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search/search-result.interface';
 
 @Injectable({
   providedIn: 'root'

@@ -1,5 +1,6 @@
 import { Injectable, NgZone, inject } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, merge, fromEvent } from 'rxjs';
+import type { Observable, Subscription} from 'rxjs';
+import { BehaviorSubject, merge, fromEvent } from 'rxjs';
 import { map, startWith, debounceTime, shareReplay } from 'rxjs/operators';
 
 export interface ViewportSnapshot {

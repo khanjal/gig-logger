@@ -1,4 +1,4 @@
-import { IActionRecord } from '@interfaces/sheets/action-record.interface';
+import type { IActionRecord } from '@interfaces/sheets/action-record.interface';
 
 export interface IExpense extends IActionRecord {
   id?: number; // Auto-incremented by Dexie

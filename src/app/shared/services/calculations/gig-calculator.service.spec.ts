@@ -5,9 +5,9 @@ import { TripService } from '../sheets/trip.service';
 import { WeekdayService } from '../sheets/weekday.service';
 import { LoggerService } from '../logger.service';
 import { DateHelper } from '@helpers/date.helper';
-import { IShift } from '@interfaces/entities/shift.interface';
-import { ITrip } from '@interfaces/entities/trip.interface';
-import { IWeekday } from '@interfaces/sheets/weekday.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IWeekday } from '@interfaces/sheets/weekday.interface';
 
 describe('GigCalculatorService', () => {
   let service: GigCalculatorService;

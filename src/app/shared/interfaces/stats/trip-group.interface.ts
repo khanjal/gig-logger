@@ -1,4 +1,4 @@
-import { ITrip } from "@interfaces/entities/trip.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
 
 export interface ITripGroup {
     date: string,

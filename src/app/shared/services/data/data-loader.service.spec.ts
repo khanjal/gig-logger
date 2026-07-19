@@ -17,7 +17,7 @@ import { WeeklyService } from '../sheets/weekly.service';
 import { YearlyService } from '../sheets/yearly.service';
 import { DataLinkingService } from './data-linking.service';
 import { LoggerService } from '../logger.service';
-import { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
 
 describe('DataLoaderService', () => {
   let service: DataLoaderService;

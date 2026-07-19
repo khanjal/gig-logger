@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AddressService } from './address.service';
-import { IAddress } from '@interfaces/entities/address.interface';
+import type { IAddress } from '@interfaces/entities/address.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('AddressService', () => {

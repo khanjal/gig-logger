@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular/core';
+import type { OnInit, OnDestroy} from '@angular/core';
+import { Component, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,7 +24,8 @@ import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trip
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseFabButtonComponent, BaseRectButtonComponent, BaseFieldButtonComponent } from '@components/base';
 import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
-import { Subject, debounceTime, distinctUntilChanged, Observable, from, startWith, switchMap, takeUntil } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, from, startWith, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-search',

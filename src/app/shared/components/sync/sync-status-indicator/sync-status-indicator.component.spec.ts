@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { SyncStatusIndicatorComponent } from './sync-status-indicator.component';
 import { SyncStatusService } from '@services/sync-status.service';
@@ -10,11 +11,13 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import type { ThemePreference } from '@interfaces/ui/theme.interface';
 import type { ISyncState, ISyncMessage } from '@interfaces/sync/sync-status.interface';
 import type { UserProfile } from '@interfaces/auth/user-profile.interface';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import type { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import type { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
 describe('SyncStatusIndicatorComponent', () => {
   let component: SyncStatusIndicatorComponent;

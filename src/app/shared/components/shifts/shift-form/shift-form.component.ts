@@ -1,4 +1,5 @@
-import { afterNextRender, Component, EventEmitter, inject, Injector, Input, OnChanges, OnInit, Output, runInInjectionContext, SimpleChanges } from '@angular/core';
+import type { OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { afterNextRender, Component, EventEmitter, inject, Injector, Input, Output, runInInjectionContext } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import type { IShift } from '@interfaces/entities/shift.interface';
 import { CommonModule } from '@angular/common';

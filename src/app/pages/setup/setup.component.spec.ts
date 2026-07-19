@@ -385,7 +385,7 @@ describe('SetupComponent (class-only)', () => {
     });
   });
 });
-import { ComponentFixture } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 

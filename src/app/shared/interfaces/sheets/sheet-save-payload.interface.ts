@@ -1,7 +1,7 @@
-import { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
-import { IExpense } from '@interfaces/entities/expense.interface';
-import { ITripSheetRow } from '@interfaces/sheets/trip-sheet-row.interface';
-import { IShiftSheetRow } from '@interfaces/sheets/shift-sheet-row.interface';
+import type { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
+import type { ITripSheetRow } from '@interfaces/sheets/trip-sheet-row.interface';
+import type { IShiftSheetRow } from '@interfaces/sheets/shift-sheet-row.interface';
 
 /**
  * Payload used when sending sheet save requests to the backend.

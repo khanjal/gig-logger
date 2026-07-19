@@ -1,5 +1,6 @@
-import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy, inject } from '@angular/core';
-import { Subscription } from 'rxjs';
+import type { OnDestroy} from '@angular/core';
+import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, inject } from '@angular/core';
+import type { Subscription } from 'rxjs';
 import { ViewportService } from '@services/viewport.service';
 
 @Directive({

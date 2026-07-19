@@ -1,6 +1,6 @@
 import { SyncableCrudService } from './syncable-crud.service';
 import { ActionEnum } from '@enums/action.enum';
-import { IActionRecord } from '@interfaces/sheets/action-record.interface';
+import type { IActionRecord } from '@interfaces/sheets/action-record.interface';
 import type { Table } from 'dexie';
 
 interface SyncEntity extends IActionRecord {

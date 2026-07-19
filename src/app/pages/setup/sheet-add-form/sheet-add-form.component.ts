@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output, signal, OnInit, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, EventEmitter, Output, signal, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { environment } from "src/environments/environment";
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';

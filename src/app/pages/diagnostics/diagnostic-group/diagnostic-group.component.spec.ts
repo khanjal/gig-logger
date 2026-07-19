@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DiagnosticGroupComponent } from './diagnostic-group.component';
-import { DiagnosticEntityType } from '@interfaces/stats/diagnostic.interface';
+import type { DiagnosticEntityType } from '@interfaces/stats/diagnostic.interface';
 
 describe('DiagnosticGroupComponent', () => {
   let component: DiagnosticGroupComponent;

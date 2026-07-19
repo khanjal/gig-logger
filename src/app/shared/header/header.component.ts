@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, signal, inject } from '@angular/core';
+import type { OnInit, OnDestroy} from '@angular/core';
+import { Component, Output, EventEmitter, Input, signal, inject } from '@angular/core';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AuthGoogleService } from '@services/auth-google.service';

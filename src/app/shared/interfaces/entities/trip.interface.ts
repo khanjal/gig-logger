@@ -1,5 +1,5 @@
-import { IActionRecord } from "@interfaces/sheets/action-record.interface";
-import { IAmount } from "@interfaces/sheets/amount.interface";
+import type { IActionRecord } from "@interfaces/sheets/action-record.interface";
+import type { IAmount } from "@interfaces/sheets/amount.interface";
 
 export interface ITrip extends IAmount, IActionRecord {
     id?: number;

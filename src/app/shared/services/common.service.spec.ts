@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { CommonService } from './common.service';
-import { Subscription } from 'rxjs';
+import type { Subscription } from 'rxjs';
 
 describe('CommonService', () => {
   let service: CommonService;

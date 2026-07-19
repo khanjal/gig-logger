@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SyncableCrudService } from '@services/syncable-crud.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IExpense } from '@interfaces/entities/expense.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 import { from } from 'rxjs';
 import { liveQuery } from 'dexie';
 
