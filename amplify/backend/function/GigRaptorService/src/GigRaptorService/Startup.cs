@@ -76,7 +76,15 @@ public class Startup
         // Register LazyS3Service as a singleton since it uses lazy initialization
         services.AddSingleton<IS3Service, LazyS3Service>();
 
-        // Register HTTP client factory
+        // Register HTTP client factory with a default timeout so calls to Google Sheets/Places
+        // can't hang the Lambda indefinitely if those services are slow or unresponsive.
+        services.ConfigureHttpClientDefaults(builder =>
+        {
+            builder.ConfigureHttpClient(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+        });
         services.AddHttpClient();
 
         // Register Google Places service with DynamoDB rate limiter
