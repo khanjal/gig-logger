@@ -13,6 +13,6 @@ export class DailyService extends GenericCrudService<IDaily> {
       super(spreadsheetDB.daily); // Pass the table reference
     }
 
-    daily$ = from(liveQuery(() => spreadsheetDB.daily.toArray()));
+    public daily$ = from(liveQuery(() => spreadsheetDB.daily.toArray()));
 
 }

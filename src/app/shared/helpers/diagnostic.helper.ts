@@ -9,7 +9,7 @@ export class DiagnosticHelper {
   /**
    * Find trips that don't have a corresponding shift
    */
-  static findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
+  public static findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
     const shiftKeys = new Set(shifts.map(s => s.key));
     return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
   }
@@ -17,7 +17,7 @@ export class DiagnosticHelper {
   /**
    * Find shifts with start/end times but no calculated duration
    */
-  static findShiftsWithoutDuration(shifts: IShift[]): IShift[] {
+  public static findShiftsWithoutDuration(shifts: IShift[]): IShift[] {
     return shifts.filter(shift => {
       const hasStartTime = shift.start && shift.start.trim().length > 0;
       const hasEndTime = shift.finish && shift.finish.trim().length > 0;
@@ -30,7 +30,7 @@ export class DiagnosticHelper {
   /**
    * Find trips with pickup/dropoff times but no calculated duration
    */
-  static findTripsWithoutDuration(trips: ITrip[]): ITrip[] {
+  public static findTripsWithoutDuration(trips: ITrip[]): ITrip[] {
     return trips.filter(trip => {
       const hasPickupTime = trip.pickupTime && trip.pickupTime.trim().length > 0;
       const hasDropoffTime = trip.dropoffTime && trip.dropoffTime.trim().length > 0;
@@ -43,7 +43,7 @@ export class DiagnosticHelper {
   /**
    * Find trips with a place but no start address
    */
-  static findTripsWithPlaceNoAddress(
+  public static findTripsWithPlaceNoAddress(
     trips: ITrip[],
     places: IPlace[],
     selectedAddress: Record<number, string>
@@ -79,7 +79,7 @@ export class DiagnosticHelper {
   /**
    * Merge duplicate groups from multiple detection strategies (equals + contains)
    */
-  static mergeDuplicateGroups<T>(
+  public static mergeDuplicateGroups<T>(
     primary: IDuplicateGroup<T>[],
     secondary: IDuplicateGroup<T>[]
   ): IDuplicateResult<T> {
@@ -122,7 +122,7 @@ export class DiagnosticHelper {
   /**
    * Recompute trip/shift counts for a group after merging duplicates
    */
-  static async recomputeGroupCounts(
+  public static async recomputeGroupCounts(
     itemType: DiagnosticEntityType,
     group: IDiagnosticRecord[],
     tripService: TripService,
@@ -182,7 +182,7 @@ export class DiagnosticHelper {
   /**
    * Custom address comparator for finding duplicates with variations
    */
-  static createAddressComparator(): (a: string, b: string) => boolean {
+  public static createAddressComparator(): (a: string, b: string) => boolean {
     return (a: string, b: string): boolean => {
       const stripCountry = (s: string) => s.replace(/,\s*usa$/i, '');
       const normalize = (s: string) => stripCountry(s).trim().replace(/\s+/g, ' ');
@@ -239,7 +239,7 @@ export class DiagnosticHelper {
   /**
    * Mark orphaned-trip diagnostic items as fixed for the provided shift keys
    */
-  static markOrphanedTripsFixed(diagnostic: IDiagnosticItem | undefined, keys: string[]) {
+  public static markOrphanedTripsFixed(diagnostic: IDiagnosticItem | undefined, keys: string[]) {
     if (!diagnostic || !diagnostic.items || !Array.isArray(keys) || keys.length === 0) return;
 
     for (const key of keys) {

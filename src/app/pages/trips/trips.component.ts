@@ -59,7 +59,7 @@ import type { ITrip } from '@interfaces/entities/trip.interface';
 })
 
 export class TripComponent implements OnInit, OnDestroy {
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private _snackBar = inject(MatSnackBar);
   private _sheetService = inject(SpreadsheetService);
   private _tripService = inject(TripService);
@@ -73,43 +73,43 @@ export class TripComponent implements OnInit, OnDestroy {
   private _router = inject(Router);
   protected authService = inject(AuthGoogleService);
 
-  @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
-  @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
+  @ViewChild(TripFormComponent) public tripForm:TripFormComponent | undefined;
+  @ViewChild(TripsTableGroupComponent) public tripsTable:TripsTableGroupComponent | undefined;
 
-  clearing = signal(false);
-  reloading = signal(false);
-  saving = signal(false);
-  syncInProgress = signal(false);
-  pollingEnabled = signal(false);
-  showYesterdayTrips = signal(false); // Controls the visibility of yesterday's trips section
+  public clearing = signal(false);
+  public reloading = signal(false);
+  public saving = signal(false);
+  public syncInProgress = signal(false);
+  public pollingEnabled = signal(false);
+  public showYesterdayTrips = signal(false); // Controls the visibility of yesterday's trips section
   // Edit mode properties
-  isEditMode = signal(false);
-  editingTripId = signal<string | null>(null);
-  isLoading = signal(false); // General loading overlay state
+  public isEditMode = signal(false);
+  public editingTripId = signal<string | null>(null);
+  public isLoading = signal(false); // General loading overlay state
 
-  savedTrips: ITrip[] = [];
-  todaysTrips = signal<ITrip[]>([]);
-  yesterdaysTrips = signal<ITrip[]>([]);
-  unsavedData = signal(false);
-  demoSheetAttached = signal(false);
+  public savedTrips: ITrip[] = [];
+  public todaysTrips = signal<ITrip[]>([]);
+  public yesterdaysTrips = signal<ITrip[]>([]);
+  public unsavedData = signal(false);
+  public demoSheetAttached = signal(false);
 
-  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
-  actionEnum = ActionEnum;
+  public defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  public actionEnum = ActionEnum;
   protected readonly uiMessages = UI_MESSAGES;
   
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
 
-  trackByTrip(index: number, trip: ITrip): string | number {
+  public trackByTrip(index: number, trip: ITrip): string | number {
     return trip?.rowId ?? trip?.key ?? index;
   }
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     const initialTripId = this._route?.snapshot?.paramMap?.get('id') ?? null;
     this.isEditMode.set(!!initialTripId);
     this.editingTripId.set(initialTripId);
@@ -226,12 +226,12 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   // Toggle yesterday's trips visibility
-  toggleYesterdayTrips(): void {
+  public toggleYesterdayTrips(): void {
     this.showYesterdayTrips.update(show => !show);
   }
 
   // Scroll to today's trips section or specific trip
-  scrollToTrip(tripId?: string): void {
+  public scrollToTrip(tripId?: string): void {
     if (tripId) {
       // Scroll to specific trip by ID with offset
       const element = document.getElementById(tripId);
@@ -255,7 +255,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  async loadSheetDialog(inputValue: string) {
+  public async loadSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
@@ -277,7 +277,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  async saveSheetDialog(inputValue: string) {
+  public async saveSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
@@ -301,7 +301,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
     
-  async confirmSaveTripsDialog() {
+  public async confirmSaveTripsDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -321,7 +321,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  async confirmLoadTripsDialog() {
+  public async confirmLoadTripsDialog() {
     // Stop polling while dialog is open
     this.stopPolling();
     const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
@@ -348,7 +348,7 @@ export class TripComponent implements OnInit, OnDestroy {
     });
   }
 
-  async reload(anchor?: string, isParentReload = false) {
+  public async reload(anchor?: string, isParentReload = false) {
     await this.refreshDefaultSheetState();
     const sheetId = this.defaultSheet()?.id;
     if (!sheetId) {
@@ -369,11 +369,11 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
   
-  async changePolling() {
+  public async changePolling() {
     await this._uiPreferences.togglePolling();
   }
 
-  async startPolling() {
+  public async startPolling() {
     // Only poll if pollingEnabled and not in edit mode
     if (!this.pollingEnabled() || this.isEditMode()) {
       return;
@@ -388,12 +388,12 @@ export class TripComponent implements OnInit, OnDestroy {
     this.logger.debug('Starting polling');
     await this._pollingService.startPolling();
   }
-  stopPolling() {
+  public stopPolling() {
     this.logger.debug('Stopping polling');
     this._pollingService.stopPolling();
   }
 
-  async loadTripForEditing() {
+  public async loadTripForEditing() {
     if (!this.editingTripId()) return;
     
     this.isLoading.set(true);
@@ -416,7 +416,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }, 200);
   }
   
-  async exitEditMode(scrollToTripId?: string) {
+  public async exitEditMode(scrollToTripId?: string) {
     this.editingTripId.set(null);
     this._router.navigate(['/trips']);
     if (this.tripForm) {
@@ -434,7 +434,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  shouldShowUpdateMessage(): boolean {
+  public shouldShowUpdateMessage(): boolean {
     return this.showUpdateMessage();
   }
 

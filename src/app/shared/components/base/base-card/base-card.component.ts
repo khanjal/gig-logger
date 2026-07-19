@@ -26,17 +26,17 @@ export class BaseCardComponent {
  * </app-base-card>
  */
   /** Card title */
-  @Input() title?: string;
+  @Input() public title?: string;
 
   /** Icon to display in title (Material icon name) */
-  @Input() titleIcon?: string;
+  @Input() public titleIcon?: string;
 
   /** Subtitle text */
-  @Input() subtitle?: string;
+  @Input() public subtitle?: string;
 
   /** Variant: default, elevated, outlined, warning */
-  @Input() variant: 'default' | 'elevated' | 'outlined' | 'warning' = 'default';
+  @Input() public variant: 'default' | 'elevated' | 'outlined' | 'warning' = 'default';
 
   /** Padding size: sm, md, lg */
-  @Input() padding: 'sm' | 'md' | 'lg' = 'md';
+  @Input() public padding: 'sm' | 'md' | 'lg' = 'md';
 }

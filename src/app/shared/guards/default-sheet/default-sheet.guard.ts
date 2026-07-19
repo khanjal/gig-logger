@@ -10,7 +10,7 @@ export class DefaultSheetGuard {
   private _sheetService = inject(SpreadsheetService);
   private _router = inject(Router);
 
-  async canActivate() {
+  public async canActivate() {
     if (!(await this.isDefaultSheet())) {
       this._router.navigate(['setup']);
       return false;

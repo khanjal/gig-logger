@@ -20,7 +20,7 @@ export class AuthGuardService {
      *    app can operate in local-only mode.
      * 3. If neither condition is met, redirect to the setup page.
      */
-    async canActivate(): Promise<boolean> {
+    public async canActivate(): Promise<boolean> {
         const isAuthenticated = await this.authService.canSync();
 
         if (isAuthenticated) {

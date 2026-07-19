@@ -108,7 +108,7 @@ export class AddressHelper {
      * getShortAddress("123 North Main Street, Springfield, IL", "", 2) // "123 N Main St, Springfield"
      * getShortAddress("123 North Street, Springfield, IL", "", 2) // "123 North St, Springfield"
      */
-    static getShortAddress(address: string, place = "", length = 2): string {
+    public static getShortAddress(address: string, place = "", length = 2): string {
         if (!address) return "";
         // Remove the place from the address first
         address = this.removePlaceFromAddress(address, place);
@@ -134,7 +134,7 @@ export class AddressHelper {
      * abbrvAddress("123 North Street") // "123 North St"
      * abbrvAddress("123 North Savana Gardner Road") // "123 N Savana Gardner Rd"
      */
-    static abbrvAddress(address: string): string {
+    public static abbrvAddress(address: string): string {
         if (!address) return "";
         // Split by comma, focus on first part (street address)
         const parts = address.split(COMMA_SPLIT_REGEX);
@@ -179,7 +179,7 @@ export class AddressHelper {
      * Abbreviates a single direction word.
      * @param addressPart The direction word.
      */
-    static abbrvDirection(addressPart: string): string {
+    public static abbrvDirection(addressPart: string): string {
         const key = addressPart.toLowerCase();
         return DIRECTION_MAP[key] || addressPart;
     }
@@ -189,7 +189,7 @@ export class AddressHelper {
      * @param address The full address string.
      * @param place The place name to remove.
      */
-    static removePlaceFromAddress(address: string, place: string): string {
+    public static removePlaceFromAddress(address: string, place: string): string {
         if (!address) return '';
         if (!place) return address;
         

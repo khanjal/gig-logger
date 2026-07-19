@@ -22,7 +22,7 @@ export class UnsavedDataService {
 
 
   /** Reactive stream that emits a boolean whenever any entity's unsaved state changes. */
-  readonly unsavedData$ = merge(
+  public readonly unsavedData$ = merge(
     this.tripService.trips$,
     this.shiftService.shifts$,
     this.expensesService.expenses$
@@ -41,12 +41,12 @@ export class UnsavedDataService {
     return { trips, shifts, expenses };
   }
 
-  async hasUnsavedData(): Promise<boolean> {
+  public async hasUnsavedData(): Promise<boolean> {
     const { total } = await this.getUnsavedCounts();
     return total > 0;
   }
 
-  async getUnsavedCounts(): Promise<{ trips: number; shifts: number; expenses: number; total: number }> {
+  public async getUnsavedCounts(): Promise<{ trips: number; shifts: number; expenses: number; total: number }> {
     const { trips, shifts, expenses } = await this.fetchUnsaved();
     return {
       trips: trips.length,
@@ -56,7 +56,7 @@ export class UnsavedDataService {
     };
   }
 
-  async collectUnsavedItems(): Promise<IUnsavedItems> {
+  public async collectUnsavedItems(): Promise<IUnsavedItems> {
     const { trips, shifts, expenses } = await this.fetchUnsaved();
     return { unsavedTrips: trips, unsavedShifts: shifts, unsavedExpenses: expenses };
   }
@@ -66,7 +66,7 @@ export class UnsavedDataService {
    * using the save-start timestamp and synced-ID sets to protect any records
    * that were edited after the save payload was collected.
    */
-  async commitSavedItems(
+  public async commitSavedItems(
     saveStartedAt: number,
     syncedTripIds: ReadonlySet<number>,
     syncedShiftIds: ReadonlySet<number>,

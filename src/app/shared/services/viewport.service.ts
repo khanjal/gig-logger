@@ -22,7 +22,7 @@ export class ViewportService {
   public viewportChange$: Observable<ViewportSnapshot> = this.snapshot$.asObservable().pipe(shareReplay(1));
   public viewportSettled$: Observable<ViewportSnapshot> = this.snapshot$.asObservable().pipe(debounceTime(120), shareReplay(1));
 
-  start(): void {
+  public start(): void {
     if (this.started) {
       return;
     }
@@ -45,7 +45,7 @@ export class ViewportService {
     });
   }
 
-  stop(): void {
+  public stop(): void {
     if (!this.started) {
       return;
     }
@@ -54,7 +54,7 @@ export class ViewportService {
     this.eventsSub = null;
   }
 
-  getSnapshot(): ViewportSnapshot {
+  public getSnapshot(): ViewportSnapshot {
     return this.snapshot$.getValue();
   }
 

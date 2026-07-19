@@ -8,7 +8,7 @@ import { AddressHelper } from '@helpers/address.helper';
 })
 export class ShortAddressPipe implements PipeTransform {
 
-    transform(text: string, place = "", length = 2): string {
+    public transform(text: string, place = "", length = 2): string {
         text = AddressHelper.getShortAddress(text, place, length);
 
         return text;

@@ -35,7 +35,7 @@ export class VoicePatternProcessorService {
    * @param dropdownData Optional dropdown data for best-match validation
    * @returns Parsed result with extracted fields
    */
-  parseTranscript(
+  public parseTranscript(
     transcript: string,
     dropdownData?: {
       serviceList?: string[];

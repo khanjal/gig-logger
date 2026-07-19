@@ -6,9 +6,9 @@ import Dexie from 'dexie';
 
 
 export class AppDB extends Dexie {
-    spreadsheets!: Table<ISpreadsheet, string>;
-    shifts!: Table<IShift, number>;
-    trips!: Table<ITrip, number>;
+    public spreadsheets!: Table<ISpreadsheet, string>;
+    public shifts!: Table<IShift, number>;
+    public trips!: Table<ITrip, number>;
 
     constructor() {
         super('localDB');

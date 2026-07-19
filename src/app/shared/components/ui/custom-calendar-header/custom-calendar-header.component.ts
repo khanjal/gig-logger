@@ -42,7 +42,7 @@ export class CustomCalendarHeaderComponent<D> implements OnDestroy {
   }
 
   // active date label rendered between the arrow buttons
-  get periodLabel(): string {
+  public get periodLabel(): string {
     // use date adapter to format the label, e.g. "SEP 2020"
     return this.dateAdapter
       .format(this.calendar.activeDate, this.dateFormats.display.monthYearLabel)
@@ -50,12 +50,12 @@ export class CustomCalendarHeaderComponent<D> implements OnDestroy {
   }
 
   // called when user clicks on one of the left buttons
-  previousClicked(mode: 'month' | 'year'): void {
+  public previousClicked(mode: 'month' | 'year'): void {
     this.changeDate(mode, -1);
   }
 
   // called when user clicks on one of the right buttons
-  nextClicked(mode: 'month' | 'year'): void {
+  public nextClicked(mode: 'month' | 'year'): void {
     this.changeDate(mode, 1);
   }
 
@@ -67,7 +67,7 @@ export class CustomCalendarHeaderComponent<D> implements OnDestroy {
         : this.dateAdapter.addCalendarYears(this.calendar.activeDate, amount);
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.destroy$.next(); // will trigger unsubscription in takeUntil
   }
 }

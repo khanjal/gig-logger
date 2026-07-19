@@ -46,11 +46,11 @@ export class ShiftFormComponent implements OnInit, OnChanges {
   private tripService = inject(TripService);
   private logger = inject(LoggerService);
 
-  @Input() rowId?: string | null;
-  @Output() parentReload = new EventEmitter<void>();
-  @Output() editModeExit = new EventEmitter<string>();
+  @Input() public rowId?: string | null;
+  @Output() public parentReload = new EventEmitter<void>();
+  @Output() public editModeExit = new EventEmitter<string>();
 
-  shiftForm = new FormGroup({
+  public shiftForm = new FormGroup({
     date: new FormControl(new Date(), Validators.required),
     service: new FormControl('', Validators.required),
     region: new FormControl(''),
@@ -72,20 +72,20 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     omit: new FormControl(false),
   });
 
-  computedTotals: ITripTotalsViewModel = this.createEmptyTotals();
-  readonly tripTotals$ = new BehaviorSubject<ITripTotalsViewModel>(this.createEmptyTotals());
+  public computedTotals: ITripTotalsViewModel = this.createEmptyTotals();
+  public readonly tripTotals$ = new BehaviorSubject<ITripTotalsViewModel>(this.createEmptyTotals());
 
-  computedShiftNumber = 1;
-  shift: IShift | undefined;
-  maxRowId = 1;
+  public computedShiftNumber = 1;
+  public shift: IShift | undefined;
+  public maxRowId = 1;
   private hasNewShiftSubscriptions = false;
   private injector = inject(Injector);
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.scheduleInitialization();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     if (changes['rowId'] && !changes['rowId'].firstChange) {
       this.scheduleInitialization();
     }
@@ -158,7 +158,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     }
   }
 
-  async updateComputedShiftNumber() {
+  public async updateComputedShiftNumber() {
     // Only update shift number if not editing
     if (this.rowId && this.rowId !== 'new') {
       return;
@@ -175,7 +175,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     this.computedShiftNumber = ShiftHelper.getNextShiftNumber(service, shifts);
   }
 
-  async calculateTotals(shiftKey?: string, deferAssignment = false): Promise<ITripTotalsViewModel> {
+  public async calculateTotals(shiftKey?: string, deferAssignment = false): Promise<ITripTotalsViewModel> {
     let trips: ITrip[] = [];
     const keyToQuery = shiftKey ?? this.shift?.key;
     if (keyToQuery) {
@@ -214,7 +214,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     };
   }
 
-  async addShift() {
+  public async addShift() {
     if (!this.shiftForm.valid) return;
 
     const formValue = this.shiftForm.value;
@@ -264,7 +264,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     this.formReset();
   }
 
-  async editShift() {
+  public async editShift() {
     if (this.shiftForm.valid && this.rowId) {
       const formValue = this.shiftForm.value;
       if (this.shift) {
@@ -367,7 +367,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     return ShiftHelper.getNextShiftNumber(service, otherShifts);
   }
 
-  formReset() {
+  public formReset() {
     this.shiftForm.reset({ date: new Date() });
     this.shiftService.getLastShift().then(lastShift => {
       if (lastShift && lastShift.service) {
@@ -379,7 +379,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     });
   }
 
-  close() {
+  public close() {
     if (this.rowId && this.rowId !== 'new') {
       // If we're editing an existing shift, emit editModeExit to navigate properly
       this.editModeExit.emit(this.rowId);

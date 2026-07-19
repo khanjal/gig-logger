@@ -12,7 +12,7 @@ export class NameService extends GenericCrudService<IName> {
       super(spreadsheetDB.names); // Pass the table reference
     }
       
-    names$ = liveQuery(() => spreadsheetDB.names.toArray());
+    public names$ = liveQuery(() => spreadsheetDB.names.toArray());
     
     public async deleteUnsaved() {
         const names = await this.getUnsaved();

@@ -9,16 +9,16 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
   templateUrl: './base-icon-button.component.html'
 })
 export class BaseIconButtonComponent {
-  @Input() icon?: string;
-  @Input() iconColor?: string;
-  @Input() loading = false;
-  @Input() disabled = false;
-  @Input() type: 'button' | 'submit' | 'reset' = 'button';
-  @Input() class = '';
+  @Input() public icon?: string;
+  @Input() public iconColor?: string;
+  @Input() public loading = false;
+  @Input() public disabled = false;
+  @Input() public type: 'button' | 'submit' | 'reset' = 'button';
+  @Input() public class = '';
 
-  @Output() clicked = new EventEmitter<void>();
+  @Output() public clicked = new EventEmitter<void>();
 
-  handleClick(): void {
+  public handleClick(): void {
     this.clicked.emit();
   }
 }

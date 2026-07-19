@@ -13,7 +13,7 @@ export class AppInitializerService {
   private initializationComplete = false;
   private initializationPromise: Promise<void> | null = null;
 
-  async initialize(): Promise<void> {
+  public async initialize(): Promise<void> {
     if (this.initializationComplete) {
       return Promise.resolve();
     }
@@ -75,7 +75,7 @@ export class AppInitializerService {
     await new Promise(resolve => setTimeout(resolve, 50));
   }
 
-  isInitialized(): boolean {
+  public isInitialized(): boolean {
     return this.initializationComplete;
   }
 }

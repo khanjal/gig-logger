@@ -11,7 +11,7 @@ import { SHEET_SOURCE_LABELS } from '@constants/sheet.constants';
   standalone: true
 })
 export class SheetSourceLabelPipe implements PipeTransform {
-  transform(source: string | undefined): string {
+  public transform(source: string | undefined): string {
     if (!source) {
       return 'Unknown';
     }

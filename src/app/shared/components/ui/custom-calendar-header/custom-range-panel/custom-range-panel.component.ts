@@ -33,8 +33,8 @@ export class CustomRangePanelComponent<D> {
   private picker = inject<MatDateRangePicker<D>>(MatDateRangePicker);
 
   // list of range presets we want to provide:
-  readonly customPresets = customPresets;
-  selectedPreset: string | null = null;
+  public readonly customPresets = customPresets;
+  public selectedPreset: string | null = null;
 
   // Precompute date ranges during initialization
   private readonly precomputedRanges: Record<CustomPreset, [start: D, end: D]> = this.customPresets.reduce((acc, preset) => {
@@ -43,7 +43,7 @@ export class CustomRangePanelComponent<D> {
   }, {} as Record<CustomPreset, [start: D, end: D]>);
 
   // called when user selects a range preset:
-  selectRange(rangeName: CustomPreset): void {
+  public selectRange(rangeName: CustomPreset): void {
     this.selectedPreset = rangeName;
     const [start, end] = this.precomputedRanges[rangeName];
     this.picker.select(start);
@@ -131,7 +131,7 @@ export class CustomRangePanelComponent<D> {
 
   // Lazy load touch-ui class
   @HostBinding('class.touch-ui')
-  get isTouchUi(): boolean {
+  public get isTouchUi(): boolean {
     return this.picker.touchUi;
   }
 }

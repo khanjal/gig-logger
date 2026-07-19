@@ -7,7 +7,7 @@ import type { IExpense } from '@interfaces/entities/expense.interface';
   standalone: true
 })
 export class GroupByMonthPipe implements PipeTransform {
-  transform(expenses: IExpense[]): Record<string, IExpense[]> {
+  public transform(expenses: IExpense[]): Record<string, IExpense[]> {
     return expenses.reduce((groups, expense) => {
       let month: string;
       if (typeof expense.date === 'string' && expense.date.length >= 7) {

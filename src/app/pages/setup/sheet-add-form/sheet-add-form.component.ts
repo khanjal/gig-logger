@@ -17,22 +17,22 @@ import { BaseInputComponent } from '@components/base/base-input/base-input.compo
 export class SheetAddFormComponent implements OnInit {
   private _spreadsheetService = inject(SpreadsheetService);
 
-  @Output() parentReload = new EventEmitter<void>();
+  @Output() public parentReload = new EventEmitter<void>();
   private demoSheetId = environment.demoSheet;
   
-  sheetForm = new FormGroup({
+  public sheetForm = new FormGroup({
     sheetId: new FormControl(''),
     sheetName: new FormControl('')
   });
 
-  saving = signal(false);
-  defaultSpreadsheet: ISpreadsheet | undefined;
+  public saving = signal(false);
+  public defaultSpreadsheet: ISpreadsheet | undefined;
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     await this.load();
   }
 
-  async load() {
+  public async load() {
     this.defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
   }
   public async addSheet() {

@@ -9,7 +9,7 @@ export class UnitHelper {
      * Currently defaults to 'mi' but can be extended to read from user preferences
      * @returns 'mi' for miles or 'km' for kilometers
      */
-    static getPreferredDistanceUnit(): string {
+    public static getPreferredDistanceUnit(): string {
         // TODO: Replace with actual user preference when implemented
         // const userPreference = localStorage.getItem('preferredDistanceUnit');
         // return userPreference || 'mi';
@@ -21,7 +21,7 @@ export class UnitHelper {
      * @param distanceInMiles Distance value in miles
      * @returns Converted distance value
      */
-    static convertDistance(distanceInMiles: number): number {
+    public static convertDistance(distanceInMiles: number): number {
         if (!distanceInMiles) return 0;
         
         const unit = this.getPreferredDistanceUnit();
@@ -37,7 +37,7 @@ export class UnitHelper {
      * @param decimals Number of decimal places (default: 1)
      * @returns Formatted distance string with unit
      */
-    static formatDistance(distanceInMiles: number, decimals = 1): string {
+    public static formatDistance(distanceInMiles: number, decimals = 1): string {
         if (!distanceInMiles) {
             return `-- ${this.getPreferredDistanceUnit()}`;
         }
@@ -51,7 +51,7 @@ export class UnitHelper {
      * Set user's preferred distance unit
      * @param unit 'mi' for miles or 'km' for kilometers
      */
-    static setPreferredDistanceUnit(unit: 'mi' | 'km'): void {
+    public static setPreferredDistanceUnit(unit: 'mi' | 'km'): void {
         // TODO: Implement when user preference system is added
         // localStorage.setItem('preferredDistanceUnit', unit);
         console.log(`[INFO]: Distance unit preference set to: ${unit} (not persisted yet)`);

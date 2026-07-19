@@ -17,7 +17,7 @@ export class TripService extends SyncableCrudService<ITrip> {
         super(spreadsheetDB.trips); // Pass the table reference
     }
 
-    trips$ = from(liveQuery(() => spreadsheetDB.trips.toArray()));
+    public trips$ = from(liveQuery(() => spreadsheetDB.trips.toArray()));
     
     public async addNext(trip: ITrip) {
         const nextTrip = {} as ITrip;
@@ -51,7 +51,7 @@ export class TripService extends SyncableCrudService<ITrip> {
         await this.add(nextTrip);
     }
 
-    async clone(trip: ITrip) {
+    public async clone(trip: ITrip) {
         const cloneTrip = trip;
         delete cloneTrip.id;
         cloneTrip.rowId = await this.getMaxRowId() + 1;

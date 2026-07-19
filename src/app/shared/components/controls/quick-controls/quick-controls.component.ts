@@ -14,40 +14,40 @@ import { BaseRectButtonComponent } from '@components/base';
   styleUrl: './quick-controls.component.scss'
 })
 export class QuickControlsComponent {
-  @Input() hasUnsavedChanges = false;
-  @Input() status: 'idle' | 'syncing' | 'success' | 'error' | 'disabled' = 'idle';
-  @Input() autoSaveEnabled = false;
-  @Input() syncAvailable = true;
-  @Input() themePreference: ThemePreference = 'system';
-  @Output() save = new EventEmitter<void>();
-  @Output() refresh = new EventEmitter<void>();
-  @Output() autoSaveToggle = new EventEmitter<boolean>();
-  @Output() themeChange = new EventEmitter<ThemePreference>();
+  @Input() public hasUnsavedChanges = false;
+  @Input() public status: 'idle' | 'syncing' | 'success' | 'error' | 'disabled' = 'idle';
+  @Input() public autoSaveEnabled = false;
+  @Input() public syncAvailable = true;
+  @Input() public themePreference: ThemePreference = 'system';
+  @Output() public save = new EventEmitter<void>();
+  @Output() public refresh = new EventEmitter<void>();
+  @Output() public autoSaveToggle = new EventEmitter<boolean>();
+  @Output() public themeChange = new EventEmitter<ThemePreference>();
 
   private themeCycle: ThemePreference[] = ['light', 'dark', 'system'];
 
-  onThemeCycle(): void {
+  public onThemeCycle(): void {
     const currentIndex = this.themeCycle.indexOf(this.themePreference);
     const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % this.themeCycle.length;
     const nextTheme = this.themeCycle[nextIndex];
     this.themeChange.emit(nextTheme);
   }
 
-  onSaveClick(): void {
+  public onSaveClick(): void {
     if (this.status === 'syncing') return;
     this.save.emit();
   }
 
-  onRefreshClick(): void {
+  public onRefreshClick(): void {
     if (this.status === 'syncing') return;
     this.refresh.emit();
   }
 
-  onAutoSaveToggle(event: MatSlideToggleChange): void {
+  public onAutoSaveToggle(event: MatSlideToggleChange): void {
     this.autoSaveToggle.emit(event.checked);
   }
 
-  onThemeSelect(theme: ThemePreference, event: MouseEvent): void {
+  public onThemeSelect(theme: ThemePreference, event: MouseEvent): void {
     event.stopPropagation();
     this.themeChange.emit(theme);
   }

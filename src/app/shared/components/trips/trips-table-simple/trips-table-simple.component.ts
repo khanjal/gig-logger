@@ -16,18 +16,18 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     imports: [MatIcon, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
 })
 export class TripsTableSimpleComponent implements OnInit {
-  @Input() title = "";
-  @Input() link = "";
-  @Input() trips: ITrip[] = [];
+  @Input() public title = "";
+  @Input() public link = "";
+  @Input() public trips: ITrip[] = [];
   
   /**
    * Future enhancement: Add row grouping functionality
    * Reference implementation: https://stackblitz.com/edit/angular-material-table-row-grouping
    * This would allow grouping trips by date, service, or other criteria
    */
-  displayedColumns: string[] = [];
+  public displayedColumns: string[] = [];
 
-  ngOnInit() { 
+  public ngOnInit() { 
     this.displayedColumns = ['date', 'service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
   }
 }

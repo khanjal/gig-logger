@@ -86,23 +86,23 @@ const SCHEMA_V3 = {
 };
 
 export class AppDB extends Dexie {
-    addresses!: Table<IAddress, number>;
-    daily!: Table<IDaily, number>;
-    deliveries!: Table<IDelivery, number>;
-    expenses!: Table<IExpense, number>;
-    monthly!: Table<IMonthly, number>;
-    names!: Table<IName, number>;
-    places!: Table<IPlace, number>;
-    ratings!: Table<IRating, number>;
-    regions!: Table<IRegion, number>;
-    services!: Table<IService, number>;
-    setup!: Table<ISetup, number>;
-    shifts!: Table<IShift, number>;
-    trips!: Table<ITrip, number>;
-    types!: Table<IType, number>;
-    weekdays!: Table<IWeekday, number>;
-    weekly!: Table<IWeekly, number>;
-    yearly!: Table<IYearly, number>;
+    public addresses!: Table<IAddress, number>;
+    public daily!: Table<IDaily, number>;
+    public deliveries!: Table<IDelivery, number>;
+    public expenses!: Table<IExpense, number>;
+    public monthly!: Table<IMonthly, number>;
+    public names!: Table<IName, number>;
+    public places!: Table<IPlace, number>;
+    public ratings!: Table<IRating, number>;
+    public regions!: Table<IRegion, number>;
+    public services!: Table<IService, number>;
+    public setup!: Table<ISetup, number>;
+    public shifts!: Table<IShift, number>;
+    public trips!: Table<ITrip, number>;
+    public types!: Table<IType, number>;
+    public weekdays!: Table<IWeekday, number>;
+    public weekly!: Table<IWeekly, number>;
+    public yearly!: Table<IYearly, number>;
 
     constructor() {
         super('spreadsheetDB');

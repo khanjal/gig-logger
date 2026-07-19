@@ -60,9 +60,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   private currencyPipe = inject(CurrencyPipe);
   private logger = inject(LoggerService);
 
-  readonly categories: SearchCategory[] = ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
-  readonly searchState = createAsyncOperationState();
-  readonly allGroupsExpanded = computed(() => {
+  public readonly categories: SearchCategory[] = ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
+  public readonly searchState = createAsyncOperationState();
+  public readonly allGroupsExpanded = computed(() => {
     const groupedResults = this.groupedResults();
     if (groupedResults.length === 0) {
       return false;
@@ -71,28 +71,28 @@ export class SearchComponent implements OnInit, OnDestroy {
     const expandedGroups = this.expandedGroups();
     return groupedResults.every(group => expandedGroups.has(group.month));
   });
-  searchTerm = signal('');
-  isSearching = this.searchState.isLoading;
-  hasSearched = this.searchState.hasStarted;
-  showFilters = signal(false);
+  public searchTerm = signal('');
+  public isSearching = this.searchState.isLoading;
+  public hasSearched = this.searchState.hasStarted;
+  public showFilters = signal(false);
   /** Collapse state for the entire search form (keeps summary visible) */
-  isSearchCollapsed = signal(false);
-  exactMatch = signal(false);
-  caseSensitive = signal(false);
+  public isSearchCollapsed = signal(false);
+  public exactMatch = signal(false);
+  public caseSensitive = signal(false);
 
-  searchResults = signal<ISearchResult[]>([]);
-  groupedResults = signal<ISearchResultGroup[]>([]);
-  totalResultsCount = signal(0);
-  totalTripsCount = signal(0);
-  totalEarnings = signal(0);
-  groupAvgPerTripMap = signal(new Map<string, string>());
-  groupAvgRateMap = signal(new Map<string, string>());
-  resultAvgPerTripMap = signal(new Map<string, string>());
-  resultAvgRateMap = signal(new Map<string, string>());
-  resultSameAsGroupMap = signal(new Map<string, boolean>());
+  public searchResults = signal<ISearchResult[]>([]);
+  public groupedResults = signal<ISearchResultGroup[]>([]);
+  public totalResultsCount = signal(0);
+  public totalTripsCount = signal(0);
+  public totalEarnings = signal(0);
+  public groupAvgPerTripMap = signal(new Map<string, string>());
+  public groupAvgRateMap = signal(new Map<string, string>());
+  public resultAvgPerTripMap = signal(new Map<string, string>());
+  public resultAvgRateMap = signal(new Map<string, string>());
+  public resultSameAsGroupMap = signal(new Map<string, boolean>());
 
   // Category filter management
-  categoryFilters = signal<Record<SearchCategory, boolean>>({
+  public categoryFilters = signal<Record<SearchCategory, boolean>>({
     All: false,
     Address: true,
     Name: true,
@@ -101,14 +101,14 @@ export class SearchComponent implements OnInit, OnDestroy {
     Service: true,
     Type: true
   });
-  readonly enabledCount = computed(() => {
+  public readonly enabledCount = computed(() => {
     const filters = this.categoryFilters();
     return this.categories.filter(category => filters[category]).length;
   });
-  readonly categoryMetadata: Record<SearchCategory, { icon: string; color: string; borderClass: string }>;
+  public readonly categoryMetadata: Record<SearchCategory, { icon: string; color: string; borderClass: string }>;
   
   // Autocomplete
-  filteredAutocomplete$: Observable<string[]> | undefined;
+  public filteredAutocomplete$: Observable<string[]> | undefined;
   
   // For debouncing search input
   private searchSubject = new Subject<string>();
@@ -116,8 +116,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Track expanded panels
-  expandedGroups = signal(new Set<string>());
-  expandedResults = signal(new Set<string>());
+  public expandedGroups = signal(new Set<string>());
+  public expandedResults = signal(new Set<string>());
 
   constructor() {
     this.categoryMetadata = this.categories.reduce((acc, category) => {
@@ -130,7 +130,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }, {} as Record<SearchCategory, { icon: string; color: string; borderClass: string }>);
   }
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     // Setup debounced search
     this.searchSubject
       .pipe(
@@ -147,7 +147,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.autocompleteSubject.next(this.searchTerm());
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -157,7 +157,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Setup autocomplete filtering based on search term
    */
-  setupAutocompleteFilter(): void {
+  public setupAutocompleteFilter(): void {
     this.filteredAutocomplete$ = this.autocompleteSubject.pipe(
       startWith(this.searchTerm()),
       switchMap((searchValue: string) => from(this.getFilteredAutocompleteOptions(searchValue)))
@@ -190,7 +190,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Called when user types in search input
    */
-  onSearchInput(value: string): void {
+  public onSearchInput(value: string): void {
     this.searchTerm.set(value);
     this.showFilters.set(false);
     this.searchSubject.next(value);
@@ -200,7 +200,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Called when autocomplete option is selected
    */
-  onAutocompleteSelected(value: string): void {
+  public onAutocompleteSelected(value: string): void {
     this.searchTerm.set(value);
     void this.performSearch(value);
   }
@@ -208,7 +208,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Toggle filter section visibility
    */
-  toggleFilters(): void {
+  public toggleFilters(): void {
     this.showFilters.update(show => !show);
   }
 
@@ -216,7 +216,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Toggle the collapsed state of the search form. When collapsed the input
    * and filter sections are hidden but the bottom summary remains visible.
    */
-  toggleSearchCollapsed(): void {
+  public toggleSearchCollapsed(): void {
     this.isSearchCollapsed.update(v => !v);
     // When collapsing, also hide the filters to keep UI tidy
     if (this.isSearchCollapsed()) {
@@ -227,7 +227,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Get list of enabled categories
    */
-  getEnabledCategories(): SearchCategory[] {
+  public getEnabledCategories(): SearchCategory[] {
     const filters = this.categoryFilters();
     const enabled = this.categories.filter(category => filters[category]);
     // Return alphabetically sorted or default alphabetical list
@@ -237,7 +237,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Toggle a category filter
    */
-  toggleCategory(category: SearchCategory): void {
+  public toggleCategory(category: SearchCategory): void {
     this.categoryFilters.update(filters => ({
       ...filters,
       [category]: !filters[category]
@@ -255,21 +255,21 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Check if a category is enabled
    */
-  isCategoryEnabled(category: SearchCategory): boolean {
+  public isCategoryEnabled(category: SearchCategory): boolean {
     return this.categoryFilters()[category] || false;
   }
 
   /**
    * Get count of enabled categories
    */
-  getEnabledCount(): number {
+  public getEnabledCount(): number {
     return this.enabledCount();
   }
 
   /**
    * Select all categories
    */
-  selectAllCategories(): void {
+  public selectAllCategories(): void {
     this.categoryFilters.set({
       All: false,
       Address: true,
@@ -288,7 +288,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Deselect all categories
    */
-  deselectAllCategories(): void {
+  public deselectAllCategories(): void {
     this.categoryFilters.set({
       All: false,
       Address: false,
@@ -307,7 +307,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Handle exact match toggle
    */
-  onExactMatchChange(): void {
+  public onExactMatchChange(): void {
     if (this.searchTerm().trim().length > 0) {
       void this.performSearch(this.searchTerm());
     }
@@ -316,7 +316,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Handle case sensitive toggle
    */
-  onCaseSensitiveChange(): void {
+  public onCaseSensitiveChange(): void {
     if (this.searchTerm().trim().length > 0) {
       void this.performSearch(this.searchTerm());
     }
@@ -325,14 +325,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Called when user selects a category filter
    */
-  onCategoryChange(category: SearchCategory): void {
+  public onCategoryChange(category: SearchCategory): void {
     this.toggleCategory(category);
   }
 
   /**
    * Perform the actual search
    */
-  async performSearch(term: string): Promise<void> {
+  public async performSearch(term: string): Promise<void> {
     if (!term || term.trim().length === 0) {
       this.searchResults.set([]);
       this.groupedResults.set([]);
@@ -370,7 +370,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Clear search results and reset form
    */
-  clearSearch(): void {
+  public clearSearch(): void {
     this.searchTerm.set('');
     this.searchResults.set([]);
     this.groupedResults.set([]);
@@ -385,35 +385,35 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Get icon for a category
    */
-  getCategoryIcon(category: SearchCategory): string {
+  public getCategoryIcon(category: SearchCategory): string {
     return this.searchService.getCategoryIcon(category);
   }
 
   /**
    * Get color class for a category
    */
-  getCategoryColor(category: SearchCategory): string {
+  public getCategoryColor(category: SearchCategory): string {
     return this.searchService.getCategoryColor(category);
   }
 
   /**
    * Get border color class for a category.
    */
-  getCategoryBorderClass(category: SearchCategory): string {
+  public getCategoryBorderClass(category: SearchCategory): string {
     return this.searchService.getCategoryBorderClass(category);
   }
 
   /**
    * Get categories as array for template iteration
    */
-  getCategoriesArray(): SearchCategory[] {
+  public getCategoriesArray(): SearchCategory[] {
     return this.categories;
   }
 
   /**
    * Toggle group expansion
    */
-  toggleGroup(monthKey: string): void {
+  public toggleGroup(monthKey: string): void {
     this.expandedGroups.update(current => {
       const next = new Set(current);
       if (next.has(monthKey)) {
@@ -428,14 +428,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Check if group is expanded
    */
-  isGroupExpanded(monthKey: string): boolean {
+  public isGroupExpanded(monthKey: string): boolean {
     return this.expandedGroups().has(monthKey);
   }
 
   /**
    * Toggle result expansion to show trips
    */
-  toggleResult(resultKey: string): void {
+  public toggleResult(resultKey: string): void {
     this.expandedResults.update(current => {
       const next = new Set(current);
       if (next.has(resultKey)) {
@@ -450,41 +450,41 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Check if result is expanded
    */
-  isResultExpanded(resultKey: string): boolean {
+  public isResultExpanded(resultKey: string): boolean {
     return this.expandedResults().has(resultKey);
   }
 
   /**
    * Get unique key for a result
    */
-  getResultKey(result: ISearchResult, monthKey: string): string {
+  public getResultKey(result: ISearchResult, monthKey: string): string {
     return `${monthKey}-${result.type}-${result.value}`;
   }
 
-  getResultMetric(result: ISearchResult, monthKey: string, metricMap: Map<string, string>): string {
+  public getResultMetric(result: ISearchResult, monthKey: string, metricMap: Map<string, string>): string {
     return metricMap.get(this.getResultKey(result, monthKey)) || '-';
   }
 
   /*
    * TrackBy helpers to improve ngFor rendering performance
    */
-  trackByCategory(index: number, category: SearchCategory): string {
+  public trackByCategory(index: number, category: SearchCategory): string {
     return String(category);
   }
 
-  trackByGroup(index: number, group: ISearchResultGroup): string {
+  public trackByGroup(index: number, group: ISearchResultGroup): string {
     return group?.month || String(index);
   }
 
-  trackByResult(index: number, result: ISearchResult): string {
+  public trackByResult(index: number, result: ISearchResult): string {
     return `${result.type}|${result.value}`;
   }
 
-  trackByTrip(index: number, trip: ITrip): number | string {
+  public trackByTrip(index: number, trip: ITrip): number | string {
     return typeof trip?.id === 'number' ? trip.id : index;
   }
 
-  isResultSameAsGroupByKey(result: ISearchResult, group: ISearchResultGroup): boolean {
+  public isResultSameAsGroupByKey(result: ISearchResult, group: ISearchResultGroup): boolean {
     return this.resultSameAsGroupMap().get(this.getResultKey(result, group.month)) || false;
   }
 
@@ -623,14 +623,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Get total unique results count (not grouped)
    */
-  getTotalResultsCount(): number {
+  public getTotalResultsCount(): number {
     return this.searchResults().length;
   }
 
   /**
    * Get total trips across all results
    */
-  getTotalTripsCount(): number {
+  public getTotalTripsCount(): number {
     const uniqueTripIds = new Set<number>();
     this.searchResults().forEach(result => {
       result.trips.forEach(trip => {
@@ -643,7 +643,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Get total earnings across all results
    */
-  getTotalEarnings(): number {
+  public getTotalEarnings(): number {
     const uniqueTrips = new Map<number, ITrip>();
     this.searchResults().forEach(result => {
       result.trips.forEach(trip => {
@@ -662,14 +662,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Expand all groups
    */
-  expandAll(): void {
+  public expandAll(): void {
     this.expandedGroups.set(new Set(this.groupedResults().map(group => group.month)));
   }
 
   /**
    * Collapse all groups
    */
-  collapseAll(): void {
+  public collapseAll(): void {
     this.expandedGroups.set(new Set<string>());
     this.expandedResults.set(new Set<string>());
   }
@@ -677,7 +677,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   /**
    * Toggle all groups between expanded and collapsed
    */
-  toggleAllGroups(): void {
+  public toggleAllGroups(): void {
     if (this.allGroupsExpanded()) {
       this.collapseAll();
     } else {
@@ -685,7 +685,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  getGroupAvgPerTrip(group: ISearchResultGroup): string {
+  public getGroupAvgPerTrip(group: ISearchResultGroup): string {
     if (!group || !group.results) return '-';
     // Collect unique, non-excluded trips
     const uniqueTrips = new Map<number, ITrip>();
@@ -702,7 +702,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this.currencyPipe.transform(total / tripsArr.length) || '-';
   }
 
-  getGroupAvgRate(group: ISearchResultGroup): string {
+  public getGroupAvgRate(group: ISearchResultGroup): string {
     if (!group || !group.results) return '-';
     // Collect unique, non-excluded trips
     const uniqueTrips = new Map<number, ITrip>();
@@ -722,7 +722,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     return `$${avg.toFixed(2)}`;
   }
 
-  getResultAvgPerTrip(result: ISearchResult): string {
+  public getResultAvgPerTrip(result: ISearchResult): string {
     if (!result || !result.trips) return '-';
     const trips = result.trips.filter(trip => typeof trip.id === 'number' && !trip.exclude);
     if (trips.length === 0) return '-';
@@ -730,7 +730,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this.currencyPipe.transform(total / trips.length) || '-';
   }
 
-  getResultAvgRate(result: ISearchResult): string {
+  public getResultAvgRate(result: ISearchResult): string {
     if (!result || !result.trips) return '-';
     const trips = result.trips.filter(trip => typeof trip.amountPerTime === 'number' && !trip.exclude);
     if (trips.length === 0) return '-';
@@ -742,7 +742,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Check if a sub-result's trips are the same as the month group's trips
    * Used to hide redundant sub-results
    */
-  isResultSameAsGroup(result: ISearchResult, group: ISearchResultGroup): boolean {
+  public isResultSameAsGroup(result: ISearchResult, group: ISearchResultGroup): boolean {
     if (!result || !group) return false;
     
     // Get unique trip IDs from the result (excluding excluded trips)

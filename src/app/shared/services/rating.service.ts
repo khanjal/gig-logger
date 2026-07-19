@@ -7,7 +7,7 @@ import { liveQuery } from "dexie";
   providedIn: 'root'
 })
 export class RatingService {
-    rating$ = liveQuery(() => spreadsheetDB.places.toArray());
+    public rating$ = liveQuery(() => spreadsheetDB.places.toArray());
 
     public async getRemoteRatings(): Promise<IRating[]> {
         return await spreadsheetDB.ratings.toArray();

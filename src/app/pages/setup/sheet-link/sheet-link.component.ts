@@ -28,10 +28,10 @@ export class SheetLinkComponent {
   private dialog = inject(MatDialog);
   private _logger = inject(LoggerService);
 
-  @Output() parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
-  readonly sheetLinkState = createAsyncOperationState();
+  @Output() public parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
+  public readonly sheetLinkState = createAsyncOperationState();
 
-  async openCreateSheetDialog() {
+  public async openCreateSheetDialog() {
     this.sheetLinkState.setLoading();
     try {
       const dialogRef = this.dialog.open(SheetCreateComponent, {
@@ -76,7 +76,7 @@ export class SheetLinkComponent {
     }
   }
 
-  async openListSheetsDialog() {
+  public async openListSheetsDialog() {
     this.sheetLinkState.setLoading();
     try {
       const dialogRef = this.dialog.open(SheetListComponent, {
@@ -108,7 +108,7 @@ export class SheetLinkComponent {
     }
   }
 
-  async linkSheet(sheet: ISheet): Promise<void> {
+  public async linkSheet(sheet: ISheet): Promise<void> {
     this.sheetLinkState.setLoading();
     const existingSheet = await this._spreadsheetService.findSheet(sheet.properties.id);
     if (existingSheet) {

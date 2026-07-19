@@ -6,7 +6,7 @@ import { Pipe } from '@angular/core';
     standalone: true
 })
 export class AddressLineBreakPipe implements PipeTransform {
-    transform(address: string, minLength = 30): string {
+    public transform(address: string, minLength = 30): string {
         if (!address || address.length <= minLength) {
             return address;
         }

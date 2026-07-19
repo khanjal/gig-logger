@@ -3,7 +3,7 @@ import { Pipe } from '@angular/core';
 
 @Pipe({ name: 'ordinal', standalone: true })
 export class OrdinalPipe implements PipeTransform {
-  transform(value: string | number | null): string {
+  public transform(value: string | number | null): string {
     if (value === null || value === undefined) return '';
     const num = parseInt(value.toString(), 10);
     if (isNaN(num)) return value.toString();

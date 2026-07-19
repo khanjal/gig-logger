@@ -59,9 +59,9 @@ export class DiagnosticsComponent {
   private _nameService = inject(NameService);
   private logger = inject(LoggerService);
 
-  dataDiagnostics = signal<DiagnosticItem[]>([]);
-  isLoading = signal(false);
-  async runDiagnostics() {
+  public dataDiagnostics = signal<DiagnosticItem[]>([]);
+  public isLoading = signal(false);
+  public async runDiagnostics() {
     this.isLoading.set(true);
     this.dataDiagnostics.set([]); // Clear previous results
     try {
@@ -317,7 +317,7 @@ export class DiagnosticsComponent {
     return { items: duplicates, groups: duplicateGroups };
   }
 
-  getSeverityIcon(severity: string): string {
+  public getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
       case 'warning': return 'warning';
@@ -325,7 +325,7 @@ export class DiagnosticsComponent {
     }
   }
 
-  getSeverityColor(severity: string): string {
+  public getSeverityColor(severity: string): string {
     switch (severity) {
       case 'error': return 'warn';
       case 'warning': return 'accent';

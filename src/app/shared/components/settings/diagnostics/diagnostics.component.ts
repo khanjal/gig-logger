@@ -60,9 +60,9 @@ export class DiagnosticsComponent {
   private _nameService = inject(NameService);
   private _logger = inject(LoggerService);
 
-  dataDiagnostics: DiagnosticItem[] = [];
-  isLoading = false;
-  async runDiagnostics() {
+  public dataDiagnostics: DiagnosticItem[] = [];
+  public isLoading = false;
+  public async runDiagnostics() {
     this.isLoading = true;
     this.dataDiagnostics = []; // Clear previous results
     try {
@@ -353,7 +353,7 @@ export class DiagnosticsComponent {
     });
   }
 
-  getSeverityIcon(severity: string): string {
+  public getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
       case 'warning': return 'warning';
@@ -361,7 +361,7 @@ export class DiagnosticsComponent {
     }
   }
 
-  getSeverityColor(severity: string): string {
+  public getSeverityColor(severity: string): string {
     switch (severity) {
       case 'error': return 'warn';
       case 'warning': return 'accent';

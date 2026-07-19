@@ -14,21 +14,21 @@ import type { ITrip } from '@interfaces/entities/trip.interface';
   imports: [MatIcon, NgClass, CurrencyPipe, DatePipe]
 })
 export class TripsTableBasicComponent implements OnInit {
-  @Input() trips: ITrip[] = [];
+  @Input() public trips: ITrip[] = [];
   
-  displayedColumns: string[] = [];
+  public displayedColumns: string[] = [];
 
-  prefers24Hour = false;
-  ngOnInit() { 
+  public prefers24Hour = false;
+  public ngOnInit() { 
     this.displayedColumns = ['date', 'service', 'place', 'tips'];
     this.prefers24Hour = DateHelper.prefers24Hour();
   }
 
-  trackByTrip(index: number, trip: ITrip): number {
+  public trackByTrip(index: number, trip: ITrip): number {
     return trip?.id ?? index;
   }
 
-  hasSecondaryData = (trip: ITrip): boolean => {
+  public hasSecondaryData = (trip: ITrip): boolean => {
     return !!(trip.endUnit || trip.note);
   };
 }

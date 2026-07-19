@@ -7,7 +7,7 @@ export class VersionService {
   private http = inject(HttpClient);
 
 
-  async getVersion(): Promise<{ version: string; build: string }> {
+  public async getVersion(): Promise<{ version: string; build: string }> {
     try {
       return await firstValueFrom(this.http.get<{ version: string; build: string }>('/assets/version.json'));
     } catch {
@@ -16,7 +16,7 @@ export class VersionService {
   }
 
   // Returns a formatted version string like YYYY.MM.DD.build
-  async getFormattedVersion(): Promise<string> {
+  public async getFormattedVersion(): Promise<string> {
     const v = await this.getVersion();
     if (v.version === 'unknown' || v.build === 'unknown') return 'unknown';
     // Replace dashes with dots in date (YYYY-MM-DD -> YYYY.MM.DD)

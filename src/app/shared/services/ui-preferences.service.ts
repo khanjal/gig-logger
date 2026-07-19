@@ -35,12 +35,12 @@ export class UiPreferencesService {
     return saved ? JSON.parse(saved) : false;
   }
 
-  async setPolling(value: boolean) {
+  public async setPolling(value: boolean) {
     localStorage.setItem(this.pollingKey, JSON.stringify(value));
     this._pollingEnabled$.next(value);
   }
 
-  async togglePolling() {
+  public async togglePolling() {
     await this.setPolling(!this._pollingEnabled$.value);
   }
 }

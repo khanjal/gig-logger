@@ -17,9 +17,9 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
-  title = 'raptor-gig';
-  isLoading = signal(true);
-  hasError = signal(false);
+  public title = 'raptor-gig';
+  public isLoading = signal(true);
+  public hasError = signal(false);
   private routerSubscription?: Subscription;
 
   public ngOnInit(): void {

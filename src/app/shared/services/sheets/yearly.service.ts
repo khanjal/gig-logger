@@ -13,6 +13,6 @@ export class YearlyService extends GenericCrudService<IYearly> {
       super(spreadsheetDB.yearly); // Pass the table reference
     }
 
-    yearly$ = from(liveQuery(() => spreadsheetDB.yearly.toArray()));
+    public yearly$ = from(liveQuery(() => spreadsheetDB.yearly.toArray()));
 
 }

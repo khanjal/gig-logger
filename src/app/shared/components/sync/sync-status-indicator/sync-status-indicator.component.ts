@@ -53,16 +53,16 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   protected authService = inject(AuthGoogleService);
 
-  @Input() mode: 'button' | 'panel' = 'button';
+  @Input() public mode: 'button' | 'panel' = 'button';
   private destroy$ = new Subject<void>();
   private intervalId?: number;
   
-  syncState = signal<ISyncState | null>(null);
-  messages = signal<ISyncMessage[]>([]);
-  timeSinceLastSync = signal('Never');
-  showDetailedView = signal(false);
-  hasUnsavedChanges = signal(false);
-  unsavedCounts = signal<{ trips: number; shifts: number; expenses: number; total: number }>({ trips: 0, shifts: 0, expenses: 0, total: 0 });
+  public syncState = signal<ISyncState | null>(null);
+  public messages = signal<ISyncMessage[]>([]);
+  public timeSinceLastSync = signal('Never');
+  public showDetailedView = signal(false);
+  public hasUnsavedChanges = signal(false);
+  public unsavedCounts = signal<{ trips: number; shifts: number; expenses: number; total: number }>({ trips: 0, shifts: 0, expenses: 0, total: 0 });
 
   // Definitions for the pending-changes breakdown. Add a new savable type here
   // (plus its count in UnsavedDataService) and it flows into the widget + deep
@@ -74,7 +74,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   ];
 
   /** Non-empty pending sections, ready to render as deep-link chips. */
-  pendingSections = computed(() => {
+  public pendingSections = computed(() => {
     const counts = this.unsavedCounts();
     return this.sectionDefs
       .map(def => {
@@ -84,17 +84,17 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       .filter(section => section.count > 0);
   });
 
-  menuOpen = signal(false);
-  isPendingRoute = signal(false);
-  autoSaveEnabled = signal(false);
-  isSignedIn = signal<boolean>(false);
-  themePreference = signal<ThemePreference>('system');
-  overlayPositions: ConnectedPosition[] = [
+  public menuOpen = signal(false);
+  public isPendingRoute = signal(false);
+  public autoSaveEnabled = signal(false);
+  public isSignedIn = signal<boolean>(false);
+  public themePreference = signal<ThemePreference>('system');
+  public overlayPositions: ConnectedPosition[] = [
     { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetX: 0, offsetY: 6 },
     { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetX: 0, offsetY: -6 }
   ];
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     // Keep the trigger highlighted (active-page style) while the pending
     // changes page it links to is open, mirroring routerLinkActive on nav links.
     const updatePendingRoute = () => this.isPendingRoute.set(this.router.url.split('?')[0] === '/pending-changes');
@@ -160,7 +160,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.checkUnsavedChanges();
   }
 
-  async toggleAutoSave(enabled: boolean): Promise<void> {
+  public async toggleAutoSave(enabled: boolean): Promise<void> {
     // Prevent enabling auto-save when user isn't signed in/can't sync
     if (enabled) {
       const canSync = await this.authService.canSync();
@@ -177,16 +177,16 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     await this.uiPreferences.setPolling(enabled);
   }
 
-  setTheme(preference: ThemePreference): void {
+  public setTheme(preference: ThemePreference): void {
     this.themeService.setTheme(preference);
     this.themePreference.set(preference);
   }
 
-  toggleMenu(): void {
+  public toggleMenu(): void {
     this.menuOpen.update(v => !v);
   }
 
-  closeMenu(): void {
+  public closeMenu(): void {
     this.menuOpen.set(false);
   }
 
@@ -200,14 +200,14 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  openPendingChanges(section?: PendingSection): void {
+  public openPendingChanges(section?: PendingSection): void {
     this.closeMenu();
     const extras: NavigationExtras = {};
     if (section) extras.queryParams = { section };
     this.router.navigate(['/pending-changes'], extras);
   }
 
-  async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes
+  public async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
 
     const canSync = await this.authService.canSync();
@@ -228,7 +228,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  async updateFromSpreadsheet(): Promise<void> {
+  public async updateFromSpreadsheet(): Promise<void> {
     // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
     if (this.hasUnsavedChanges()) {
@@ -254,7 +254,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
@@ -266,7 +266,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.timeSinceLastSync.set(this.syncStatusService.getTimeSinceLastSync());
   }
 
-  getStatusIcon(): string {
+  public getStatusIcon(): string {
     // If signed out, show sync as off
     if (!this.isSignedIn()) return 'cloud_off';
 
@@ -290,7 +290,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusClass(): string {
+  public getStatusClass(): string {
     // Signed-out state should appear disabled
     if (!this.isSignedIn()) return 'status-disabled';
 
@@ -304,7 +304,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     return `status-${this.syncState()!.status}`;
   }
 
-  getTooltipText(): string {
+  public getTooltipText(): string {
     // When not signed in, guide user to sign in for sync
     if (!this.isSignedIn()) return 'Sign in to enable sync';
 
@@ -328,7 +328,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     }
   }
   
-  getStatusText(): string {
+  public getStatusText(): string {
     if (!this.isSignedIn()) return 'Signed out';
 
     if (!this.syncState()) return 'Unknown';
@@ -341,7 +341,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     return this.syncState()!.message || 'Ready';
   }
 
-  getOperationText(): string {
+  public getOperationText(): string {
     const operation = this.syncState()?.operation;
     if (!operation) return '';
     
@@ -354,7 +354,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     return operationLabels[operation];
   }
 
-  getNextCheckText(): string {
+  public getNextCheckText(): string {
     if (!this.isSignedIn()) {
       return 'Sign in to sync';
     }
@@ -376,15 +376,15 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     return `in ${next}s`;
   }
 
-  toggleDetailedView(): void {
+  public toggleDetailedView(): void {
     this.showDetailedView.update(v => !v);
   }
 
-  clearMessages(): void {
+  public clearMessages(): void {
     this.syncStatusService.clearMessages();
   }
 
-  getMessageIcon(type: string): string {
+  public getMessageIcon(type: string): string {
     switch (type) {
       case 'error':
         return 'error';
@@ -396,7 +396,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatTimestamp(date: Date): string {
+  public formatTimestamp(date: Date): string {
     return new Date(date).toLocaleTimeString();
   }
 }

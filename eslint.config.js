@@ -15,6 +15,15 @@ module.exports = defineConfig([
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      "@typescript-eslint/explicit-member-accessibility": [
+        "error",
+        {
+          accessibility: "explicit",
+          overrides: {
+            constructors: "no-public",
+          },
+        },
+      ],
       "@typescript-eslint/consistent-type-imports": [
         "error",
         {

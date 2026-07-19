@@ -7,7 +7,7 @@ export class ShiftCreationHelper {
      * @param date Optional date for the shift, defaults to today
      * @returns A new IShift object with default values
      */
-    static createDefaultShift(date?: string): IShift {
+    public static createDefaultShift(date?: string): IShift {
         const shiftDate = date || DateHelper.getDateISO(new Date());
 
         const shift: IShift = {
@@ -55,7 +55,7 @@ export class ShiftCreationHelper {
      * @param shift The shift to validate
      * @returns True if shift is valid, false otherwise
      */
-    static isValidShift(shift: IShift): boolean {
+    public static isValidShift(shift: IShift): boolean {
         return !!(shift.date && shift.key);
     }
 
@@ -64,7 +64,7 @@ export class ShiftCreationHelper {
      * @param date The date for the shift
      * @returns A unique key string
      */
-    static generateShiftKey(date: Date): string {
+    public static generateShiftKey(date: Date): string {
         return DateHelper.getDateKey(date);
     }
 }

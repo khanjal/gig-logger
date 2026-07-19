@@ -270,7 +270,7 @@ export class DataLinkingService {
         }
     }
 
-    async updateAncillaryInfo() {
+    public async updateAncillaryInfo() {
         try {
             this._logger.info('Updating ancillary info');
             

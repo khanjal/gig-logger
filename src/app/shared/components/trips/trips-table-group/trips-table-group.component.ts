@@ -23,18 +23,18 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
   private _weekdayService = inject(WeekdayService);
   private cdr = inject(ChangeDetectorRef);
 
-  @Input() title = "";
-  @Input() link = "";
-  @Input() days = 6;
+  @Input() public title = "";
+  @Input() public link = "";
+  @Input() public days = 6;
   
-  displayedColumns: string[] = [];
-  tripGroups: ITripGroup[] = [];
-  @ViewChildren('tableContainer') tableContainers!: QueryList<ElementRef>;
-  isScrollable: boolean[] = [];
-  prefers24Hour = false;
+  public displayedColumns: string[] = [];
+  public tripGroups: ITripGroup[] = [];
+  @ViewChildren('tableContainer') public tableContainers!: QueryList<ElementRef>;
+  public isScrollable: boolean[] = [];
+  public prefers24Hour = false;
   private injector = inject(Injector);
 
-  ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     // Avoid duplicate initial load; ngOnInit handles first render.
     if (changes['days'] && !changes['days'].firstChange) {
       runInInjectionContext(this.injector, () => {
@@ -45,7 +45,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
     }
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.displayedColumns = ['service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     this.prefers24Hour = DateHelper.prefers24Hour();
     // Defer async hydration until after first paint to avoid NG0100 in dev mode.
@@ -56,12 +56,12 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
     });
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     // Run after the current render cycle to avoid change-detection re-entrancy.
     queueMicrotask(() => this.checkScrollable());
   }
 
-  checkScrollable() {
+  public checkScrollable() {
     if (!this.tableContainers) return;
     this.isScrollable = this.tableContainers.map((container: ElementRef) => {
       const el = container.nativeElement;
@@ -77,7 +77,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
     });
   }
 
-  async load() {
+  public async load() {
     const sheetTrips = await this._tripService.getPreviousDays(this.days);
     sort(sheetTrips, '-id');
     

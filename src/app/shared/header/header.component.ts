@@ -42,15 +42,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private logger = inject(LoggerService);
   private themeService = inject(ThemeService);
 
-  @Output() headerError = new EventEmitter<Error>();
+  @Output() public headerError = new EventEmitter<Error>();
   
-  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
-  isAuthenticated = signal(false);
+  public defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  public isAuthenticated = signal(false);
   // True when user can't sync remotely but has local spreadsheets
-  localOnlyMode = signal(false);
-  isLoading = signal(false);
-  currentRoute = signal('/');
-  isMenuOpen = signal(false);
+  public localOnlyMode = signal(false);
+  public isLoading = signal(false);
+  public currentRoute = signal('/');
+  public isMenuOpen = signal(false);
 
   // Notification badge counts for unsaved trips and shifts
   public unsavedTripsCount = signal(0);
@@ -58,7 +58,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   
   // Polling interval for unsaved counts (ms)
   public static readonly DEFAULT_UNSAVED_POLL_INTERVAL = 5000;
-  @Input() unsavedPollInterval: number = HeaderComponent.DEFAULT_UNSAVED_POLL_INTERVAL;
+  @Input() public unsavedPollInterval: number = HeaderComponent.DEFAULT_UNSAVED_POLL_INTERVAL;
 
   // Timeout for header initialization (ms)
   public static readonly HEADER_INIT_TIMEOUT_MS = 10000;
@@ -68,9 +68,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private spreadsheetsSubscription?: { unsubscribe: () => void };
 
   // Theme state
-  themePreference = signal<ThemePreference>('system');
-  resolvedTheme = signal<'light' | 'dark'>('light');
-  toolbarGradient = 'linear-gradient(135deg, var(--primary-800), var(--primary-900))'; // uses theme tokens for gradient
+  public themePreference = signal<ThemePreference>('system');
+  public resolvedTheme = signal<'light' | 'dark'>('light');
+  public toolbarGradient = 'linear-gradient(135deg, var(--primary-800), var(--primary-900))'; // uses theme tokens for gradient
 
   constructor() { 
     // Subscribe to header updates with automatic cleanup on destroy
@@ -119,7 +119,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       });
   }
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     // Show loading indicator
     this.setLoadingState(true);
     try {
@@ -234,7 +234,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isMenuOpen.set(false);
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();
     this.destroy$.complete();

@@ -73,7 +73,7 @@ import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType }
 })
 
 export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private _addressService = inject(AddressService);
   private _nameService = inject(NameService);
   private _placeService = inject(PlaceService);
@@ -86,31 +86,31 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   private _permissionService = inject(PermissionService);
   private _mockLocationService = inject(MockLocationService);
 
-  @Input() enableBottomPadding = false;
+  @Input() public enableBottomPadding = false;
   // #region ViewChild, Inputs, Outputs, Form
-  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
-  @ViewChild('searchInput') inputElement!: ElementRef;
-  @Input() fieldName = '';
-  @Input() searchType = '';
-  @Input() googleSearch: string | undefined;
-  @Input() isRequired = false;
-  @Input() scrollOffset = 100; // Default offset, can be overridden
+  @ViewChild(MatAutocompleteTrigger) public autocompleteTrigger!: MatAutocompleteTrigger;
+  @ViewChild('searchInput') public inputElement!: ElementRef;
+  @Input() public fieldName = '';
+  @Input() public searchType = '';
+  @Input() public googleSearch: string | undefined;
+  @Input() public isRequired = false;
+  @Input() public scrollOffset = 100; // Default offset, can be overridden
 
-  @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
-  @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
+  @Output() public auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
+  @Output() public valueChanged: EventEmitter<string> = new EventEmitter<string>();
 
-  searchForm = new FormGroup({
+  public searchForm = new FormGroup({
     searchInput: new FormControl('')
   });
   // #endregion
 
   // #region State & Constants
-  filteredItems: Observable<ISearchItem[]> | undefined;
-  filteredItemsArray = signal<ISearchItem[]>([]);
-  showGoogleMapsIcon = signal(false);
-  hasSelection = signal(false);
-  isGoogleSearching = signal(false);
-  showNoGoogleResults = signal(false);
+  public filteredItems: Observable<ISearchItem[]> | undefined;
+  public filteredItemsArray = signal<ISearchItem[]>([]);
+  public showGoogleMapsIcon = signal(false);
+  public hasSelection = signal(false);
+  public isGoogleSearching = signal(false);
+  public showNoGoogleResults = signal(false);
   private initialValue = '';
   // When true skip the next focus handler after a user selection (prevents refocus on mobile)
   private skipNextFocus = signal(false);
@@ -128,26 +128,26 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  get value(): string {
+  public get value(): string {
     return this.searchForm.controls.searchInput.value || '';
   }
-  set value(val: string) {
+  public set value(val: string) {
     const currentValue = this.searchForm.controls.searchInput.value || '';
     if (currentValue !== val) {
       this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     }
   }
-  writeValue(value: string): void {
+  public writeValue(value: string): void {
     const normalizedValue = value || '';
     this.searchForm.controls.searchInput.setValue(normalizedValue, { emitEvent: false });
     this.initialValue = normalizedValue;
     void this.syncSelectionStateForExternalValue(normalizedValue);
   }
-  registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
-  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
-  setDisabledState?(): void {}
+  public registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
+  public registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  public setDisabledState?(): void {}
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     this.validateSearchType();
     this.updateValidators();
     this.setGoogleSearchType();
@@ -159,7 +159,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
       this.logger.warn(`Invalid search type: ${this.searchType}`);
     }
   }
-  async ngOnChanges(): Promise<void> {
+  public async ngOnChanges(): Promise<void> {
     this.updateValidators();
     this.setGoogleSearchType();
     this.searchForm.controls.searchInput.updateValueAndValidity();
@@ -168,7 +168,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     const currentValue = this.searchForm.controls.searchInput.value || '';
     void this.syncSelectionStateForExternalValue(currentValue);
   }
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.cleanupSubscriptions();
     this.cleanupCache();
   }
@@ -185,7 +185,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   // #endregion
 
   // #region Event Handlers
-  onInputChange(event: Event): void {
+  public onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (!target) {
       this.logger.warn('Invalid input target in onInputChange');
@@ -209,7 +209,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     }
   }
   
-  onBlur(): void {
+  public onBlur(): void {
     const trimmedValue = this.value.trim();
     if (this.value !== trimmedValue) {
       this.setInputValue(trimmedValue);
@@ -234,7 +234,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     this.showNoGoogleResults.set(false);
   }
   
-  async onInputSelect(selectedItem: ISearchItem): Promise<void> {
+  public async onInputSelect(selectedItem: ISearchItem): Promise<void> {
     let finalAddress = selectedItem.name;
 
     // Get full address for Google results with place ID
@@ -275,7 +275,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   }
 
   // Handle option selection change (works better on touch devices)
-  onOptionSelection(event: MatOptionSelectionChange, item: ISearchItem): void {
+  public onOptionSelection(event: MatOptionSelectionChange, item: ISearchItem): void {
     if (event && event.source && event.isUserInput) {
       // Use microtask to avoid ExpressionChangedAfterItHasBeenCheckedError when closing panel
       Promise.resolve().then(async () => {
@@ -300,7 +300,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     }
   }
 
-  onFocus(): void {
+  public onFocus(): void {
     // If we just selected an item, skip this focus to avoid re-opening the dropdown on mobile
     if (this.skipNextFocus()) { this.skipNextFocus.set(false); return; }
 
@@ -312,7 +312,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     });
   }
 
-  onDropdownReady(): void {
+  public onDropdownReady(): void {
     // Called by focus-scroll directive when it's safe to open dropdown
     if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen && this.filteredItemsArray().length > 0) {
       // Small additional delay to ensure page scroll has fully settled
@@ -326,7 +326,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   // #endregion
 
   // #region Public Methods
-  getViewportHeight(items?: ISearchItem[]): number {
+  public getViewportHeight(items?: ISearchItem[]): number {
     // If showing spinner or no results message, return fixed height
     if (this.isGoogleSearching() || this.showNoGoogleResults()) {
       return this.ITEM_HEIGHT;
@@ -340,7 +340,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     return Math.min(itemsToUse.length, 10) * this.getItemSize();
   }
   
-  getItemSize(): number {
+  public getItemSize(): number {
     // Always use static item height
     return this.ITEM_HEIGHT;
   }

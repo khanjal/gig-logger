@@ -66,31 +66,31 @@ export class ExpensesComponent implements OnInit {
   private expensesService = inject(ExpensesService);
   private unsavedDataService = inject(UnsavedDataService);
   private route = inject(ActivatedRoute);
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private _snackBar = inject(MatSnackBar);
   protected authService = inject(AuthGoogleService);
 
-  dateFormats = DATE_FORMATS;
-  groupedExpensesByYear = signal<Record<string, IExpense[]>>({});
-  yearTotals = signal<Record<string, number>>({});
-  showAddForm = signal(false);
-  monthTotals = signal<Record<string, number>>({});
-  expenseForm!: FormGroup;
-  expenses = signal<IExpense[]>([]);
-  groupedExpenses = signal<Record<string, IExpense[]>>({});
-  defaultCategories = [
+  public dateFormats = DATE_FORMATS;
+  public groupedExpensesByYear = signal<Record<string, IExpense[]>>({});
+  public yearTotals = signal<Record<string, number>>({});
+  public showAddForm = signal(false);
+  public monthTotals = signal<Record<string, number>>({});
+  public expenseForm!: FormGroup;
+  public expenses = signal<IExpense[]>([]);
+  public groupedExpenses = signal<Record<string, IExpense[]>>({});
+  public defaultCategories = [
     'Fuel', 'Food', 'Parking', 'Maintenance', 'Tolls', 'Supplies', 'Other'
   ];
-  customCategories = signal<string[]>([]);
-  editingExpenseId = signal<number | undefined>(undefined);
-  unsavedData = signal(false);
-  saving = signal(false);
-  actionEnum = ActionEnum;
-  maxRowId = signal(1);
+  public customCategories = signal<string[]>([]);
+  public editingExpenseId = signal<number | undefined>(undefined);
+  public unsavedData = signal(false);
+  public saving = signal(false);
+  public actionEnum = ActionEnum;
+  public maxRowId = signal(1);
   private pendingEditRowId?: number;
   private readonly destroyRef = inject(DestroyRef);
 
-  async ngOnInit() {
+  public async ngOnInit() {
     // Deep link from the pending-changes page: open a specific expense for edit.
     const editParam = this.route.snapshot.queryParams['edit'];
     if (editParam !== undefined && editParam !== null && editParam !== '' && !Number.isNaN(Number(editParam))) {
@@ -123,7 +123,7 @@ export class ExpensesComponent implements OnInit {
     return new Date();
   }
 
-  async loadExpenses() {
+  public async loadExpenses() {
     const expenses = await this.expensesService.list();
     await this.syncExpenseState(expenses);
   }
@@ -194,7 +194,7 @@ export class ExpensesComponent implements OnInit {
     }, 100);
   }
 
-  async addExpense() {
+  public async addExpense() {
     if (this.expenseForm.invalid) return;
     const now = Date.now();
     const formValue = this.expenseForm.value as IExpenseFormValue;
@@ -225,7 +225,7 @@ export class ExpensesComponent implements OnInit {
     this.showAddForm.set(false);
   }
 
-  editExpense(expense: IExpense) {
+  public editExpense(expense: IExpense) {
     this.expenseForm.patchValue(mapExpenseToFormValue(expense));
     this.editingExpenseId.set(expense.id);
     this.showAddForm.set(true);
@@ -235,7 +235,7 @@ export class ExpensesComponent implements OnInit {
    * Resets the form and clears editing state, but keeps the form open.
    * Used when the user wants to clear the form without closing it.
    */
-  async resetForm() {
+  public async resetForm() {
     await this.clearFormState();
     // Do not close the form here; handled by button
   }
@@ -244,7 +244,7 @@ export class ExpensesComponent implements OnInit {
    * Cancels editing, resets the form, and closes the form.
    * Used when the user explicitly cancels editing or adding.
    */
-  cancelEdit() {
+  public cancelEdit() {
     this.clearFormState();
     this.showAddForm.set(false);
   }
@@ -260,7 +260,7 @@ export class ExpensesComponent implements OnInit {
   /**
    * Deletes the currently editing expense
    */
-  async deleteCurrentExpense() {
+  public async deleteCurrentExpense() {
     if (!this.editingExpenseId()) return;
     const expense = this.expenses().find(e => e.id === this.editingExpenseId());
     if (expense) {
@@ -271,7 +271,7 @@ export class ExpensesComponent implements OnInit {
   /**
    * Checks if the currently editing expense is marked for deletion
    */
-  isEditingDeleted(): boolean {
+  public isEditingDeleted(): boolean {
     if (!this.editingExpenseId()) return false;
     const expense = this.expenses().find(e => e.id === this.editingExpenseId());
     return expense?.action === ActionEnum.Delete;
@@ -280,7 +280,7 @@ export class ExpensesComponent implements OnInit {
   /**
    * Restores a deleted expense
    */
-  async restoreCurrentExpense() {
+  public async restoreCurrentExpense() {
     if (!this.editingExpenseId()) return;
     const expense = this.expenses().find(e => e.id === this.editingExpenseId());
     if (expense) {
@@ -294,7 +294,7 @@ export class ExpensesComponent implements OnInit {
   /**
    * Restores an expense from the table menu
    */
-  async restoreExpense(expense: IExpense) {
+  public async restoreExpense(expense: IExpense) {
     updateAction(expense, ActionEnum.Update);
     expense.saved = false;
     await this.expensesService.update([expense]);
@@ -303,7 +303,7 @@ export class ExpensesComponent implements OnInit {
   /**
    * Confirms deletion with user before deleting expense
    */
-  async confirmDeleteExpenseDialog(expense: IExpense) {
+  public async confirmDeleteExpenseDialog(expense: IExpense) {
     const message = `This expense will be deleted from your spreadsheet. Are you sure you want to delete this?`;
 
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -330,7 +330,7 @@ export class ExpensesComponent implements OnInit {
    * If the expense was just added (ActionEnum.Add), it's removed from the database.
    * Otherwise, it's marked as deleted and will be removed from the spreadsheet on next sync.
    */
-  async deleteExpense(expense: IExpense) {
+  public async deleteExpense(expense: IExpense) {
     if (expense.action === ActionEnum.Add) {
       // Permanently delete newly added expenses that haven't been synced yet
       await this.expensesService.delete(expense.id!);
@@ -342,7 +342,7 @@ export class ExpensesComponent implements OnInit {
     }
   }
 
-  async confirmSaveDialog() {
+  public async confirmSaveDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -362,7 +362,7 @@ export class ExpensesComponent implements OnInit {
     }
   }
 
-  async saveSheetDialog(inputValue: string) {
+  public async saveSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
@@ -381,15 +381,15 @@ export class ExpensesComponent implements OnInit {
     }
   }
 
-  hideAddForm() {
+  public hideAddForm() {
     this.showAddForm.set(false);
   }
 
-  get categories(): string[] {
+  public get categories(): string[] {
     // Merge, dedupe, and sort categories alphabetically
     const merged = Array.from(new Set([...this.defaultCategories, ...this.customCategories()]));
     return merged.sort((a, b) => a.localeCompare(b));
   }
 
-  sortByMonth = (a: {key: string}, b: {key: string}) => a.key > b.key ? -1 : 1;
+  public sortByMonth = (a: {key: string}, b: {key: string}) => a.key > b.key ? -1 : 1;
 }

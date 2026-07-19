@@ -52,55 +52,55 @@ export class BaseButtonComponent implements AfterViewInit, OnChanges, OnDestroy 
   private renderer = inject(Renderer2);
 
   /** Button variant style */
-  @Input() variant: ButtonVariant = 'primary';
+  @Input() public variant: ButtonVariant = 'primary';
 
   /** Button size */
-  @Input() size: ButtonSize = 'md';
+  @Input() public size: ButtonSize = 'md';
 
   /** Icon name (Material icon) */
-  @Input() icon?: string;
+  @Input() public icon?: string;
 
   /** Icon position (left/right) */
-  @Input() iconPosition: 'left' | 'right' = 'left';
+  @Input() public iconPosition: 'left' | 'right' = 'left';
 
   /** Icon color (CSS color value or CSS variable) */
-  @Input() iconColor?: string;
+  @Input() public iconColor?: string;
 
   /** Render as a floating action button (circular) */
   /**
    * Render as a floating action button (circular). Use `[fab]="true"`.
    */
-  @Input() fab = false;
+  @Input() public fab = false;
 
   /** Fab style: regular or mini */
-  @Input() fabStyle: FabStyle = 'regular';
+  @Input() public fabStyle: FabStyle = 'regular';
 
   /** Extended fab shows label next to icon */
-  @Input() extended = false;
+  @Input() public extended = false;
 
   /** Disabled state */
-  @Input() disabled = false;
+  @Input() public disabled = false;
 
   /** Loading state - shows spinner and disables button */
-  @Input() loading = false;
+  @Input() public loading = false;
 
   /** Native button type ('button' | 'submit' | 'reset') forwarded to native element */
-  @Input() type: 'button' | 'submit' | 'reset' = 'button';
+  @Input() public type: 'button' | 'submit' | 'reset' = 'button';
 
   /** Full width button */
-  @Input() fullWidth = false;
+  @Input() public fullWidth = false;
 
   /** No background - transparent button with minimal hover effect */
-  @Input() noBackground = false;
+  @Input() public noBackground = false;
 
   /** Optional label string. When provided the label will be rendered
    *  inside a `.btn-text` span so consumers don't need to project a
    *  `.btn-text` element themselves.
    */
-  @Input() label?: string;
+  @Input() public label?: string;
 
   /** Click event emitter */
-  @Output() clicked = new EventEmitter<void>();
+  @Output() public clicked = new EventEmitter<void>();
 
   private resizeHandler = () => this.updateIconOnlyClass();
 
@@ -110,15 +110,15 @@ export class BaseButtonComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.scheduleIconOnlyClassUpdate();
   }
 
-  ngOnChanges(_changes: SimpleChanges): void {
+  public ngOnChanges(_changes: SimpleChanges): void {
     this.scheduleIconOnlyClassUpdate();
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.resizeHandler);
     }
@@ -157,13 +157,13 @@ export class BaseButtonComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
 
-  onButtonClick(): void {
+  public onButtonClick(): void {
     if (!this.disabled && !this.loading) {
       this.clicked.emit();
     }
   }
 
-  get buttonClasses(): string {
+  public get buttonClasses(): string {
     const classes = [
       'app-base-button',
       `btn-${this.variant}`,

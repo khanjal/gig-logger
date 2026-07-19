@@ -79,8 +79,8 @@ const NEW_SHIFT_VALUE = 'new';
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, SearchInputComponent, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
-  dialogRef = inject<MatDialogRef<TripFormComponent>>(MatDialogRef, { optional: true });
-  data = inject(MAT_DIALOG_DATA, { optional: true });
+  public dialogRef = inject<MatDialogRef<TripFormComponent>>(MatDialogRef, { optional: true });
+  public data = inject(MAT_DIALOG_DATA, { optional: true });
   private _snackBar = inject(MatSnackBar);
   private _addressService = inject(AddressService);
   private _deliveryService = inject(DeliveryService);
@@ -93,13 +93,13 @@ export class TripFormComponent implements OnInit {
   private _viewportScroller = inject(ViewportScroller);
   private cdr = inject(ChangeDetectorRef);
 
-  @Output() parentReload = new EventEmitter<void>();
-  @Output() editModeExit = new EventEmitter<string | undefined>();
-  @Input() isInEditMode = false;
-  @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
+  @Output() public parentReload = new EventEmitter<void>();
+  @Output() public editModeExit = new EventEmitter<string | undefined>();
+  @Input() public isInEditMode = false;
+  @ViewChild(MatAutocompleteTrigger) public autocomplete: MatAutocompleteTrigger | undefined;
 
   // Typed FormGroup for better compile-time safety
-  tripForm = new FormGroup<{
+  public tripForm = new FormGroup<{
     shift: FormControl<string | null>;
     service: FormControl<string | null>;
     region: FormControl<string | null>;
@@ -145,30 +145,30 @@ export class TripFormComponent implements OnInit {
     exclude: new FormControl<string | null>(null),
   });
 
-  isNewShift = signal<boolean>(true);
-  showAdvancedPay = false;
-  showPickupAddress = false;
-  showOdometer = false;
-  showOrder = false;
-  showTimes = false;
+  public isNewShift = signal<boolean>(true);
+  public showAdvancedPay = false;
+  public showPickupAddress = false;
+  public showOdometer = false;
+  public showOrder = false;
+  public showTimes = false;
 
-  selectedAddress: IAddress | undefined;
-  selectedAddressDeliveries: IDelivery[] = [];
+  public selectedAddress: IAddress | undefined;
+  public selectedAddressDeliveries: IDelivery[] = [];
   
-  selectedName: IName | undefined;
-  selectedNameDeliveries: IDelivery[] = [];
+  public selectedName: IName | undefined;
+  public selectedNameDeliveries: IDelivery[] = [];
   
-  selectedPlace: IPlace | undefined;
-  selectedPlaceAddresses: IAddress[] = [];
+  public selectedPlace: IPlace | undefined;
+  public selectedPlaceAddresses: IAddress[] = [];
 
-  shifts: IShift[] = [];
-  shiftOptions = signal<IShiftSummaryOption[]>([]);
-  selectedShift: IShift | undefined;
-  selectedShiftOption = signal<IShiftSummaryOption | undefined>(undefined);
+  public shifts: IShift[] = [];
+  public shiftOptions = signal<IShiftSummaryOption[]>([]);
+  public selectedShift: IShift | undefined;
+  public selectedShiftOption = signal<IShiftSummaryOption | undefined>(undefined);
 
-  title = "Add Trip";
+  public title = "Add Trip";
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
     this.tripForm.controls.service.updateValueAndValidity();
 
@@ -455,25 +455,25 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.shift.setValue(NEW_SHIFT_VALUE, { emitEvent: false });
   }
 
-  setPickupAddress(address: string) {
+  public setPickupAddress(address: string) {
     this.tripForm.controls.startAddress.setValue(address);
   }
 
-  setDropoffAddress(address: string) {
+  public setDropoffAddress(address: string) {
     this.tripForm.get('endAddress')?.setValue(address);
   }
 
-  async setDestinationAddress(address: string) {
+  public async setDestinationAddress(address: string) {
     this.tripForm.controls.endAddress.setValue(address);
     await this.showAddressNames();
   }
 
-  async setName(name: string) {
+  public async setName(name: string) {
     this.tripForm.controls.name.setValue(name);
     await this.showNameAddresses();
   }
 
-  async showAddressNames() {
+  public async showAddressNames() {
     const address = this.tripForm.value.endAddress;
     if (!address) {
       await this.deferListBindingUpdate(() => {
@@ -493,7 +493,7 @@ export class TripFormComponent implements OnInit {
     });
   }
 
-  async showNameAddresses() {
+  public async showNameAddresses() {
     const name = this.tripForm.value.name;
     if (!name) {
       await this.deferListBindingUpdate(() => {
@@ -513,7 +513,7 @@ export class TripFormComponent implements OnInit {
     });
   }
 
-  async selectPlace() {
+  public async selectPlace() {
     let place = this.tripForm.value.place;
     if (!place) {
       await this.deferListBindingUpdate(() => {
@@ -592,19 +592,19 @@ export class TripFormComponent implements OnInit {
     openSnackbar(this._snackBar, this[section] ? showMsg : hideMsg);
   }
 
-  toggleAdvancedPay() {
+  public toggleAdvancedPay() {
     this.toggleSection('showAdvancedPay', 'Showing Additional Payment Fields', 'Hiding Additional Payment Fields');
   }
 
-  toggleOdometer() {
+  public toggleOdometer() {
     this.toggleSection('showOdometer', 'Showing Odometer Fields', 'Hiding Odometer Fields');
   }
 
-  toggleOrder() {
+  public toggleOrder() {
     this.toggleSection('showOrder', 'Showing Order Fields', 'Hiding Order Fields');
   }
 
-  togglePickupAddress() {
+  public togglePickupAddress() {
     this.toggleSection('showPickupAddress', 'Showing Pickup Address', 'Hiding Pickup Address');
   }
 
@@ -628,15 +628,15 @@ export class TripFormComponent implements OnInit {
   }
 
 
-  setPickupTime() {
+  public setPickupTime() {
     this.tripForm.controls.pickupTime.setValue(DateHelper.getTimeString());
   }
 
-  setDropoffTime() {
+  public setDropoffTime() {
     this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString());
   }
 
-  close() {
+  public close() {
     if (this.isInEditMode) {
       // We're in edit mode on the trips page, emit event to exit edit mode
       this.editModeExit.emit(undefined);
@@ -647,10 +647,10 @@ export class TripFormComponent implements OnInit {
   }
 
   // Remove keyboard handling - now handled by focus-scroll directive
-  keyboardPadding = false;
+  public keyboardPadding = false;
 
   // --- Voice input result handler ---
-  async onVoiceResult(result: IVoiceParseResult) {
+  public async onVoiceResult(result: IVoiceParseResult) {
     if (!result) return;
 
     // Mapping of voice fields to form controls and their handlers

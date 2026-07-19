@@ -36,11 +36,11 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   private destroyRef = inject(DestroyRef);
 
   private stats: ITripStatistics = this.createEmptyStats();
-  dailyData = signal<IDaily[]>([]);
+  public dailyData = signal<IDaily[]>([]);
 
-  @Input() trips: ITrip[] = [];
-  @Input() startDate?: string;
-  @Input() endDate?: string;
+  @Input() public trips: ITrip[] = [];
+  @Input() public startDate?: string;
+  @Input() public endDate?: string;
 
   private readonly dialogConfig = {
     height: '550px',
@@ -48,7 +48,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     panelClass: 'custom-modalbox'
   } as const;
 
-  summaryCards = signal<ISummaryCard[]>([]);
+  public summaryCards = signal<ISummaryCard[]>([]);
 
   // Memoized computed properties
   private _cachedBusiestDay: { label: string; count: number; date: string } | null = null;
@@ -56,7 +56,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   private _cachedBestWeekdayPerTrip: { label: string; value: number; dayIndex: number } | null = null;
   private _cachedBestWeekdayPerTime: { label: string; value: number; dayIndex: number } | null = null;
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.dailyService.daily$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
@@ -65,7 +65,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
       });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     if (changes['trips'] || changes['startDate'] || changes['endDate']) {
       this.refreshSummary();
     }
@@ -152,19 +152,19 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     };
   }
 
-  get busiestDay() {
+  public get busiestDay() {
     return this._cachedBusiestDay;
   }
 
-  get highestEarningDay() {
+  public get highestEarningDay() {
     return this._cachedHighestEarningDay;
   }
 
-  get bestWeekdayPerTrip(): { label: string; value: number; dayIndex: number } | null {
+  public get bestWeekdayPerTrip(): { label: string; value: number; dayIndex: number } | null {
     return this._cachedBestWeekdayPerTrip;
   }
 
-  get bestWeekdayPerTime(): { label: string; value: number; dayIndex: number } | null {
+  public get bestWeekdayPerTime(): { label: string; value: number; dayIndex: number } | null {
     return this._cachedBestWeekdayPerTime;
   }
 
@@ -202,7 +202,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     return best;
   }
 
-  executeAction(index: number): void {
+  public executeAction(index: number): void {
     const action = this.summaryCards()[index].action;
     if (action) {
       action();
@@ -350,7 +350,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     });
   }
 
-  showTripsWithHighestTip(): void {
+  public showTripsWithHighestTip(): void {
     const highest = this.stats.highestTip;
     this.openTripsModal(
       `Trips with Highest Tip ($${NumberHelper.formatNumber(highest)})`,
@@ -358,7 +358,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showTripsWithLowestTip(): void {
+  public showTripsWithLowestTip(): void {
     const lowest = this.stats.lowestNonZeroTip;
     if (lowest === null) return;
     this.openTripsModal(
@@ -367,7 +367,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showLongestTrips(): void {
+  public showLongestTrips(): void {
     const longest = this.stats.longestTrip;
     this.openTripsModal(
       `Longest Trips (${NumberHelper.formatNumber(longest)} mi)`,
@@ -375,7 +375,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showShortestTrips(): void {
+  public showShortestTrips(): void {
     const shortest = this.stats.shortestTrip;
     if (shortest === null) return;
     this.openTripsModal(
@@ -384,7 +384,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showTripsWithHighestPay(): void {
+  public showTripsWithHighestPay(): void {
     const highest = this.stats.highestPay;
     this.openTripsModal(
       `Trips with Highest Pay ($${NumberHelper.formatNumber(highest)})`,
@@ -392,7 +392,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showTripsWithLowestPay(): void {
+  public showTripsWithLowestPay(): void {
     const lowest = this.stats.lowestPay;
     if (lowest === null) return;
     this.openTripsModal(
@@ -403,7 +403,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
 
   // Median drill-down intentionally omitted; median can be non-observed when even counts are averaged.
 
-  showTripsWithBestPerMile(): void {
+  public showTripsWithBestPerMile(): void {
     const best = this.stats.bestEarningsPerMile;
     this.openTripsModal(
       `Trips with Best $/Mile ($${NumberHelper.formatNumber(best)})`,
@@ -411,7 +411,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showTripsWithWorstPerMile(): void {
+  public showTripsWithWorstPerMile(): void {
     const worst = this.stats.worstEarningsPerMile;
     this.openTripsModal(
       `Trips with Worst $/Mile ($${NumberHelper.formatNumber(worst)})`,
@@ -419,7 +419,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showBusiestDayTrips(): void {
+  public showBusiestDayTrips(): void {
     if (!this.busiestDay) return;
     const { label, date } = this.busiestDay;
     this.openTripsModal(
@@ -428,7 +428,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showHighestEarningDayTrips(): void {
+  public showHighestEarningDayTrips(): void {
     if (!this.highestEarningDay) return;
     const { label, total, date } = this.highestEarningDay;
     this.openTripsModal(
@@ -437,34 +437,34 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     );
   }
 
-  showZeroTipTrips(): void {
+  public showZeroTipTrips(): void {
     this.openTripsModal('Trips with $0 tip', t => (t.tip || 0) === 0);
   }
 
-  showCashTrips(): void {
+  public showCashTrips(): void {
     this.openTripsModal('Trips with cash collected', t => (t.cash || 0) > 0);
   }
 
   // Accessor methods for backward compatibility if needed
-  get totalEarnings(): number { return this.stats.totalEarnings; }
-  get totalTips(): number { return this.stats.totalTips; }
-  get totalBonus(): number { return this.stats.totalBonus; }
-  get totalDistance(): number { return this.stats.totalDistance; }
-  get averagePerTrip(): number { return this.stats.averagePerTrip; }
-  get medianTip(): number { return this.stats.medianTip; }
-  get medianPay(): number { return this.stats.medianPay; }
-  get averagePay(): number { return this.stats.averagePay; }
-  get highestPay(): number { return this.stats.highestPay; }
-  get lowestPay(): number | null { return this.stats.lowestPay; }
-  get highestTip(): number { return this.stats.highestTip; }
-  get zeroTipTrips(): number { return this.stats.zeroTipTrips; }
-  get cashTrips(): number { return this.stats.cashTrips; }
-  get averagePerMile(): number { return this.stats.averagePerMile; }
-  get bestEarningsPerMile(): number { return this.stats.bestEarningsPerMile; }
-  get worstEarningsPerMile(): number { return this.stats.worstEarningsPerMile; }
-  get averageTip(): number { return this.stats.averageTip; }
-  get lowestNonZeroTip(): number | null { return this.stats.lowestNonZeroTip; }
-  get tipPercentage(): number { return this.stats.tipPercentage; }
-  get longestTrip(): number { return this.stats.longestTrip; }
-  get shortestTrip(): number | null { return this.stats.shortestTrip; }
+  public get totalEarnings(): number { return this.stats.totalEarnings; }
+  public get totalTips(): number { return this.stats.totalTips; }
+  public get totalBonus(): number { return this.stats.totalBonus; }
+  public get totalDistance(): number { return this.stats.totalDistance; }
+  public get averagePerTrip(): number { return this.stats.averagePerTrip; }
+  public get medianTip(): number { return this.stats.medianTip; }
+  public get medianPay(): number { return this.stats.medianPay; }
+  public get averagePay(): number { return this.stats.averagePay; }
+  public get highestPay(): number { return this.stats.highestPay; }
+  public get lowestPay(): number | null { return this.stats.lowestPay; }
+  public get highestTip(): number { return this.stats.highestTip; }
+  public get zeroTipTrips(): number { return this.stats.zeroTipTrips; }
+  public get cashTrips(): number { return this.stats.cashTrips; }
+  public get averagePerMile(): number { return this.stats.averagePerMile; }
+  public get bestEarningsPerMile(): number { return this.stats.bestEarningsPerMile; }
+  public get worstEarningsPerMile(): number { return this.stats.worstEarningsPerMile; }
+  public get averageTip(): number { return this.stats.averageTip; }
+  public get lowestNonZeroTip(): number | null { return this.stats.lowestNonZeroTip; }
+  public get tipPercentage(): number { return this.stats.tipPercentage; }
+  public get longestTrip(): number { return this.stats.longestTrip; }
+  public get shortestTrip(): number | null { return this.stats.shortestTrip; }
 }

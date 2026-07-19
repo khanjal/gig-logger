@@ -14,13 +14,13 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 export class SplitDialogComponent {
   private dialogRef = inject<MatDialogRef<SplitDialogComponent>>(MatDialogRef);
 
-  selection: 'both' | 'place' | 'customer' | 'neither' = 'both';
+  public selection: 'both' | 'place' | 'customer' | 'neither' = 'both';
 
-  cancel() {
+  public cancel() {
     this.dialogRef.close();
   }
 
-  confirm() {
+  public confirm() {
     this.dialogRef.close(this.selection);
   }
 }

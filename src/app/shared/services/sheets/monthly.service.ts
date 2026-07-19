@@ -13,6 +13,6 @@ export class MonthlyService  extends GenericCrudService<IMonthly> {
       super(spreadsheetDB.monthly); // Pass the table reference
     }
     
-    monthly$ = from(liveQuery(() => spreadsheetDB.monthly.toArray()));
+    public monthly$ = from(liveQuery(() => spreadsheetDB.monthly.toArray()));
 
 }

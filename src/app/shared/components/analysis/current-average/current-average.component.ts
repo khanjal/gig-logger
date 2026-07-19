@@ -21,48 +21,48 @@ export class CurrentAverageComponent {
 
   private _date: string = DateHelper.toISO();
 
-  @Input() set date(value: string) {
+  @Input() public set date(value: string) {
     this._date = value || DateHelper.toISO();
     this.currentAverageState.setDate(this._date);
   }
 
-  get date(): string {
+  public get date(): string {
     return this._date;
   }
 
-  get currentDayAmount(): number {
+  public get currentDayAmount(): number {
     return this.currentAverageState.currentDayAmount();
   }
 
-  get currentMonthAmount(): number {
+  public get currentMonthAmount(): number {
     return this.currentAverageState.currentMonthAmount();
   }
 
-  get currentWeekAmount(): number {
+  public get currentWeekAmount(): number {
     return this.currentAverageState.currentWeekAmount();
   }
 
-  get dailyAverage(): number {
+  public get dailyAverage(): number {
     return this.currentAverageState.dailyAverage();
   }
 
-  get weeklyAverage(): number {
+  public get weeklyAverage(): number {
     return this.currentAverageState.weeklyAverage();
   }
 
-  get monthlyAverage(): number {
+  public get monthlyAverage(): number {
     return this.currentAverageState.monthlyAverage();
   }
 
-  showDailyAverage = true;
-  showWeeklyAverage = false;
-  showMonthlyAverage = false;
+  public showDailyAverage = true;
+  public showWeeklyAverage = false;
+  public showMonthlyAverage = false;
 
   constructor() {
       this.currentAverageState.setDate(this._date);
     }
 
-  toggle() {
+  public toggle() {
     const states = ['Daily', 'Weekly', 'Monthly'];
     const currentIndex = states.findIndex(state => this[`show${state}Average` as keyof CurrentAverageComponent]);
     const nextIndex = (currentIndex + 1) % states.length;

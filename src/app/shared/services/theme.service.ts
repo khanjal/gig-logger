@@ -38,23 +38,23 @@ export class ThemeService {
     this.applyTheme(initialPreference, false);
   }
 
-  get preferenceChanges(): Observable<ThemePreference> {
+  public get preferenceChanges(): Observable<ThemePreference> {
     return this.preference$.asObservable();
   }
 
-  get activeTheme$(): Observable<ResolvedTheme> {
+  public get activeTheme$(): Observable<ResolvedTheme> {
     return this.resolved$.asObservable();
   }
 
-  get activeTheme(): ResolvedTheme {
+  public get activeTheme(): ResolvedTheme {
     return this.resolved$.value;
   }
 
-  get currentPreference(): ThemePreference {
+  public get currentPreference(): ThemePreference {
     return this.preference$.value;
   }
 
-  setTheme(preference: ThemePreference): void {
+  public setTheme(preference: ThemePreference): void {
     this.applyTheme(preference);
   }
 

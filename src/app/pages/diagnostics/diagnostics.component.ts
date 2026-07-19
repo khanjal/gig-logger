@@ -58,33 +58,33 @@ export class DiagnosticsComponent implements OnInit {
   private _gigWorkflow = inject(GigWorkflowService);
   private _uiPreferences = inject(UiPreferencesService);
 
-  dataDiagnostics = signal<IDiagnosticItem[]>([]);
-  isLoading = signal(false);
-  isBulkFixing = signal(false);
-  selectedValue: (IDiagnosticRecord | undefined)[] = [];
-  selectedAddress: Record<number, string> = {};
-  selectedShiftToDelete: Record<number, number | undefined> = {};
+  public dataDiagnostics = signal<IDiagnosticItem[]>([]);
+  public isLoading = signal(false);
+  public isBulkFixing = signal(false);
+  public selectedValue: (IDiagnosticRecord | undefined)[] = [];
+  public selectedAddress: Record<number, string> = {};
+  public selectedShiftToDelete: Record<number, number | undefined> = {};
 
-  trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
+  public trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
     return item.name ?? index;
   }
 
-  trackByGroup(_index: number, group: IDiagnosticRecord[]): string | number {
+  public trackByGroup(_index: number, group: IDiagnosticRecord[]): string | number {
     const first = group?.[0];
     return first?.rowId ?? first?.id ?? first?.key ?? first?.name ?? group.length;
   }
 
-  trackByProblemItem(index: number, item: IDiagnosticRecord): string | number {
+  public trackByProblemItem(index: number, item: IDiagnosticRecord): string | number {
     // Prefer rowId, id, key, or fallback to index
     return item?.rowId ?? item?.id ?? item?.key ?? index;
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     // Automatically run diagnostics on page load
     this.runDiagnostics();
   }
 
-  async runDiagnostics() {
+  public async runDiagnostics() {
     this.isLoading.set(true);
     this.dataDiagnostics.set([]);
     this.selectedValue = [];
@@ -305,7 +305,7 @@ export class DiagnosticsComponent implements OnInit {
 
 
 
-  getSeverityIcon(severity: string): string {
+  public getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
       case 'warning': return 'warning';
@@ -313,7 +313,7 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  getSeverityColor(severity: string): string {
+  public getSeverityColor(severity: string): string {
     switch (severity) {
       case 'error': return 'warn';
       case 'warning': return 'accent';
@@ -321,17 +321,17 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  getCountBySeverity(severity: 'info' | 'warning' | 'error'): number {
+  public getCountBySeverity(severity: 'info' | 'warning' | 'error'): number {
     return this.dataDiagnostics()
       .filter(item => item.severity === severity)
       .reduce((sum, item) => sum + item.count, 0);
   }
 
-  getTotalIssues(): number {
+  public getTotalIssues(): number {
     return this.dataDiagnostics().reduce((sum, item) => sum + item.count, 0);
   }
 
-  async mergeDuplicates(group: IDiagnosticRecord[], selectedItem: IDiagnosticRecord, itemType: DiagnosticEntityType) {
+  public async mergeDuplicates(group: IDiagnosticRecord[], selectedItem: IDiagnosticRecord, itemType: DiagnosticEntityType) {
     const trips = await this._tripService.list();
     const shifts = await this._shiftService.list();
 
@@ -411,7 +411,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async fixShiftDuration(record: IDiagnosticRecord) {
+  public async fixShiftDuration(record: IDiagnosticRecord) {
     const shift = record as unknown as IShift;
     if (!shift.start || !shift.finish) return;
     const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
@@ -424,7 +424,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async fixTripDuration(record: IDiagnosticRecord) {
+  public async fixTripDuration(record: IDiagnosticRecord) {
     const trip = record as unknown as ITrip;
     await this._gigCalculator.updateTripDuration(trip);
 
@@ -434,7 +434,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async bulkFixShiftDurations() {
+  public async bulkFixShiftDurations() {
     this.isBulkFixing.set(true);
     try {
       // Ensure autosave is disabled before long-running batch updates
@@ -457,7 +457,7 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  async bulkFixTripDurations() {
+  public async bulkFixTripDurations() {
     this.isBulkFixing.set(true);
     try {
       // Ensure autosave is disabled before long-running batch updates
@@ -475,7 +475,7 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  async applyAddressToTrip(record: IDiagnosticRecord, address: string) {
+  public async applyAddressToTrip(record: IDiagnosticRecord, address: string) {
     record.startAddress = address;
     record.addressApplied = true;
     const trip = record as unknown as ITrip;
@@ -485,7 +485,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async createShiftFromTrip(record: IDiagnosticRecord) {
+  public async createShiftFromTrip(record: IDiagnosticRecord) {
     // Delegate to the batch flow so single-create reuses same logic
     await this.createShiftsFromTrips([record]);
   }
@@ -497,7 +497,7 @@ export class DiagnosticsComponent implements OnInit {
    * - Persists all new shifts, then calls `calculateShiftTotals` once with the array
    * - Marks matching orphaned trips as fixed in diagnostics
    */
-  async createShiftsFromTrips(records: IDiagnosticRecord[]) {
+  public async createShiftsFromTrips(records: IDiagnosticRecord[]) {
     if (!records || records.length === 0) return;
     const trips = records as unknown as ITrip[];
 
@@ -558,13 +558,13 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
+  public hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
     return group.some(s => s.markedForDelete);
   }
 
 
 
-  async markShiftForDelete(group: IDiagnosticRecord[], rowId: number, groupIndex: number) {
+  public async markShiftForDelete(group: IDiagnosticRecord[], rowId: number, groupIndex: number) {
     const record = group.find(s => s.rowId === rowId);
     if (!record) return;
     const shift = record as unknown as IShift;

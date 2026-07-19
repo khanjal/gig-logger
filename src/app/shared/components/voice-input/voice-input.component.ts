@@ -31,23 +31,23 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   private _voicePatternProcessor = inject(VoicePatternProcessorService);
 
   // Dropdown data (from database + canonical JSON fallback)
-  serviceList: string[] = [];
-  addressList: string[] = [];
-  typeList: string[] = [];
-  placeList: string[] = [];
+  public serviceList: string[] = [];
+  public addressList: string[] = [];
+  public typeList: string[] = [];
+  public placeList: string[] = [];
 
   // Component state
-  transcript = signal('');
-  parsedResult = signal<IVoiceParseResult | null>(null);
-  recognition: ISpeechRecognition | null = null;
-  recognizing = signal(false);
+  public transcript = signal('');
+  public parsedResult = signal<IVoiceParseResult | null>(null);
+  public recognition: ISpeechRecognition | null = null;
+  public recognizing = signal(false);
   private transcriptTimeout: ReturnType<typeof setTimeout> | null = null;
-  suggestionPhrase = signal('');
+  public suggestionPhrase = signal('');
 
   // Auto-hide delay (in milliseconds)
   private readonly TRANSCRIPT_AUTO_HIDE_DELAY = 3000;
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     // Load dropdown data (service handles canonical fallback)
     const data = await this._dropdownDataService.getAllDropdownData();
     this.serviceList = data.services;
@@ -56,7 +56,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     this.addressList = data.addresses;
   }
 
-  @Output() voiceResult = new EventEmitter<IVoiceParseResult>();
+  @Output() public voiceResult = new EventEmitter<IVoiceParseResult>();
 
   private getRandomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
@@ -66,7 +66,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.cleanup();
   }
 
@@ -81,7 +81,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onMicClick(): Promise<void> {
+  public async onMicClick(): Promise<void> {
     if (!this.isSpeechRecognitionSupported()) {
       alert('Speech recognition is not supported in this browser. Please try Chrome, Edge, or Safari.');
       return;
@@ -199,14 +199,14 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }, this.TRANSCRIPT_AUTO_HIDE_DELAY);
   }
 
-  get micButtonColor(): string {
+  public get micButtonColor(): string {
     return this.recognizing() ? 'bg-error' : 'bg-primary';
   }
 
   /**
    * Gets the parsed result as an array of key-value pairs for template iteration
    */
-  get parsedResultEntries(): { key: string; value: string }[] {
+  public get parsedResultEntries(): { key: string; value: string }[] {
     if (!this.parsedResult()) return [];
     // Convert camelCase keys to Proper Case with spaces
     const toProperCase = (str: string) =>
@@ -220,7 +220,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   /**
    * Checks if parsed result has any data
    */
-  get hasParsedData(): boolean {
+  public get hasParsedData(): boolean {
     return this.parsedResultEntries.length > 0;
   }
 
@@ -234,7 +234,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
    * @param transcript The speech recognition result text
    * @returns Parsed voice input result with extracted fields
    */
-  parseTranscript(transcript: string): IVoiceParseResult {
+  public parseTranscript(transcript: string): IVoiceParseResult {
     return this._voicePatternProcessor.parseTranscript(transcript, {
       serviceList: this.serviceList,
       typeList: this.typeList,

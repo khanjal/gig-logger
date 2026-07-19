@@ -13,7 +13,7 @@ export class WeekdayService  extends GenericCrudService<IWeekday> {
       super(spreadsheetDB.weekdays); // Pass the table reference
     }
     
-    weekdays$ = from(liveQuery(() => spreadsheetDB.weekdays.toArray()));
+    public weekdays$ = from(liveQuery(() => spreadsheetDB.weekdays.toArray()));
 
     public async getCurrentTotal() {
         let total = 0;

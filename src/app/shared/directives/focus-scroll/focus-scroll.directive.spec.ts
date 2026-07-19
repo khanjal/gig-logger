@@ -23,9 +23,9 @@ class MockViewportService {
   template: `<input appFocusScroll [enableBottomPadding]="enableBottomPadding" [delayDropdownOnMobile]="delay" [suppressDropdownAfterSelection]="suppress">`
 })
 class HostComponent {
-  enableBottomPadding = false;
-  delay = true;
-  suppress = false;
+  public enableBottomPadding = false;
+  public delay = true;
+  public suppress = false;
 }
 
 describe('FocusScrollDirective (integration)', () => {

@@ -6,11 +6,11 @@ import { updateAction } from "@utils/action.utils";
 import type { ITrip } from "@interfaces/entities/trip.interface";
 
 export class ShiftHelper {
-    static compareShifts(o1: IShift, o2: IShift): boolean {
+    public static compareShifts(o1: IShift, o2: IShift): boolean {
         return o1?.date === o2?.date && o1?.service === o2?.service && o1?.number === o2?.number
     }
 
-    static getUniqueShifts(shifts: IShift[]): IShift[] {
+    public static getUniqueShifts(shifts: IShift[]): IShift[] {
         const uniqueShifts: IShift[] = [];
 
         shifts.forEach(shift => {
@@ -27,7 +27,7 @@ export class ShiftHelper {
         return uniqueShifts;
     }
 
-    static getNextShiftNumber(service: string, shifts: IShift[]): number {
+    public static getNextShiftNumber(service: string, shifts: IShift[]): number {
         shifts = this.getUniqueShifts(shifts);
 
         const serviceShifts = shifts.filter(shift => shift.service == service);
@@ -36,7 +36,7 @@ export class ShiftHelper {
         return serviceShifts.length > 0 ? serviceShifts[0].number+1 : 1;
     }
 
-    static getTodaysShifts():  IShift[] {
+    public static getTodaysShifts():  IShift[] {
         const shifts: IShift[] = [];
         const todaysShifts: IShift[] = [];
 
@@ -50,7 +50,7 @@ export class ShiftHelper {
         return todaysShifts;
     }
 
-    static createNewShift(service: string, shifts: IShift[]): IShift {
+    public static createNewShift(service: string, shifts: IShift[]): IShift {
         const shift: IShift = {} as IShift;
 
         shift.service = service;
@@ -67,7 +67,7 @@ export class ShiftHelper {
         return shift;
     }
 
-    static createShiftFromTrip(trip: ITrip): IShift {
+    public static createShiftFromTrip(trip: ITrip): IShift {
         const shift: IShift = {} as IShift;
 
         shift.key = trip.key;
@@ -82,7 +82,7 @@ export class ShiftHelper {
         return shift;
     }
 
-    static removeDuplicateShifts(shifts: IShift[]): IShift[] {
+    public static removeDuplicateShifts(shifts: IShift[]): IShift[] {
         shifts = shifts.filter((value, index, self) => self.map(x => x.key).indexOf(value.key) == index);
 
         return shifts;
@@ -97,7 +97,7 @@ export class ShiftHelper {
      * const duplicates = ShiftHelper.getDuplicateShiftKeys([{ key: 'A' }, { key: 'A' }, { key: 'B' }] as IShift[]);
      * // duplicates has only 'A'
      */
-    static getDuplicateShiftKeys(shifts: IShift[]): Set<string> {
+    public static getDuplicateShiftKeys(shifts: IShift[]): Set<string> {
         const keyCounts = new Map<string, number>();
 
         for (const shift of shifts) {

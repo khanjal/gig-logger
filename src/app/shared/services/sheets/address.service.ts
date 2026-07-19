@@ -12,7 +12,7 @@ export class AddressService extends GenericCrudService<IAddress> {
       super(spreadsheetDB.addresses); // Pass the table reference
     }
 
-    addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
+    public addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
 
     public async deleteUnsaved() {
         const addresses = await this.getUnsaved();

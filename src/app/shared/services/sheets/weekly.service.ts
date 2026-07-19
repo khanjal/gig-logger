@@ -13,7 +13,7 @@ export class WeeklyService  extends GenericCrudService<IWeekly> {
       super(spreadsheetDB.weekly); // Pass the table reference
     }
 
-    weekly$ = from(liveQuery(() => spreadsheetDB.weekly.toArray()));
+    public weekly$ = from(liveQuery(() => spreadsheetDB.weekly.toArray()));
 
     public async getLastWeekFromDay(day: string) {
         return (await spreadsheetDB.weekly.where("begin").below(day).last());

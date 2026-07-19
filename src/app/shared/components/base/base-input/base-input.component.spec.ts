@@ -19,9 +19,9 @@ import { BaseInputComponent } from './base-input.component';
 class HostComponent {
   private fb = inject(FormBuilder);
 
-  form = this.fb.group({ name: ['', Validators.required] });
-  submitted = false;
-  onSubmit() { this.submitted = true; }
+  public form = this.fb.group({ name: ['', Validators.required] });
+  public submitted = false;
+  public onSubmit() { this.submitted = true; }
 }
 
 @Component({
@@ -36,7 +36,7 @@ class HostComponent {
 class NumberHostComponent {
   private fb = inject(FormBuilder);
 
-  form = this.fb.group({ amount: [null as number | string | null] });
+  public form = this.fb.group({ amount: [null as number | string | null] });
 }
 
 describe('BaseInputComponent (integration)', () => {

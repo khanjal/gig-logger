@@ -22,22 +22,22 @@ import { BaseRectButtonComponent } from '@components/base';
 export class ExpensesQuickViewComponent {
   private expensesService = inject(ExpensesService);
   private router = inject(Router);
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
 
-  ActionEnum = ActionEnum;
-  dateFormats = DATE_FORMATS;
+  public ActionEnum = ActionEnum;
+  public dateFormats = DATE_FORMATS;
 
-  @Input() expense: IExpense = {} as IExpense;
-  @Input() index = 0;
-  @Input() inlineMode = false;
-  @Output() parentReload = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<IExpense>();
+  @Input() public expense: IExpense = {} as IExpense;
+  @Input() public index = 0;
+  @Input() public inlineMode = false;
+  @Output() public parentReload = new EventEmitter<void>();
+  @Output() public edit = new EventEmitter<IExpense>();
 
-  canEditExpense(): boolean {
+  public canEditExpense(): boolean {
     return !!this.expense && this.expense.action !== ActionEnum.Delete;
   }
 
-  async editExpense(): Promise<void> {
+  public async editExpense(): Promise<void> {
     // Emit so an embedding parent (e.g. pending changes) can decide how to open
     // the editor; only self-navigate when standalone. Expenses are edited inline
     // on the expenses page, so we route there with the row to open.
@@ -47,7 +47,7 @@ export class ExpensesQuickViewComponent {
     }
   }
 
-  confirmDeleteExpenseDialog(): void {
+  public confirmDeleteExpenseDialog(): void {
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = 'Confirm Delete';
     dialogData.message = 'This expense will be removed from your spreadsheet on the next sync. Are you sure you want to delete this?';
@@ -67,12 +67,12 @@ export class ExpensesQuickViewComponent {
     });
   }
 
-  async deleteExpense(): Promise<void> {
+  public async deleteExpense(): Promise<void> {
     await this.expensesService.deleteItem(this.expense);
     this.parentReload.emit();
   }
 
-  async restoreExpense(): Promise<void> {
+  public async restoreExpense(): Promise<void> {
     updateAction(this.expense, ActionEnum.Update);
     this.expense.saved = false;
     await this.expensesService.update([this.expense]);

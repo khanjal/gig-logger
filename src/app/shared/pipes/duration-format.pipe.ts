@@ -8,7 +8,7 @@ import { Pipe } from '@angular/core';
  */
 @Pipe({ name: 'durationFormat', standalone: true })
 export class DurationFormatPipe implements PipeTransform {
-  transform(value: number | string | null | undefined): string {
+  public transform(value: number | string | null | undefined): string {
     if (value == null || value === '') return '';
     let totalSeconds: number;
     if (typeof value === 'string') {

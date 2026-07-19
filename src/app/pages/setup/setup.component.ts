@@ -61,7 +61,7 @@ import { createAsyncOperationState } from '@helpers/async-operation-state.helper
 ]
 })
 export class SetupComponent implements OnInit {
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private _snackBar = inject(MatSnackBar);
   private _commonService = inject(CommonService);
   private _logger = inject(LoggerService);
@@ -71,24 +71,24 @@ export class SetupComponent implements OnInit {
   protected authService = inject(AuthGoogleService);
   private versionService = inject(VersionService);
 
-  @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
+  @ViewChild(SheetAddFormComponent) public form:SheetAddFormComponent | undefined;
 
-  isAuthenticated = signal(false);
-  readonly deletingState = createAsyncOperationState();
-  readonly reloadingState = createAsyncOperationState();
-  readonly settingState = createAsyncOperationState();
-  deleting = this.deletingState.isLoading;
-  reloading = this.reloadingState.isLoading;
-  setting = this.settingState.isLoading;
-  spreadsheets = signal<ISpreadsheet[] | undefined>(undefined);
-  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
-  unsavedData = signal(false);
-  showAdvanced = signal(false);
+  public isAuthenticated = signal(false);
+  public readonly deletingState = createAsyncOperationState();
+  public readonly reloadingState = createAsyncOperationState();
+  public readonly settingState = createAsyncOperationState();
+  public deleting = this.deletingState.isLoading;
+  public reloading = this.reloadingState.isLoading;
+  public setting = this.settingState.isLoading;
+  public spreadsheets = signal<ISpreadsheet[] | undefined>(undefined);
+  public defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  public unsavedData = signal(false);
+  public showAdvanced = signal(false);
 
-  version = signal('');
+  public version = signal('');
 
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     this.isAuthenticated.set(await this.authService.canSync());
     await this.load();
     // Load formatted version string (YYYYMMDD.build)
@@ -276,7 +276,7 @@ export class SetupComponent implements OnInit {
     this._commonService.updateHeaderLink("New User");
   }
 
-  async loadSheetDialog(inputValue: string) {
+  public async loadSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
@@ -294,7 +294,7 @@ export class SetupComponent implements OnInit {
     }
   }
 
-  async confirmDeleteAndReloadDialog() {
+  public async confirmDeleteAndReloadDialog() {
     const canSync = await this.authService.canSync();
     if (!canSync) {
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_RELOAD, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
@@ -320,7 +320,7 @@ export class SetupComponent implements OnInit {
     }
   }
 
-  async confirmDeleteAllDialog() {
+  public async confirmDeleteAllDialog() {
     const message = `This will delete everything except for what is saved in your spreadsheet. Are you sure?`;
 
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -341,7 +341,7 @@ export class SetupComponent implements OnInit {
     }
   }
 
-  async confirmUnlinkSpreadsheetDialog(spreadsheet: ISpreadsheet) {
+  public async confirmUnlinkSpreadsheetDialog(spreadsheet: ISpreadsheet) {
     const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
     const isDefaultSheet = spreadsheet.default === "true";
     const isOnlySheet = allSpreadsheets.length === 1;

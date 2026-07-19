@@ -29,14 +29,14 @@ export class SyncStatusService implements OnDestroy {
   public readonly messages$: Observable<ISyncMessage[]> = this.messagesSubject.asObservable();
   public readonly lastSuccessfulSync$: Observable<Date | null> = this.lastSuccessfulSyncSubject.asObservable();
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.stopCountdown();
   }
 
   /**
    * Start a new sync operation
    */
-  startSync(operation: SyncOperation, totalItems = 0): void {
+  public startSync(operation: SyncOperation, totalItems = 0): void {
     this.syncStateSubject.next({
       status: 'syncing',
       operation,
@@ -52,7 +52,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Update sync progress
    */
-  updateProgress(itemsSynced: number, message?: string): void {
+  public updateProgress(itemsSynced: number, message?: string): void {
     const currentState = this.syncStateSubject.value;
     const progress = currentState.totalItems > 0 
       ? Math.round((itemsSynced / currentState.totalItems) * 100)
@@ -70,7 +70,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Mark sync as successful
    */
-  completeSync(message?: string): void {
+  public completeSync(message?: string): void {
     const currentState = this.syncStateSubject.value;
     const successMessage = message || this.getOperationMessage(currentState.operation!, 'success');
     
@@ -98,7 +98,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Mark sync as failed
    */
-  failSync(error: string): void {
+  public failSync(error: string): void {
     const currentState = this.syncStateSubject.value;
     this.syncStateSubject.next({
       ...currentState,
@@ -121,7 +121,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Add a message to the log
    */
-  addMessage(text: string, type: 'info' | 'warning' | 'error' = 'info'): void {
+  public addMessage(text: string, type: 'info' | 'warning' | 'error' = 'info'): void {
     const currentMessages = this.messagesSubject.value;
     const newMessage: ISyncMessage = {
       text,
@@ -137,14 +137,14 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Clear all messages
    */
-  clearMessages(): void {
+  public clearMessages(): void {
     this.messagesSubject.next([]);
   }
 
   /**
    * Reset to idle state
    */
-  resetToIdle(): void {
+  public resetToIdle(): void {
     this.syncStateSubject.next({
       ...this.DEFAULT_STATE,
       timestamp: new Date()
@@ -154,14 +154,14 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Get current sync state
    */
-  getCurrentState(): ISyncState {
+  public getCurrentState(): ISyncState {
     return this.syncStateSubject.value;
   }
 
   /**
    * Check if sync is currently in progress
    */
-  isSyncing(): boolean {
+  public isSyncing(): boolean {
     return this.syncStateSubject.value.status === 'syncing';
   }
 
@@ -193,7 +193,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Get time since last successful sync in human-readable format
    */
-  getTimeSinceLastSync(): string {
+  public getTimeSinceLastSync(): string {
     const lastSync = this.lastSuccessfulSyncSubject.value;
     if (!lastSync) return 'Never';
 
@@ -212,7 +212,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Start countdown timer for next sync
    */
-  startCountdown(intervalMs: number): void {
+  public startCountdown(intervalMs: number): void {
     this.stopCountdown();
     let seconds = Math.ceil(intervalMs / 1000);
     
@@ -233,7 +233,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Stop countdown timer
    */
-  stopCountdown(): void {
+  public stopCountdown(): void {
     if (this.countdownTimer) {
       clearInterval(this.countdownTimer);
       this.countdownTimer = null;

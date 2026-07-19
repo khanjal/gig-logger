@@ -66,7 +66,7 @@ export class DropdownDataService {
   /**
    * Fetches all dropdown data and caches it
    */
-  async getAllDropdownData(): Promise<IDropdownData> {
+  public async getAllDropdownData(): Promise<IDropdownData> {
     if (this.cachedData) {
       return this.cachedData;
     }
@@ -98,7 +98,7 @@ export class DropdownDataService {
   /**
    * Gets a specific dropdown list by type
    */
-  async getDropdownList(type: DropdownType): Promise<string[]> {
+  public async getDropdownList(type: DropdownType): Promise<string[]> {
     const data = await this.getAllDropdownData();
     switch (type) {
       case 'Service':
@@ -146,7 +146,7 @@ export class DropdownDataService {
   /**
    * Filters a dropdown list by a search term
    */
-  async filterDropdown(type: DropdownType, searchTerm: string): Promise<string[]> {
+  public async filterDropdown(type: DropdownType, searchTerm: string): Promise<string[]> {
     const list = await this.getDropdownList(type);
     if (!searchTerm) return list;
     
@@ -160,7 +160,7 @@ export class DropdownDataService {
    * Checks both database list and canonical JSON list for proper casing
    * Returns properly cased input value if no match found
    */
-  findBestMatch(raw: string, list: string[], type?: DropdownType): string | undefined {
+  public findBestMatch(raw: string, list: string[], type?: DropdownType): string | undefined {
     if (!raw) return this.toProperCase(raw);
     
     // Normalize function: lowercase, remove apostrophes, extra spaces, punctuation
@@ -249,7 +249,7 @@ export class DropdownDataService {
   /**
    * Clears the cache (useful when data is updated)
    */
-  clearCache(): void {
+  public clearCache(): void {
     this.cachedData = null;
   }
 }

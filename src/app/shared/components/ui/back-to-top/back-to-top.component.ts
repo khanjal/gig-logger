@@ -16,16 +16,16 @@ import { BaseFabButtonComponent } from '@components/base';
   `
 })
 export class BackToTopComponent {
-  @Input() scrollThreshold = 300;
-  showButton = false;
+  @Input() public scrollThreshold = 300;
+  public showButton = false;
 
   @HostListener('window:scroll', [])
-  onWindowScroll(): void {
+  public onWindowScroll(): void {
     const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
     this.showButton = scrollPosition > this.scrollThreshold;
   }
 
-  scrollToTop(): void {
+  public scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

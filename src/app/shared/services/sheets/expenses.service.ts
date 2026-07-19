@@ -7,7 +7,7 @@ import { liveQuery } from 'dexie';
 
 @Injectable({ providedIn: 'root' })
 export class ExpensesService extends SyncableCrudService<IExpense> {
-  expenses$ = from(liveQuery(() => spreadsheetDB.expenses.toArray()));
+  public expenses$ = from(liveQuery(() => spreadsheetDB.expenses.toArray()));
 
   constructor() {
     super(spreadsheetDB.expenses);

@@ -29,13 +29,13 @@ export class CurrentAverageStateService {
   private weeklyRows = toSignal(this._weeklyService.weekly$, { initialValue: [] as IWeekly[] });
   private monthlyRows = toSignal(this._monthlyService.monthly$, { initialValue: [] as IMonthly[] });
 
-  readonly currentDayAmount = computed(() => {
+  public readonly currentDayAmount = computed(() => {
     const date = this.selectedDate();
     const shifts = this.shifts().filter(shift => shift.date === date);
     return shifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
   });
 
-  readonly currentWeekAmount = computed(() => {
+  public readonly currentWeekAmount = computed(() => {
     const selectedDate = DateHelper.parseLocalDate(this.selectedDate());
     const mondayDate = DateHelper.getMonday(new Date(selectedDate));
     const mondayISO = DateHelper.toISO(mondayDate);
@@ -44,7 +44,7 @@ export class CurrentAverageStateService {
     return shifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
   });
 
-  readonly currentMonthAmount = computed(() => {
+  public readonly currentMonthAmount = computed(() => {
     const selectedDate = DateHelper.parseLocalDate(this.selectedDate());
     const monthStart = DateHelper.getFirstDayOfMonth(selectedDate);
 
@@ -52,7 +52,7 @@ export class CurrentAverageStateService {
     return shifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
   });
 
-  readonly dailyAverage = computed(() => {
+  public readonly dailyAverage = computed(() => {
     const selectedDate = DateHelper.parseLocalDate(this.selectedDate());
     const dayOfWeek = DateHelper.getDayOfWeek(selectedDate);
     const weekday = this.weekdays().find(row => row.day === dayOfWeek);
@@ -60,7 +60,7 @@ export class CurrentAverageStateService {
     return this.toFiniteNumber(weekday?.dailyPrevAverage);
   });
 
-  readonly weeklyAverage = computed(() => {
+  public readonly weeklyAverage = computed(() => {
     const selectedDate = this.selectedDate();
     const previousRows = this.weeklyRows()
       .filter(row => (row.begin ?? '') < selectedDate)
@@ -70,7 +70,7 @@ export class CurrentAverageStateService {
     return this.toFiniteNumber(latest?.average);
   });
 
-  readonly monthlyAverage = computed(() => {
+  public readonly monthlyAverage = computed(() => {
     const selectedDate = DateHelper.parseLocalDate(this.selectedDate());
     const monthYear = DateHelper.getMonthYearString(selectedDate);
     const monthly = this.monthlyRows().find(row => row.month === monthYear);
@@ -78,7 +78,7 @@ export class CurrentAverageStateService {
     return this.toFiniteNumber(monthly?.average);
   });
 
-  setDate(date: string | null | undefined): void {
+  public setDate(date: string | null | undefined): void {
     this.selectedDate.set(date || DateHelper.toISO());
   }
 

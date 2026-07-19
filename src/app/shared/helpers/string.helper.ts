@@ -1,5 +1,5 @@
 export class StringHelper {
-  static truncate(text: string, length = 20, suffix = '...'): string {
+  public static truncate(text: string, length = 20, suffix = '...'): string {
     if (!text || text.length <= length) {
       return text;
     }

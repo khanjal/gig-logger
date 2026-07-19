@@ -14,7 +14,7 @@ export class ShiftService extends SyncableCrudService<IShift> {
       super(spreadsheetDB.shifts); // Pass the table reference
     }
 
-    shifts$ = from(liveQuery(() => spreadsheetDB.shifts.toArray()));
+    public shifts$ = from(liveQuery(() => spreadsheetDB.shifts.toArray()));
 
     public async getUnsavedShifts(): Promise<IShift[]> {
         return await this.getUnsaved();

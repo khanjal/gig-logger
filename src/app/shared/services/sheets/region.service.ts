@@ -15,7 +15,7 @@ export class RegionService extends GenericCrudService<IRegion> {
       super(spreadsheetDB.regions); // Pass the table reference
     }
 
-    services$ = liveQuery(() => spreadsheetDB.services.toArray());
+    public services$ = liveQuery(() => spreadsheetDB.services.toArray());
     
     public async deleteUnsaved() {
         const regions = await this.getUnsaved();

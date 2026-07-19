@@ -30,7 +30,7 @@ export class UpdatesService {
     );
   }
 
-  getUpdates(): Observable<IUpdateEntry[]> {
+  public getUpdates(): Observable<IUpdateEntry[]> {
     return this.updatesSubject.asObservable();
   }
 }

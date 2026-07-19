@@ -15,7 +15,7 @@ export class ServiceService extends GenericCrudService<IService> {
       super(spreadsheetDB.services); // Pass the table reference
     }
     
-    services$ = liveQuery(() => spreadsheetDB.services.toArray());
+    public services$ = liveQuery(() => spreadsheetDB.services.toArray());
 
     public async deleteUnsaved() {
         const services = await this.getUnsaved();

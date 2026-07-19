@@ -18,14 +18,14 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   private appUpdateService = inject(AppUpdateService);
   private logger = inject(LoggerService);
 
-  serviceWorkerStatus = signal('Checking...');
-  isUpdateAvailable = signal(false);
-  showInstallButton = signal(false);
-  isOnline = signal(navigator.onLine);
+  public serviceWorkerStatus = signal('Checking...');
+  public isUpdateAvailable = signal(false);
+  public showInstallButton = signal(false);
+  public isOnline = signal(navigator.onLine);
   private updateStatusSubscription: Subscription | undefined;
   private deferredPrompt: IBeforeInstallPromptEvent | null = null;
   
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     // Subscribe to app update status
     this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
       (status: IAppUpdateStatus) => {
@@ -70,14 +70,14 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
       }
     });
   }
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     // Unsubscribe to prevent memory leaks
     if (this.updateStatusSubscription) {
       this.updateStatusSubscription.unsubscribe();
     }
   }
     // Trigger an update if available
-  async updateApp(): Promise<void> {
+  public async updateApp(): Promise<void> {
     try {
       await this.appUpdateService.activateUpdate();
     } catch (error) {
@@ -86,7 +86,7 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   }
 
   // Install the PWA if prompt is available
-  async installApp(): Promise<void> {
+  public async installApp(): Promise<void> {
     if (this.deferredPrompt) {
       this.deferredPrompt.prompt();
       const { outcome } = await this.deferredPrompt.userChoice;
@@ -100,7 +100,7 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
     }
   }
 
-  async forceCacheUpdate(): Promise<void> {
+  public async forceCacheUpdate(): Promise<void> {
     // Check for internet connectivity before attempting cache update
     if (!navigator.onLine) {
       this.logger.warn('Cannot force cache update - no internet connectivity');

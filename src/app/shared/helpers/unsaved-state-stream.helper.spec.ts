@@ -9,7 +9,7 @@ import { bindUnsavedStateFromStreams } from './unsaved-state-stream.helper';
   template: ''
 })
 class HostComponent {
-  destroyRef: DestroyRef = inject(DestroyRef);
+  public destroyRef: DestroyRef = inject(DestroyRef);
 }
 
 describe('bindUnsavedStateFromStreams', () => {

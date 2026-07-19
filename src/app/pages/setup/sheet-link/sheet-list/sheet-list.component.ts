@@ -36,15 +36,15 @@ export class SheetListComponent implements OnInit {
   private _logger = inject(LoggerService);
   private dialogRef = inject<MatDialogRef<SheetListComponent>>(MatDialogRef);
 
-  sheets = signal<ISheetProperties[]>([]);
-  selectedSheet = signal<ISheetProperties | null>(null);
-  loading = signal(true);
+  public sheets = signal<ISheetProperties[]>([]);
+  public selectedSheet = signal<ISheetProperties | null>(null);
+  public loading = signal(true);
   
-  ngOnInit() {
+  public ngOnInit() {
     this.loadSheets();
   }
 
-  async loadSheets() {
+  public async loadSheets() {
     this.loading.set(true);
     try {
       // Load sheets from your service
@@ -65,11 +65,11 @@ export class SheetListComponent implements OnInit {
     }
   }
 
-  selectSheet(sheet: ISheetProperties) {
+  public selectSheet(sheet: ISheetProperties) {
     this.selectedSheet.set(sheet);
   }
 
-  confirmSelection() {
+  public confirmSelection() {
     const selectedSheet = this.selectedSheet();
     if (selectedSheet) {
       // Close dialog and pass selected sheet back to parent
@@ -77,16 +77,16 @@ export class SheetListComponent implements OnInit {
     }
   }
 
-  cancel() {
+  public cancel() {
     // Close dialog without returning anything
     this.dialogRef.close(null);
   }
 
-  trackBySheetId(index: number, sheet: ISheetProperties): string {
+  public trackBySheetId(index: number, sheet: ISheetProperties): string {
     return sheet.id;
   }
 
-  formatFileSize(bytes: number): string {
+  public formatFileSize(bytes: number): string {
     if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];

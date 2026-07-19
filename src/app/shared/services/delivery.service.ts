@@ -12,5 +12,5 @@ export class DeliveryService extends GenericCrudService<IDelivery> {
       super(spreadsheetDB.deliveries); // Pass the table reference
     }
 
-    deliveries$ = liveQuery(() => spreadsheetDB.deliveries.toArray());
+    public deliveries$ = liveQuery(() => spreadsheetDB.deliveries.toArray());
 }

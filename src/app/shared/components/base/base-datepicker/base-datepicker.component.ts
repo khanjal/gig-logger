@@ -56,55 +56,55 @@ export class BaseDatepickerComponent implements ControlValueAccessor {
    */
 
   /** Input label */
-  @Input() label?: string;
+  @Input() public label?: string;
 
   /** Input placeholder */
-  @Input() placeholder?: string;
+  @Input() public placeholder?: string;
 
   /** Helper/hint text */
-  @Input() hint?: string;
+  @Input() public hint?: string;
 
   /** Error message */
-  @Input() error?: string;
+  @Input() public error?: string;
 
   /** Tailwind width class (e.g., 'w-full', 'w-1/2', 'w-[250px]') */
-  @Input() widthClass = 'w-full';
+  @Input() public widthClass = 'w-full';
 
   /** Disabled state */
-  @Input() disabled = false;
+  @Input() public disabled = false;
 
   /** Required field indicator */
-  @Input() required = false;
+  @Input() public required = false;
 
   /** Value */
-  value: Date | null = null;
+  public value: Date | null = null;
 
   // ValueAccessor implementation
-  onChange: (value: Date | null) => void = () => {};
-  onTouched: () => void = () => {};
+  public onChange: (value: Date | null) => void = () => {};
+  public onTouched: () => void = () => {};
 
-  writeValue(value: Date | null): void {
+  public writeValue(value: Date | null): void {
     this.value = value;
   }
 
-  registerOnChange(fn: (value: Date | null) => void): void {
+  public registerOnChange(fn: (value: Date | null) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: () => void): void {
+  public registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
 
-  onDateChange(event: MatDatepickerInputEvent<Date>): void {
+  public onDateChange(event: MatDatepickerInputEvent<Date>): void {
     this.value = event.value;
     this.onChange(this.value);
   }
 
-  onBlur(): void {
+  public onBlur(): void {
     this.onTouched();
   }
 }

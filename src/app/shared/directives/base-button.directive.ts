@@ -9,14 +9,14 @@ export class BaseButtonDirective implements OnChanges, OnDestroy {
   private el = inject(ElementRef);
   private renderer = inject(Renderer2);
 
-  @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
-  @Input() fab = false;
-  @Input() fabStyle: 'regular' | 'mini' = 'regular';
-  @Input() loading = false;
-  @Input() disabled = false;
-  @Input() extraClass = '';
+  @Input() public variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
+  @Input() public fab = false;
+  @Input() public fabStyle: 'regular' | 'mini' = 'regular';
+  @Input() public loading = false;
+  @Input() public disabled = false;
+  @Input() public extraClass = '';
 
-  @Output() clicked = new EventEmitter<void>();
+  @Output() public clicked = new EventEmitter<void>();
 
   private host: HTMLElement;
 
@@ -25,7 +25,7 @@ export class BaseButtonDirective implements OnChanges, OnDestroy {
     this.renderer.addClass(this.host, 'app-base-button');
   }
 
-  ngOnChanges(): void {
+  public ngOnChanges(): void {
     this.updateClasses();
     this.updateDisabled();
   }
@@ -63,7 +63,7 @@ export class BaseButtonDirective implements OnChanges, OnDestroy {
 
   // emit clicked only when not loading/disabled
   @HostListener('click', ['$event'])
-  handleClick(event?: Event) {
+  public handleClick(event?: Event) {
     if (this.loading || this.disabled) {
       event?.stopImmediatePropagation();
       return;
@@ -71,7 +71,7 @@ export class BaseButtonDirective implements OnChanges, OnDestroy {
     this.clicked.emit();
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     // cleanup classes we added
     this.renderer.removeClass(this.host, 'app-base-button');
   }
