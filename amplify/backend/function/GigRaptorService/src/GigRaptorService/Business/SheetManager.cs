@@ -1,6 +1,7 @@
 ﻿using GigRaptorService.Helpers;
 using GigRaptorService.Models;
 using GigRaptorService.Services;
+using Microsoft.Extensions.Logging;
 using RaptorSheets.Core.Extensions;
 using RaptorSheets.Gig.Entities;
 using RaptorSheets.Gig.Enums;
@@ -40,7 +41,7 @@ public class SheetManager : ISheetManager
         LazyThreadSafetyMode.ExecutionAndPublication
     );
 
-    public SheetManager(string token, string sheetId, IConfiguration configuration, IS3Service? s3Service = null)
+    public SheetManager(string token, string sheetId, IConfiguration configuration, IS3Service? s3Service = null, ILogger? logger = null)
     {
         _configuration = configuration;
         if (FeatureFlags.IsRateLimitingEnabled(_configuration))
@@ -48,11 +49,7 @@ public class SheetManager : ISheetManager
             // Apply rate limiting as needed
             EnforceRateLimitAsync(sheetId).GetAwaiter().GetResult();
         }
-        // NOTE: RaptorSheets.Gig is consumed here as a pinned NuGet package (see .csproj), not a
-        // local project reference, so GoogleSheetManager's new optional ILogger constructor param
-        // (added in the RaptorSheets repo) isn't available until that package is republished and
-        // this reference is bumped. Wire an ILogger through here once that lands.
-        _googleSheetManager = new GoogleSheetManager(token, sheetId);
+        _googleSheetManager = new GoogleSheetManager(token, sheetId, logger);
         _s3Service = s3Service ?? new S3Service(configuration);
         _sheetId = sheetId;
 

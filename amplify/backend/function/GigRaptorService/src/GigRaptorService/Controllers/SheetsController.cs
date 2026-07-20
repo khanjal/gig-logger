@@ -45,7 +45,7 @@ public class SheetsController : ControllerBase
 
         var accessToken = GetAccessTokenFromHeader(headers);
         // Middleware guarantees accessToken is valid
-        _sheetmanager = new SheetManager(accessToken!, sheetId, _configuration);
+        _sheetmanager = new SheetManager(accessToken!, sheetId, _configuration, logger: _logger);
     }
 
     // HttpContext is null when a test constructs the controller directly rather than
