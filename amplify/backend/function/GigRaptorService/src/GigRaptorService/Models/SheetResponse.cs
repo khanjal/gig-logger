@@ -1,4 +1,3 @@
-using RaptorSheets.Gig.Entities;
 using System.Text.Json.Serialization;
 
 namespace GigRaptorService.Models;
@@ -9,10 +8,15 @@ namespace GigRaptorService.Models;
 public class SheetResponse
 {
     /// <summary>
-    /// Direct sheet data (null if S3Link is provided)
+    /// Direct sheet data (null if S3Link is provided). Declared as <see cref="object"/> rather than
+    /// SheetEntity so the size-checked read path (see SheetManager.ProcessResponseSize) can hand over
+    /// an already-serialized System.Text.Json.Nodes.JsonNode instead of the typed SheetEntity - System.Text.Json
+    /// writes a JsonNode by copying its existing token tree, which is far cheaper than reflecting over the
+    /// full SheetEntity object graph a second time. Small, non-size-checked responses (CreateSheet, SaveData)
+    /// still pass a plain SheetEntity here, which serializes the normal (reflection-based) way.
     /// </summary>
     [JsonPropertyName("sheetEntity")]
-    public SheetEntity? SheetEntity { get; set; }
+    public object? SheetEntity { get; set; }
 
     /// <summary>
     /// S3 link for large responses (null if SheetEntity is provided)
@@ -33,9 +37,11 @@ public class SheetResponse
     public Dictionary<string, string>? Metadata { get; set; }
 
     /// <summary>
-    /// Creates a SheetResponse with direct sheet data
+    /// Creates a SheetResponse with direct sheet data. Accepts either a typed SheetEntity (small
+    /// responses that don't go through the size check) or an already-serialized JsonNode (the
+    /// size-checked path, to avoid a second full-object serialization).
     /// </summary>
-    public static SheetResponse FromSheetEntity(SheetEntity sheetEntity)
+    public static SheetResponse FromSheetEntity(object sheetEntity)
     {
         return new SheetResponse
         {

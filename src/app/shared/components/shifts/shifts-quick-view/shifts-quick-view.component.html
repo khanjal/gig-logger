@@ -19,24 +19,26 @@
     <div class="flex items-center min-w-0 w-full overflow-x-auto">
       <div class="flex-1 min-w-0 text-left">
         <div class="inline-flex items-center gap-2 sm:gap-4">
-          <!-- Status Icon -->
-          <mat-icon class="text-xl flex-shrink-0"
-            [ngClass]="{
-              'text-tertiary': shift.saved && !isDuplicate,
-              'text-success': !shift.saved && shift.action === ActionEnum.Add && !isDuplicate,
-              'text-info': !shift.saved && shift.action === ActionEnum.Update && !isDuplicate,
-              'text-error': (!shift.saved && shift.action === ActionEnum.Delete && !isDuplicate),
-              'text-warning': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !isDuplicate),
-              'text-accent': isDuplicate
-            }">
-            @if (!shift.saved && shift.action === ActionEnum.Add && !isDuplicate) { add }
-            @else if (!shift.saved && shift.action === ActionEnum.Update && !isDuplicate) { edit }
-            @else if (!shift.saved && shift.action === ActionEnum.Delete && !isDuplicate) { delete }
-            @else if (isDuplicate) { content_copy }
-            @else { check_circle }
-          </mat-icon>
+          <!-- Status Icon: hidden once saved (border color already signals state); duplicates always flagged -->
+          @if (!shift.saved || isDuplicate) {
+            <mat-icon class="text-xl flex-shrink-0"
+              [ngClass]="{
+                'text-success': !isDuplicate && shift.action === ActionEnum.Add,
+                'text-info': !isDuplicate && shift.action === ActionEnum.Update,
+                'text-error': !isDuplicate && shift.action === ActionEnum.Delete,
+                'text-warning': !isDuplicate && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete)),
+                'text-accent': isDuplicate
+              }"
+              [attr.aria-label]="isDuplicate ? 'Duplicate shift' : shift.action === ActionEnum.Add ? 'Unsaved: new shift' : shift.action === ActionEnum.Update ? 'Unsaved: edited' : shift.action === ActionEnum.Delete ? 'Unsaved: pending delete' : 'Unsaved change'">
+              @if (isDuplicate) { content_copy }
+              @else if (shift.action === ActionEnum.Add) { add }
+              @else if (shift.action === ActionEnum.Update) { edit }
+              @else if (shift.action === ActionEnum.Delete) { delete }
+              @else { help }
+            </mat-icon>
+          }
           <!-- Row ID -->
-          <span class="text-base font-bold text-info font-mono">#{{shift.rowId}}</span>
+          <span class="text-base font-bold text-info font-mono" [attr.aria-label]="shift.saved && !isDuplicate ? 'Saved' : null">#{{shift.rowId}}</span>
         </div>
       </div>
 

@@ -37,20 +37,22 @@
     <div class="mt-1 text-xs text-secondary flex items-center w-full">
       <div class="flex-1 min-w-0 text-left">
         <div class="inline-flex items-center gap-2">
-          <mat-icon class="text-xl flex-shrink-0"
-          [ngClass]="{
-            'trip-icon-saved': trip.saved,
-            'trip-icon-add': !trip.saved && trip.action === 'ADD',
-            'trip-icon-update': !trip.saved && trip.action === 'UPDATE',
-            'trip-icon-delete': !trip.saved && trip.action === 'DELETE',
-            'trip-icon-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE'))
-          }">
-            @if (!trip.saved && trip.action === 'ADD') { add }
-              @else if (!trip.saved && trip.action === 'UPDATE') { edit }
-              @else if (!trip.saved && trip.action === 'DELETE') { delete }
-              @else { check_circle }
-            </mat-icon>
-            <span class="text-xs font-bold text-primary font-mono">#{{trip.rowId}}</span>
+          @if (!trip.saved) {
+            <mat-icon class="text-xl flex-shrink-0"
+            [ngClass]="{
+              'trip-icon-add': trip.action === 'ADD',
+              'trip-icon-update': trip.action === 'UPDATE',
+              'trip-icon-delete': trip.action === 'DELETE',
+              'trip-icon-other': !trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')
+            }"
+            [attr.aria-label]="trip.action === 'ADD' ? 'Unsaved: new trip' : trip.action === 'UPDATE' ? 'Unsaved: edited' : trip.action === 'DELETE' ? 'Unsaved: pending delete' : 'Unsaved change'">
+              @if (trip.action === 'ADD') { add }
+                @else if (trip.action === 'UPDATE') { edit }
+                @else if (trip.action === 'DELETE') { delete }
+                @else { help }
+              </mat-icon>
+          }
+            <span class="text-xs font-bold text-primary font-mono" [attr.aria-label]="trip.saved ? 'Saved' : null">#{{trip.rowId}}</span>
           </div>
         </div>
 

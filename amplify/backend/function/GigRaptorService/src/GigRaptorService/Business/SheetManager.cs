@@ -7,6 +7,7 @@ using RaptorSheets.Gig.Enums;
 using RaptorSheets.Gig.Managers;
 using RaptorSheets.Core.Entities;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace GigRaptorService.Business;
 
@@ -47,6 +48,10 @@ public class SheetManager : ISheetManager
             // Apply rate limiting as needed
             EnforceRateLimitAsync(sheetId).GetAwaiter().GetResult();
         }
+        // NOTE: RaptorSheets.Gig is consumed here as a pinned NuGet package (see .csproj), not a
+        // local project reference, so GoogleSheetManager's new optional ILogger constructor param
+        // (added in the RaptorSheets repo) isn't available until that package is republished and
+        // this reference is bumped. Wire an ILogger through here once that lands.
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
         _s3Service = s3Service ?? new S3Service(configuration);
         _sheetId = sheetId;
@@ -104,7 +109,13 @@ public class SheetManager : ISheetManager
             return SheetResponse.FromS3Link(s3Link, metadata);
         }
 
-        return SheetResponse.FromSheetEntity(sheetEntity);
+        // Reuse the JSON already produced above for the size check instead of letting the
+        // framework serialize the full SheetEntity object graph a second time on the way out.
+        // Parsing into a JsonNode is a cheap DOM copy; ASP.NET Core's System.Text.Json output
+        // formatter writes a JsonNode by copying its existing tokens rather than reflecting
+        // over SheetEntity's ~17 nested collections again.
+        var sheetEntityJson = JsonNode.Parse(jsonContent);
+        return SheetResponse.FromSheetEntity(sheetEntityJson!);
     }
 
     public async Task<SheetResponse> CreateSheet()
