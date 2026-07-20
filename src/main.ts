@@ -14,6 +14,7 @@ import { AppInitializerService } from './app/shared/services/app-initializer.ser
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/app-routing.module';
 import { environment } from './environments/environment';
+import { installE2eHooks } from './app/shared/testing/e2e-hooks';
 
 if (environment.production) {
   enableProdMode();
@@ -51,6 +52,10 @@ bootstrapApplication(AppComponent, {
       multi: true
     }
   ]
+}).then(appRef => {
+  if (!environment.production) {
+    installE2eHooks(appRef.injector);
+  }
 }).catch(err => {
   console.error('Failed to bootstrap application:', err);
   
