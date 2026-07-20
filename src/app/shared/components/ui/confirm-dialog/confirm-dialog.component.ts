@@ -11,17 +11,17 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
     imports: [BaseRectButtonComponent]
 })
 export class ConfirmDialogComponent {
-  dialogRef = inject<MatDialogRef<ConfirmDialogComponent>>(MatDialogRef);
-  data = inject<IConfirmDialog>(MAT_DIALOG_DATA);
+  public dialogRef = inject<MatDialogRef<ConfirmDialogComponent>>(MatDialogRef);
+  public data = inject<IConfirmDialog>(MAT_DIALOG_DATA);
 
-  title!: string;
-  message!: string;
-  trueIcon: string | undefined;
-  trueText! :string;
-  trueColor: string;
-  falseIcon: string | undefined;
-  falseText! :string;
-  falseColor: string;
+  public title!: string;
+  public message!: string;
+  public trueIcon: string | undefined;
+  public trueText! :string;
+  public trueColor: string;
+  public falseIcon: string | undefined;
+  public falseText! :string;
+  public falseColor: string;
 
   constructor() {
     const data = this.data;
@@ -37,12 +37,12 @@ export class ConfirmDialogComponent {
     this.falseColor = data.falseColor ?? "accent";
   }
 
-  onConfirm(): void {
+  public onConfirm(): void {
     // Close the dialog, return true
     this.dialogRef.close(true);
   }
 
-  onDismiss(): void {
+  public onDismiss(): void {
     // Close the dialog, return false
     this.dialogRef.close(false);
   }

@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { TripsTableBasicComponent } from './trips-table-basic.component';
 import { DateHelper } from '@helpers/date.helper';
 import type { ITrip } from '@interfaces/entities/trip.interface';

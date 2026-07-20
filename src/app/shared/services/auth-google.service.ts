@@ -4,7 +4,7 @@ import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { authConfig } from './auth.config';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
-import { UserProfile } from '@interfaces/auth/user-profile.interface';
+import type { UserProfile } from '@interfaces/auth/user-profile.interface';
 import { GigWorkflowService } from './gig-workflow.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
@@ -93,7 +93,7 @@ export class AuthGoogleService {
     }
   }
 
-  login(): void {
+  public login(): void {
     this.logger.info('Initiating login flow');
     this.oAuthService.initCodeFlow();
   }
@@ -112,7 +112,7 @@ export class AuthGoogleService {
     this.logger.info('Local state cleared');
   }
 
-  async refreshToken(): Promise<void> {
+  public async refreshToken(): Promise<void> {
     try {
       const result = await this.gigWorkflowService.refreshAuthToken();
       if (!result?.accessToken) throw new Error('No access token received from refresh');
@@ -135,7 +135,7 @@ export class AuthGoogleService {
     }
   }
 
-  async logout(): Promise<void> {
+  public async logout(): Promise<void> {
     this.logger.info('Starting logout process');
     try {
       await this.gigWorkflowService.clearRefreshToken();
@@ -146,7 +146,7 @@ export class AuthGoogleService {
     }
   }
 
-  async isAuthenticated(): Promise<boolean> {
+  public async isAuthenticated(): Promise<boolean> {
     try {
       // Add timeout to prevent hanging
       return await Promise.race([
@@ -199,16 +199,16 @@ export class AuthGoogleService {
   }
 
   // Keep the synchronous version for cases where you can't use async
-  isAuthenticatedSync(): boolean {
+  public isAuthenticatedSync(): boolean {
     return !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
   }
 
   // Method to get authentication state from localStorage only
-  getAuthenticationFromStorage(): boolean {
+  public getAuthenticationFromStorage(): boolean {
     return localStorage.getItem(this.IS_AUTHENTICATED_KEY) === 'true';
   }
 
-  async getProfile(): Promise<UserProfile | null> {
+  public async getProfile(): Promise<UserProfile | null> {
     try {
       const token = this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
       if (!token) return null;
@@ -227,7 +227,7 @@ export class AuthGoogleService {
    * Public helper to determine if remote sync is available.
    * Returns true when the user is currently authenticated (token present/refresh OK).
    */
-  async canSync(): Promise<boolean> {
+  public async canSync(): Promise<boolean> {
     try {
       return await this.isAuthenticated();
     } catch (e) {
@@ -236,7 +236,7 @@ export class AuthGoogleService {
     }
   }
 
-  getAccessToken(): string | null {
+  public getAccessToken(): string | null {
     return this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
   }
 

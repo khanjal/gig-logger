@@ -1,4 +1,5 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import { LoggerService } from '@services/logger.service';
@@ -24,15 +25,15 @@ export class HomeComponent implements OnInit {
   private appUpdateService = inject(AppUpdateService);
   private destroyRef = inject(DestroyRef);
   
-  showInstallButton = signal(false);
-  isAuthenticated = signal(false);
-  hasDefaultSheet = signal(false);
-  showStartLoggingButton = signal(false);
-  isUpdateAvailable = signal(false);
-  showUpdateNotification = signal(false);
+  public showInstallButton = signal(false);
+  public isAuthenticated = signal(false);
+  public hasDefaultSheet = signal(false);
+  public showStartLoggingButton = signal(false);
+  public isUpdateAvailable = signal(false);
+  public showUpdateNotification = signal(false);
   private deferredPrompt: IBeforeInstallPromptEvent | null = null;
 
-  async ngOnInit() {
+  public async ngOnInit() {
     // Subscribe to app update status
     this.appUpdateService.updateStatus$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -91,7 +92,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  async updateApp(): Promise<void> {
+  public async updateApp(): Promise<void> {
     try {
       await this.appUpdateService.activateUpdate();
     } catch (error) {
@@ -99,13 +100,13 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  dismissUpdate(): void {
+  public dismissUpdate(): void {
     this.showUpdateNotification.set(false);
     // Re-evaluate showing the start logging button
     this.evaluateStartLoggingButton();
   }
 
-  async installApp() {
+  public async installApp() {
     if (this.deferredPrompt) {
       this.deferredPrompt.prompt();
       const { outcome } = await this.deferredPrompt.userChoice;

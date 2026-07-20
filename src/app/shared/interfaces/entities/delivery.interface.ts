@@ -1,15 +1,14 @@
-import type { IAmount } from "@interfaces/sheets/amount.interface"
-import type { INote } from "@interfaces/entities/note.interface"
-import type { ITrip } from "@interfaces/entities/trip.interface"
-
-export interface IDelivery extends IAmount {
+export interface IDelivery {
     name: string
     address: string
-    dates: string[]
-    notes: INote[]
-    places: string[]
-    services: string[]
-    trips: ITrip[]
-    units: string[]
-    visits: number
+    trips: number
+    pay: number
+    tips: number
+    bonus: number
+    total: number
+    distance: number
+    firstTrip: string
+    lastTrip: string
+    amountPerTrip: number
+    amountPerDistance: number
 }

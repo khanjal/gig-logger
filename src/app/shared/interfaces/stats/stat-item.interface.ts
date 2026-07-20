@@ -1,4 +1,4 @@
-import { IAmountPer } from "@interfaces/sheets/amount-per.interface";
+import type { IAmountPer } from "@interfaces/sheets/amount-per.interface";
 
 export interface IStatItem extends IAmountPer {
     name: string;

@@ -4,7 +4,7 @@ import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
-import { TripFormValue } from '@form-types/trip-form.types';
+import type { TripFormValue } from '@form-types/trip-form.types';
 
 export class TripHelper {
     /**
@@ -14,7 +14,7 @@ export class TripHelper {
      * @param bonus The bonus amount
      * @returns The calculated total (pay + tip + bonus)
      */
-    static calculateTotal(pay: number, tip: number, bonus: number): number {
+    public static calculateTotal(pay: number, tip: number, bonus: number): number {
         return (Number(pay) || 0) + (Number(tip) || 0) + (Number(bonus) || 0);
     }
 
@@ -22,7 +22,7 @@ export class TripHelper {
      * Recalculates and updates the total field on a trip entity.
      * @param trip The trip to update
      */
-    static updateTotal(trip: ITrip): void {
+    public static updateTotal(trip: ITrip): void {
         trip.total = TripHelper.calculateTotal(trip.pay, trip.tip, trip.bonus);
     }
 
@@ -55,7 +55,7 @@ export class TripHelper {
      *   undefined
      * );
      */
-    static async createFromFormValue(
+    public static async createFromFormValue(
         formValue: TripFormValue,
         shift: IShift,
         existingTrip: ITrip | undefined,

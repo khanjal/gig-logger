@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ViewportScroller } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AddressService } from '@services/sheets/address.service';
-import { DeliveryService } from '@services/delivery.service';
+import { DeliveryService } from '@services/sheets/delivery.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
@@ -13,8 +13,8 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { IShift } from '@interfaces/entities/shift.interface';
-import { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
 
 // Exposes the component's private setDefaultShift method for spying/invocation without using `any`.

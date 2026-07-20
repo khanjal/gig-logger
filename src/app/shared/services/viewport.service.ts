@@ -1,5 +1,6 @@
 import { Injectable, NgZone, inject } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, merge, fromEvent } from 'rxjs';
+import type { Observable, Subscription} from 'rxjs';
+import { BehaviorSubject, merge, fromEvent } from 'rxjs';
 import { map, startWith, debounceTime, shareReplay } from 'rxjs/operators';
 
 export interface ViewportSnapshot {
@@ -21,7 +22,7 @@ export class ViewportService {
   public viewportChange$: Observable<ViewportSnapshot> = this.snapshot$.asObservable().pipe(shareReplay(1));
   public viewportSettled$: Observable<ViewportSnapshot> = this.snapshot$.asObservable().pipe(debounceTime(120), shareReplay(1));
 
-  start(): void {
+  public start(): void {
     if (this.started) {
       return;
     }
@@ -44,7 +45,7 @@ export class ViewportService {
     });
   }
 
-  stop(): void {
+  public stop(): void {
     if (!this.started) {
       return;
     }
@@ -53,7 +54,7 @@ export class ViewportService {
     this.eventsSub = null;
   }
 
-  getSnapshot(): ViewportSnapshot {
+  public getSnapshot(): ViewportSnapshot {
     return this.snapshot$.getValue();
   }
 

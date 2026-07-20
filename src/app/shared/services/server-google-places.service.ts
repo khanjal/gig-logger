@@ -35,7 +35,7 @@ export class ServerGooglePlacesService {
    * Get autocomplete suggestions from server-side Google Places API
    * Now uses in-memory cache to avoid redundant requests
    */
-  async getAutocomplete(
+  public async getAutocomplete(
     query: string, 
     searchType = 'address',
     country = 'US',
@@ -92,7 +92,7 @@ export class ServerGooglePlacesService {
    * Get detailed place information by place ID
    * Now uses in-memory cache to avoid redundant requests
    */
-  async getPlaceDetails(placeId: string): Promise<IPlaceDetails | null> {
+  public async getPlaceDetails(placeId: string): Promise<IPlaceDetails | null> {
     if (!placeId) {
       return null;
     }
@@ -129,7 +129,7 @@ export class ServerGooglePlacesService {
   /**
    * Get current user's API usage statistics
    */
-  async getUserUsage(): Promise<IUserApiUsage | null> {
+  public async getUserUsage(): Promise<IUserApiUsage | null> {
     try {
       const userId = getCurrentUserId();
       return await firstValueFrom(this.http.get<IUserApiUsage>(
@@ -149,7 +149,7 @@ export class ServerGooglePlacesService {
   /**
    * Check if the service is available (for fallback scenarios)
    */
-  async isServiceAvailable(): Promise<boolean> {
+  public async isServiceAvailable(): Promise<boolean> {
     try {
       const usage = await this.getUserUsage();
       return usage !== null;
@@ -161,7 +161,7 @@ export class ServerGooglePlacesService {
   /**
    * Get full address with zip code using place ID
    */
-  async getFullAddressWithZip(placeId: string): Promise<string | null> {
+  public async getFullAddressWithZip(placeId: string): Promise<string | null> {
     const placeDetails = await this.getPlaceDetails(placeId);
     if (!placeDetails) return null;
 
@@ -195,7 +195,7 @@ export class ServerGooglePlacesService {
   /**
    * Parse address components from place details
    */
-  parseAddressComponents(placeDetails: IPlaceDetails): {
+  public parseAddressComponents(placeDetails: IPlaceDetails): {
     streetNumber?: string;
     route?: string;
     locality?: string;
@@ -230,7 +230,7 @@ export class ServerGooglePlacesService {
    * Get user's current location for location bias (with enhanced caching)
    * Now supports mock location override for testing
    */
-  async getUserLocation(): Promise<{ lat: number; lng: number } | null> {
+  public async getUserLocation(): Promise<{ lat: number; lng: number } | null> {
     // Check if mock location is enabled
     const mockLocation = this.mockLocationService.getLocation();
     if (mockLocation) {
@@ -291,7 +291,7 @@ export class ServerGooglePlacesService {
    * Get autocomplete with optional location bias
    * Only calls Google Places API if we have user location or explicit override
    */
-  async getAutocompleteWithLocation(
+  public async getAutocompleteWithLocation(
     query: string, 
     searchType = 'address',
     country = 'US',
@@ -325,7 +325,7 @@ export class ServerGooglePlacesService {
   /**
    * Smart autocomplete that tries location-based only. No fallback suggestions.
    */
-  async getSmartAutocomplete(
+  public async getSmartAutocomplete(
     query: string, 
     searchType = 'address',
     country = 'US'
@@ -352,14 +352,14 @@ export class ServerGooglePlacesService {
   /**
    * Clear cached location (useful when user moves significantly)
    */
-  clearLocationCache(): void {
+  public clearLocationCache(): void {
     this.cachedLocation = null;
   }
 
   /**
    * Check if location permission is granted
    */
-  async checkLocationPermission(): Promise<'granted' | 'denied' | 'prompt'> {
+  public async checkLocationPermission(): Promise<'granted' | 'denied' | 'prompt'> {
     if (!navigator.permissions) {
       return 'prompt';
     }
@@ -375,7 +375,7 @@ export class ServerGooglePlacesService {
   /**
    * Check if we can reliably get user location for Google Places API
    */
-  async canGetUserLocation(): Promise<boolean> {
+  public async canGetUserLocation(): Promise<boolean> {
     // If mock location is enabled, treat location as available.
     if (this.mockLocationService.isEnabled() && this.mockLocationService.getLocation()) {
       return true;
@@ -408,7 +408,7 @@ export class ServerGooglePlacesService {
   /**
    * Get autocomplete results only if location is available, otherwise return empty
    */
-  async getLocationBasedAutocomplete(
+  public async getLocationBasedAutocomplete(
     query: string, 
     searchType = 'address',
     country = 'US'

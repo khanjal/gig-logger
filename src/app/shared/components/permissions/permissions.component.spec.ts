@@ -1,7 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { PermissionsComponent } from './permissions.component';
 import { LoggerService } from '@services/logger.service';
-import { PermissionService, PermissionState } from '@services/permission.service';
+import type { PermissionState } from '@services/permission.service';
+import { PermissionService } from '@services/permission.service';
 import { BehaviorSubject } from 'rxjs';
 
 describe('PermissionsComponent', () => {

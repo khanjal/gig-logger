@@ -1,7 +1,7 @@
 import { DiagnosticHelper } from './diagnostic.helper';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 import type { IShift } from '@interfaces/entities/shift.interface';
-import type { IPlace } from '@interfaces/entities/place.interface';
+import type { ILocation } from '@interfaces/entities/location.interface';
 import type { IDuplicateGroup } from '@interfaces/stats/diagnostic.interface';
 
 describe('DiagnosticHelper', () => {
@@ -49,19 +49,19 @@ describe('DiagnosticHelper', () => {
     time: overrides.time ?? '',
   } as IShift);
 
-  const makePlace = (overrides: Partial<IPlace> = {}): IPlace => ({
-    id: overrides.id ?? 1,
-    rowId: overrides.rowId ?? 1,
-    saved: overrides.saved ?? true,
+  const makeLocation = (overrides: Partial<ILocation> = {}): ILocation => ({
     place: overrides.place ?? 'Store A',
-    addresses: overrides.addresses ?? [],
-    types: overrides.types ?? [],
+    address: overrides.address ?? '123 Main',
     trips: overrides.trips ?? 0,
     pay: overrides.pay ?? 0,
-    tip: overrides.tip ?? 0,
+    tips: overrides.tips ?? 0,
     bonus: overrides.bonus ?? 0,
-    cash: overrides.cash ?? 0,
     total: overrides.total ?? 0,
+    distance: overrides.distance ?? 0,
+    firstTrip: overrides.firstTrip ?? '',
+    lastTrip: overrides.lastTrip ?? '',
+    amountPerTrip: overrides.amountPerTrip ?? 0,
+    amountPerDistance: overrides.amountPerDistance ?? 0,
   });
 
   it('finds orphaned trips without matching shifts and not excluded', () => {
@@ -104,36 +104,18 @@ describe('DiagnosticHelper', () => {
 
   it('throws when selectedAddress is invalid', () => {
     const trips = [makeTrip({ place: 'Store A', startAddress: '' })];
-    const places = [makePlace({ place: 'Store A' })];
+    const locations = [makeLocation({ place: 'Store A' })];
 
-    expect(() => DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, null as unknown as Record<number, string>))
+    expect(() => DiagnosticHelper.findTripsWithPlaceNoAddress(trips, locations, null as unknown as Record<number, string>))
       .toThrowError('selectedAddress parameter must be a valid object');
   });
 
   it('auto-selects address when only one available', () => {
     const trips = [makeTrip({ rowId: 5, place: 'Store A', startAddress: '' })];
-    const places = [makePlace({ 
-      place: 'Store A', 
-      addresses: [{
-        id: 1,
-        rowId: 1,
-        saved: true,
-        address: '123 Main',
-        names: [],
-        notes: [],
-        trips: 0,
-        firstTrip: '',
-        lastTrip: '',
-        pay: 0,
-        tip: 0,
-        bonus: 0,
-        cash: 0,
-        total: 0
-      }]
-    })];
+    const locations = [makeLocation({ place: 'Store A', address: '123 Main' })];
     const selected: Record<number, string> = {};
 
-    const result = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, selected);
+    const result = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, locations, selected);
 
     expect(result[0].availableAddresses).toEqual(['123 Main']);
     expect(selected[5]).toBe('123 Main');

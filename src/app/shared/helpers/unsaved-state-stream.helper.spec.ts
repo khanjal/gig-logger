@@ -1,5 +1,6 @@
 import { Component, DestroyRef, inject } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { bindUnsavedStateFromStreams } from './unsaved-state-stream.helper';
 
@@ -8,7 +9,7 @@ import { bindUnsavedStateFromStreams } from './unsaved-state-stream.helper';
   template: ''
 })
 class HostComponent {
-  destroyRef: DestroyRef = inject(DestroyRef);
+  public destroyRef: DestroyRef = inject(DestroyRef);
 }
 
 describe('bindUnsavedStateFromStreams', () => {

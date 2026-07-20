@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import type { OnInit, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { NgClass, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -40,35 +41,35 @@ import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private _snackBar = inject(MatSnackBar);
   private _gigLoggerService = inject(GigWorkflowService);
   private _tripService = inject(TripService);
   private _shiftService = inject(ShiftService);
   private _router = inject(Router);
 
-  @Input() trip: ITrip = {} as ITrip;
-  @Input() showActions = true;
-  @Input() inlineMode = false;
-  @Input() index = 0;
-  @Input() stripeEven?: boolean;
-  @Output() parentReload = new EventEmitter<void>();
-  @Output() pollingToggle = new EventEmitter<boolean>();
-  @Output() scrollToTrip = new EventEmitter<string | undefined>();
-  @Output() editClicked = new EventEmitter<ITrip>();
-  actionEnum = ActionEnum;
-  isExpanded = false;
-  prefers24Hour = false;
+  @Input() public trip: ITrip = {} as ITrip;
+  @Input() public showActions = true;
+  @Input() public inlineMode = false;
+  @Input() public index = 0;
+  @Input() public stripeEven?: boolean;
+  @Output() public parentReload = new EventEmitter<void>();
+  @Output() public pollingToggle = new EventEmitter<boolean>();
+  @Output() public scrollToTrip = new EventEmitter<string | undefined>();
+  @Output() public editClicked = new EventEmitter<ITrip>();
+  public actionEnum = ActionEnum;
+  public isExpanded = false;
+  public prefers24Hour = false;
   // Parsed date and computed format for display
-  parsedTripDate: Date | null = null;
-  dateFormat: string = DATE_FORMATS.SHORT_DATE;
+  public parsedTripDate: Date | null = null;
+  public dateFormat: string = DATE_FORMATS.SHORT_DATE;
   
   // Distance unit properties
-  get distanceUnit(): string {
+  public get distanceUnit(): string {
     return UnitHelper.getPreferredDistanceUnit();
   }
   
-  get distanceDisplay(): string {
+  public get distanceDisplay(): string {
     return UnitHelper.formatDistance(this.trip.distance);
   }
       
@@ -76,14 +77,14 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
    * Convert distance value based on unit preference
    * Delegates to UnitHelper for consistency across the app
    */
-  convertDistance(distance: number): number {
+  public convertDistance(distance: number): number {
     return UnitHelper.convertDistance(distance);
   }
   
   /**
    * Format distance for display with appropriate unit
    */
-  formatDistance(distance: number): string {
+  public formatDistance(distance: number): string {
     return UnitHelper.formatDistance(distance);
   }
   
@@ -91,7 +92,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
    * Demo method to toggle between units (for future use)
    * This shows how unit switching would work when user preferences are implemented
    */
-  toggleDistanceUnit(): void {
+  public toggleDistanceUnit(): void {
     const currentUnit = UnitHelper.getPreferredDistanceUnit();
     const newUnit = currentUnit === 'mi' ? 'km' : 'mi';
     UnitHelper.setPreferredDistanceUnit(newUnit);
@@ -99,13 +100,13 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     // but it demonstrates the intended functionality
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.setExpansionState();
     this.prefers24Hour = DateHelper.prefers24Hour();
     this.updateDateFormat();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  public ngOnChanges(changes: SimpleChanges) {
     // Re-evaluate expansion state when trip data changes
     if (changes['trip'] && changes['trip'].currentValue) {
       this.setExpansionState();
@@ -138,7 +139,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   /**
    * Determine stripe parity: external override → loop index → rowId fallback
    */
-  get isEvenStripe(): boolean {
+  public get isEvenStripe(): boolean {
     if (this.stripeEven !== undefined) {
       return this.stripeEven;
     }
@@ -151,11 +152,11 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     return rowId % 2 === 0;
   }
 
-  toggleExpansion() {
+  public toggleExpansion() {
     this.isExpanded = !this.isExpanded;
   }
 
-  async restoreTrip() {
+  public async restoreTrip() {
     updateAction(this.trip, ActionEnum.Update);
     await this._tripService.update([this.trip]);
 
@@ -166,7 +167,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     }
   }
 
-  confirmDeleteTripDialog() {
+  public confirmDeleteTripDialog() {
     const message = `Trip may not be saved to your spreadsheet. Are you sure you want to delete this?`;
 
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -187,7 +188,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     });
   }
   
-  async cloneUnsavedTrip() {
+  public async cloneUnsavedTrip() {
   await this._tripService.clone(this.trip);
    this.parentReload.emit();
     openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CLONED_TRIP);
@@ -195,7 +196,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
    this.scrollToTrip.emit(undefined);
   }
 
-  async splitTrip() {
+  public async splitTrip() {
     const dialogRef = this.dialog.open(SplitDialogComponent, { 
       width: '360px',
       panelClass: 'split-trip-dialog'
@@ -210,7 +211,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     this.scrollToTrip.emit(undefined);
   }
   
-  async nextStopTrip() {
+  public async nextStopTrip() {
     await this._tripService.addNext(this.trip);
     this.parentReload.emit();
     openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ADDED_NEXT_TRIP);
@@ -218,7 +219,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     this.scrollToTrip.emit(undefined);
   }
 
-  async setDropoffTime() {
+  public async setDropoffTime() {
     const dropOffTime = DateHelper.getTimeString(new Date);
 
     const shift = (await this._shiftService.query("key", this.trip.key))[0];
@@ -239,7 +240,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     this.parentReload.emit();
   }
 
-  async setPickupTime() {
+  public async setPickupTime() {
     const pickupTime = DateHelper.getTimeString(new Date);
 
     const shift = (await this._shiftService.query("key", this.trip.key))[0];
@@ -255,14 +256,14 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
 
   
-  async deleteTrip() {
+  public async deleteTrip() {
     await this._tripService.deleteItem(this.trip);
     await this._gigLoggerService.calculateShiftTotalsByKey(this.trip.key);
 
     this.parentReload.emit();
   }
 
-  async editTrip() {
+  public async editTrip() {
     // Emit edit event for parent components to handle (e.g., closing dialogs)
     this.editClicked.emit(this.trip);
     // Only navigate when not embedded inline

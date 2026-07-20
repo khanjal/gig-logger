@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ITrip } from '@interfaces/entities/trip.interface';
-import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search/search-result.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search/search-result.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class SearchService {
    * @param category The category to filter by ('All' searches all categories)
    * @returns Promise of search results
    */
-  async search(searchTerm: string, category: SearchCategory = 'All'): Promise<ISearchResult[]> {
+  public async search(searchTerm: string, category: SearchCategory = 'All'): Promise<ISearchResult[]> {
     if (!searchTerm || searchTerm.trim().length === 0) {
       return [];
     }
@@ -66,7 +66,7 @@ export class SearchService {
    * @param caseSensitive Whether to use case-sensitive matching
    * @returns Promise of search results
    */
-  async searchMultipleCategories(searchTerm: string, categories: SearchCategory[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
+  public async searchMultipleCategories(searchTerm: string, categories: SearchCategory[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     if (!searchTerm || searchTerm.trim().length === 0 || categories.length === 0) {
       return [];
     }
@@ -260,7 +260,7 @@ export class SearchService {
    * @param results Array of search results to group
    * @returns Array of grouped results by month
    */
-  groupByMonth(results: ISearchResult[]): ISearchResultGroup[] {
+  public groupByMonth(results: ISearchResult[]): ISearchResultGroup[] {
     const groupMap = new Map<string, ISearchResultGroup>();
     const tripCountPerMonth = new Map<string, Set<number>>();
 
@@ -333,7 +333,7 @@ export class SearchService {
   /**
    * Get category icon for Material Icons
    */
-  getCategoryIcon(category: SearchCategory): string {
+  public getCategoryIcon(category: SearchCategory): string {
     const icons: Record<SearchCategory, string> = {
       'Service': 'drive_eta',
       'Place': 'place',
@@ -349,7 +349,7 @@ export class SearchService {
   /**
    * Get category icon/text class using semantic theme utilities.
    */
-  getCategoryColor(category: SearchCategory): string {
+  public getCategoryColor(category: SearchCategory): string {
     const colors: Record<SearchCategory, string> = {
       'Service': 'text-primary',
       'Place': 'text-success',
@@ -365,7 +365,7 @@ export class SearchService {
   /**
    * Get category border class using semantic theme utilities.
    */
-  getCategoryBorderClass(category: SearchCategory): string {
+  public getCategoryBorderClass(category: SearchCategory): string {
     const borders: Record<SearchCategory, string> = {
       'Service': 'border-primary',
       'Place': 'border-success',

@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
 import { spreadsheetDB } from "@data/spreadsheet.db";
-import { IRating } from "@interfaces/entities/rating.interface";
+import type { IRating } from "@interfaces/entities/rating.interface";
 import { liveQuery } from "dexie";
 
 @Injectable({
   providedIn: 'root'
 })
 export class RatingService {
-    rating$ = liveQuery(() => spreadsheetDB.places.toArray());
+    public rating$ = liveQuery(() => spreadsheetDB.places.toArray());
 
     public async getRemoteRatings(): Promise<IRating[]> {
         return await spreadsheetDB.ratings.toArray();

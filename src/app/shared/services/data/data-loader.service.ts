@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { ISheet } from "@interfaces/sheets/sheet.interface";
+import type { ISheet } from "@interfaces/sheets/sheet.interface";
 import { AddressService } from "../sheets/address.service";
 import { DailyService } from "../sheets/daily.service";
 import { MonthlyService } from "../sheets/monthly.service";
@@ -13,8 +13,8 @@ import { TypeService } from "../sheets/type.service";
 import { WeekdayService } from "../sheets/weekday.service";
 import { WeeklyService } from "../sheets/weekly.service";
 import { YearlyService } from "../sheets/yearly.service";
-import { DeliveryService } from "../delivery.service";
-import { DataLinkingService } from "./data-linking.service";
+import { DeliveryService } from "../sheets/delivery.service";
+import { LocationService } from "../sheets/location.service";
 import { LoggerService } from "../logger.service";
 import { ExpensesService } from "@services/sheets/expenses.service";
 
@@ -26,6 +26,7 @@ export class DataLoaderService {
     private _dailyService = inject(DailyService);
     private _deliveryService = inject(DeliveryService);
     private _expenseService = inject(ExpensesService);
+    private _locationService = inject(LocationService);
     private _monthlyService = inject(MonthlyService);
     private _nameService = inject(NameService);
     private _placeService = inject(PlaceService);
@@ -37,7 +38,6 @@ export class DataLoaderService {
     private _weekdayService = inject(WeekdayService);
     private _weeklyService = inject(WeeklyService);
     private _yearlyService = inject(YearlyService);
-    private _dataLinking = inject(DataLinkingService);
     private _logger = inject(LoggerService);
 
 
@@ -53,12 +53,16 @@ export class DataLoaderService {
     public async loadData(sheetData: ISheet) {
         try {
             this._logger.info('Starting data load process');
-            
-            // Load all sheet data in parallel for better performance
+
+            // Load all sheet data in parallel for better performance.
+            // Deliveries/Locations are server-computed aggregates (RaptorSheets.Gig Deliveries/
+            // Locations sheets) - loaded directly, no client-side linking needed.
             await Promise.all([
                 this._addressService.load(sheetData.addresses),
                 this._dailyService.load(sheetData.daily),
+                this._deliveryService.load(sheetData.deliveries),
                 this._expenseService.load(sheetData.expenses),
+                this._locationService.load(sheetData.locations),
                 this._monthlyService.load(sheetData.monthly),
                 this._nameService.load(sheetData.names),
                 this._placeService.load(sheetData.places),
@@ -74,12 +78,6 @@ export class DataLoaderService {
             await this._shiftService.load(sheetData.shifts);
             await this._tripService.load(sheetData.trips);
 
-            this._logger.info('Linking data');
-            await this._dataLinking.linkAllData();
-
-            await this._deliveryService.clear();
-            await this._dataLinking.linkDeliveries(sheetData.trips);
-            
             this._logger.info('Data loading completed successfully');
         } catch (error) {
             this.handleError('loadData', error);
@@ -90,11 +88,14 @@ export class DataLoaderService {
     public async appendData(sheetData: ISheet) {
         try {
             this._logger.info('Appending data');
-            
+
             await this._addressService.append(sheetData.addresses);
             await this._nameService.append(sheetData.names);
-            await this._dataLinking.linkDeliveries(sheetData.trips);
-            
+            // Deliveries/Locations are always a complete, freshly-computed snapshot from the
+            // server, so re-load rather than append.
+            await this._deliveryService.load(sheetData.deliveries);
+            await this._locationService.load(sheetData.locations);
+
             this._logger.info('Data appending completed');
         } catch (error) {
             this.handleError('appendData', error);

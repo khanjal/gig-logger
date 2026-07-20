@@ -29,11 +29,11 @@ export class SheetDemoComponent {
   private _logger = inject(LoggerService);
   protected authService = inject(AuthGoogleService);
 
-  @Output() parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
+  @Output() public parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
 
-  creatingDemo = signal(false);
+  public creatingDemo = signal(false);
 
-  async createDemoSheet() {
+  public async createDemoSheet() {
     const canSync = await this.authService.canSync();
     if (!canSync) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });

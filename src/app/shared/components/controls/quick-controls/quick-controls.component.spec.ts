@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { QuickControlsComponent } from './quick-controls.component';
 import { BaseRectButtonComponent } from '@components/base';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import type { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 describe('QuickControlsComponent', () => {
   let component: QuickControlsComponent;

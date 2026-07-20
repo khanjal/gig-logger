@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { from } from "rxjs";
 import { spreadsheetDB } from "@data/spreadsheet.db";
-import { IDaily } from "@interfaces/sheets/daily.interface";
+import type { IDaily } from "@interfaces/sheets/daily.interface";
 import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 
@@ -13,6 +13,6 @@ export class DailyService extends GenericCrudService<IDaily> {
       super(spreadsheetDB.daily); // Pass the table reference
     }
 
-    daily$ = from(liveQuery(() => spreadsheetDB.daily.toArray()));
+    public daily$ = from(liveQuery(() => spreadsheetDB.daily.toArray()));
 
 }

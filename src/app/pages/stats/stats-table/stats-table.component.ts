@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import type { OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { DecimalPipe, CurrencyPipe, NgClass } from '@angular/common';
 import type { IStatItem } from '@interfaces/stats/stat-item.interface';
@@ -12,12 +13,12 @@ import type { IStatItem } from '@interfaces/stats/stat-item.interface';
     imports: [MatIcon, DecimalPipe, CurrencyPipe, NgClass]
 })
 export class StatsTableComponent implements OnInit, OnChanges {
-  @Input() items: IStatItem[] = [];
-  @Input() name: string | undefined;
+  @Input() public items: IStatItem[] = [];
+  @Input() public name: string | undefined;
 
-  displayedColumns: string[] = [];
-  lowerCaseName = '';
-  totals = {
+  public displayedColumns: string[] = [];
+  public lowerCaseName = '';
+  public totals = {
     trips: 0,
     distance: 0,
     pay: 0,
@@ -26,18 +27,18 @@ export class StatsTableComponent implements OnInit, OnChanges {
     total: 0,
     cash: 0
   };
-  averages = {
+  public averages = {
     amountPerTime: 0,
     amountPerTrip: 0,
     amountPerDistance: 0
   };
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.displayedColumns = ['name', 'trips', 'distance', 'pay', 'tips', 'bonus', 'total', 'cash', 'time', 'amountPerTrip', 'amountPerDistance'];
     this.updateDerivedStats();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     if (changes['items'] || changes['name']) {
       this.updateDerivedStats();
     }

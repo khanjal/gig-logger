@@ -1,4 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
@@ -34,7 +35,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     imports: [NgClass, ShiftsQuickViewComponent, ShiftFormComponent, BaseFabButtonComponent, BaseRectButtonComponent]
 })
 export class ShiftsComponent implements OnInit {
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private _shiftService = inject(ShiftService);
   private _sheetService = inject(SpreadsheetService);
   private unsavedDataService = inject(UnsavedDataService);
@@ -47,27 +48,27 @@ export class ShiftsComponent implements OnInit {
   protected readonly uiMessages = UI_MESSAGES;
   private readonly destroyRef = inject(DestroyRef);
   private allShifts: IShift[] = [];
-  shifts = signal<IShift[]>([]);
-  duplicateShiftKeys = signal<Set<string>>(new Set());
-  actionEnum = ActionEnum;
-  saving = signal(false);
-  unsavedShifts: IShift[] = [];
-  unsavedData = signal(false);
-  pageSize = 20; // Number of shifts to load per request
-  currentPage = signal(0); // Current page index
-  isLoading = signal(false); // Prevent multiple simultaneous requests
-  noMoreData = signal(false); // Stop loading if all data is loaded
-  showAddForm = signal(false); // Control the visibility of the add form
-  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
-  demoSheetAttached = signal(false);
+  public shifts = signal<IShift[]>([]);
+  public duplicateShiftKeys = signal<Set<string>>(new Set());
+  public actionEnum = ActionEnum;
+  public saving = signal(false);
+  public unsavedShifts: IShift[] = [];
+  public unsavedData = signal(false);
+  public pageSize = 20; // Number of shifts to load per request
+  public currentPage = signal(0); // Current page index
+  public isLoading = signal(false); // Prevent multiple simultaneous requests
+  public noMoreData = signal(false); // Stop loading if all data is loaded
+  public showAddForm = signal(false); // Control the visibility of the add form
+  public defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  public demoSheetAttached = signal(false);
 
-  editId = signal<string | null>(null);
+  public editId = signal<string | null>(null);
 
-  trackByShift(index: number, shift: IShift): string | number {
+  public trackByShift(index: number, shift: IShift): string | number {
     return shift?.rowId ?? shift?.key ?? index;
   }
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       this.editId.set(params.get('id'));
     });
@@ -85,7 +86,7 @@ export class ShiftsComponent implements OnInit {
     await this.refreshDefaultSheetState();
   }
 
-  async loadShifts(): Promise<void> {
+  public async loadShifts(): Promise<void> {
     if (this.isLoading() || this.noMoreData()) return;
 
     this.isLoading.set(true);
@@ -121,7 +122,7 @@ export class ShiftsComponent implements OnInit {
     this.demoSheetAttached.set(isDemoSheetName(this.defaultSheet()?.name));
   }
 
-  onScroll(event: Event): void {
+  public onScroll(event: Event): void {
     const target = event.target as HTMLElement;
     const scrollTop = target.scrollTop;
     const scrollHeight = target.scrollHeight;
@@ -133,7 +134,7 @@ export class ShiftsComponent implements OnInit {
     }
   }
 
-  handleParentReload() {
+  public handleParentReload() {
     this.shifts.set([]); // Clear the shifts array
     this.currentPage.set(0); // Reset pagination
     this.noMoreData.set(false); // Reset noMoreData flag
@@ -141,7 +142,7 @@ export class ShiftsComponent implements OnInit {
     void this.loadShifts();
   }
 
-  async confirmSaveDialog() {
+  public async confirmSaveDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -161,15 +162,15 @@ export class ShiftsComponent implements OnInit {
     }
   }
   
-  addShift() {
+  public addShift() {
     this.router.navigate(['/shifts/edit', 'new']); // 'new' for creating a new shift
   }
 
-  editShift(shiftId: string) {
+  public editShift(shiftId: string) {
     this.router.navigate(['/shifts/edit', shiftId]); // Navigate to edit route with shift ID
   }
 
-  async saveSheetDialog(inputValue: string) {
+  public async saveSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
@@ -188,13 +189,13 @@ export class ShiftsComponent implements OnInit {
     }
   }
 
-  exitEditMode() {
+  public exitEditMode() {
     this.editId.set(null);
     this.router.navigate(['/shifts']);
     this.handleParentReload();
   }
 
-  hideAddForm() {
+  public hideAddForm() {
     this.showAddForm.set(false);
   }
 }

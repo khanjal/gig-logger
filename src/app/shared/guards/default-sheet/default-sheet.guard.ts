@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import type { CanActivateFn} from '@angular/router';
+import { Router } from '@angular/router';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 
 @Injectable({
@@ -9,7 +10,7 @@ export class DefaultSheetGuard {
   private _sheetService = inject(SpreadsheetService);
   private _router = inject(Router);
 
-  async canActivate() {
+  public async canActivate() {
     if (!(await this.isDefaultSheet())) {
       this._router.navigate(['setup']);
       return false;

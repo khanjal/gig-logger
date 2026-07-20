@@ -8,7 +8,7 @@ import type { IAsyncOperationState } from '@interfaces/sync/async-operation-stat
 export function createAsyncOperationState(): IAsyncOperationState {
   const status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
   const errorMessage = signal<string | null>(null);
-  const hasCompleted = signal(false);
+  const hasStarted = signal(false);
 
   const isLoading = computed(() => status() === 'loading');
   const isSuccess = computed(() => status() === 'success');
@@ -17,31 +17,31 @@ export function createAsyncOperationState(): IAsyncOperationState {
   const setLoading = (): void => {
     status.set('loading');
     errorMessage.set(null);
-    hasCompleted.set(true);
+    hasStarted.set(true);
   };
 
   const setSuccess = (): void => {
     status.set('success');
     errorMessage.set(null);
-    hasCompleted.set(true);
+    hasStarted.set(true);
   };
 
   const setError = (message = 'An unexpected error occurred'): void => {
     status.set('error');
     errorMessage.set(message);
-    hasCompleted.set(true);
+    hasStarted.set(true);
   };
 
   const reset = (): void => {
     status.set('idle');
     errorMessage.set(null);
-    hasCompleted.set(false);
+    hasStarted.set(false);
   };
 
   return {
     status,
     errorMessage,
-    hasCompleted,
+    hasStarted,
     isLoading,
     isSuccess,
     hasError,

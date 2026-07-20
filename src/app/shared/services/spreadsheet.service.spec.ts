@@ -5,8 +5,8 @@ import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
 import { localDB } from '@data/local.db';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
-import { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
 
 describe('SpreadsheetService', () => {
@@ -197,7 +197,7 @@ describe('SpreadsheetService', () => {
       const spreadsheet = { id: 'sheet-123', name: 'Test' } as ISpreadsheet;
       const sheetData: ISheet = {
         properties: { id: 'sheet-123', name: 'Updated Name' },
-        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+        addresses: [], daily: [], deliveries: [], expenses: [], locations: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
       };
       
       await localDB.spreadsheets.add(spreadsheet);
@@ -226,7 +226,7 @@ describe('SpreadsheetService', () => {
     it('shows snackbar notifications and loads data', async () => {
       const sheetData: ISheet = {
         properties: { id: 'id', name: 'n' },
-        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+        addresses: [], daily: [], deliveries: [], expenses: [], locations: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
       };
       mockGigWorkflow.loadData.and.returnValue(Promise.resolve());
 
@@ -242,7 +242,7 @@ describe('SpreadsheetService', () => {
     it('shows snackbar notifications and appends data', async () => {
       const sheetData: ISheet = {
         properties: { id: 'id', name: 'n' },
-        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+        addresses: [], daily: [], deliveries: [], expenses: [], locations: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
       };
       mockGigWorkflow.appendData.and.returnValue(Promise.resolve());
 

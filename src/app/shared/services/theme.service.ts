@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { BehaviorSubject, Observable } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
@@ -37,23 +38,23 @@ export class ThemeService {
     this.applyTheme(initialPreference, false);
   }
 
-  get preferenceChanges(): Observable<ThemePreference> {
+  public get preferenceChanges(): Observable<ThemePreference> {
     return this.preference$.asObservable();
   }
 
-  get activeTheme$(): Observable<ResolvedTheme> {
+  public get activeTheme$(): Observable<ResolvedTheme> {
     return this.resolved$.asObservable();
   }
 
-  get activeTheme(): ResolvedTheme {
+  public get activeTheme(): ResolvedTheme {
     return this.resolved$.value;
   }
 
-  get currentPreference(): ThemePreference {
+  public get currentPreference(): ThemePreference {
     return this.preference$.value;
   }
 
-  setTheme(preference: ThemePreference): void {
+  public setTheme(preference: ThemePreference): void {
     this.applyTheme(preference);
   }
 

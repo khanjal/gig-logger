@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NumberHelper } from '@helpers/number.helper';
 import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
@@ -14,9 +15,9 @@ import { SheetSourceLabelPipe } from '@pipes/sheet-source-label.pipe';
     imports: [MatCard, MatCardHeader, MatIcon, MatCardContent, TruncatePipe, SheetSourceLabelPipe]
 })
 export class SheetQuickViewComponent implements OnInit {
-  @Input() spreadsheet!: ISpreadsheet;
-  size: string | undefined;
-  ngOnInit() {
+  @Input() public spreadsheet!: ISpreadsheet;
+  public size: string | undefined;
+  public ngOnInit() {
     this.size = NumberHelper.getDataSize(this.spreadsheet.size);
   }
 }

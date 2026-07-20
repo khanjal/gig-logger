@@ -17,7 +17,7 @@ class FakeTable<T extends { id?: number }> {
     initial.forEach(i => this.add(i));
   }
 
-  add(item: T): Promise<void> {
+  public add(item: T): Promise<void> {
     if (!item.id) {
       item.id = this.nextId++;
     }
@@ -25,12 +25,12 @@ class FakeTable<T extends { id?: number }> {
     return Promise.resolve();
   }
 
-  delete(id: number): Promise<void> {
+  public delete(id: number): Promise<void> {
     this.items = this.items.filter(i => i.id !== id);
     return Promise.resolve();
   }
 
-  put(item: T): Promise<void> {
+  public put(item: T): Promise<void> {
     if (!item.id) {
       return this.add(item);
     }
@@ -38,20 +38,20 @@ class FakeTable<T extends { id?: number }> {
     return Promise.resolve();
   }
 
-  clear(): Promise<void> {
+  public clear(): Promise<void> {
     this.items = [];
     return Promise.resolve();
   }
 
-  bulkAdd(items: T[]): Promise<void> {
+  public bulkAdd(items: T[]): Promise<void> {
     return Promise.all(items.map(i => this.add(i))).then(() => undefined);
   }
 
-  toArray(): Promise<T[]> {
+  public toArray(): Promise<T[]> {
     return Promise.resolve([...this.items]);
   }
 
-  orderBy(field: string) {
+  public orderBy(field: string) {
     const get = (item: T) => (item as Record<string, unknown>)[field];
     const sorted = [...this.items].sort((a, b) => {
       const av = get(a);
@@ -73,7 +73,7 @@ class FakeTable<T extends { id?: number }> {
     };
   }
 
-  where(field: string) {
+  public where(field: string) {
     const get = (item: T) => (item as Record<string, unknown>)[field];
     return {
       equals: (value: unknown) => {

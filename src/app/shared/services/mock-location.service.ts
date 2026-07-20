@@ -14,7 +14,7 @@ export class MockLocationService {
   private readonly DEFAULT_RADIUS = 25; // miles
   
   // Preset locations for quick testing
-  readonly presetLocations: IPresetLocation[] = [
+  public readonly presetLocations: IPresetLocation[] = [
     { name: 'New York, NY', latitude: 40.7128, longitude: -74.0060, country: 'US' },
     { name: 'Los Angeles, CA', latitude: 34.0522, longitude: -118.2437, country: 'US' },
     { name: 'Chicago, IL', latitude: 41.8781, longitude: -87.6298, country: 'US' },
@@ -48,7 +48,7 @@ export class MockLocationService {
   /**
    * Get current mock location settings
    */
-  getMockLocation(): IMockLocation {
+  public getMockLocation(): IMockLocation {
     // Prefer new RG-prefixed key, but migrate legacy key if present
     let stored = localStorage.getItem(this.STORAGE_KEY);
     if (!stored) {
@@ -86,7 +86,7 @@ export class MockLocationService {
   /**
    * Save mock location settings
    */
-  saveMockLocation(mockLocation: IMockLocation): void {
+  public saveMockLocation(mockLocation: IMockLocation): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(mockLocation));
       this.logger.info('Mock location saved', mockLocation);
@@ -98,14 +98,14 @@ export class MockLocationService {
   /**
    * Check if mock location is enabled
    */
-  isEnabled(): boolean {
+  public isEnabled(): boolean {
     return this.getMockLocation().enabled;
   }
 
   /**
    * Get mock location coordinates if enabled
    */
-  getLocation(): { lat: number; lng: number } | null {
+  public getLocation(): { lat: number; lng: number } | null {
     const mock = this.getMockLocation();
     if (!mock.enabled) {
       return null;
@@ -119,14 +119,14 @@ export class MockLocationService {
   /**
    * Get search radius in miles
    */
-  getRadius(): number {
+  public getRadius(): number {
     return this.getMockLocation().radius;
   }
 
   /**
    * Enable mock location
    */
-  enable(): void {
+  public enable(): void {
     const current = this.getMockLocation();
     current.enabled = true;
     this.saveMockLocation(current);
@@ -135,7 +135,7 @@ export class MockLocationService {
   /**
    * Disable mock location
    */
-  disable(): void {
+  public disable(): void {
     const current = this.getMockLocation();
     current.enabled = false;
     this.saveMockLocation(current);
@@ -144,7 +144,7 @@ export class MockLocationService {
   /**
    * Set coordinates
    */
-  setCoordinates(latitude: number, longitude: number, name?: string): void {
+  public setCoordinates(latitude: number, longitude: number, name?: string): void {
     const current = this.getMockLocation();
     current.latitude = latitude;
     current.longitude = longitude;
@@ -157,7 +157,7 @@ export class MockLocationService {
   /**
    * Set radius
    */
-  setRadius(radius: number): void {
+  public setRadius(radius: number): void {
     const current = this.getMockLocation();
     current.radius = radius;
     this.saveMockLocation(current);
@@ -166,28 +166,28 @@ export class MockLocationService {
   /**
    * Validate latitude (-90 to 90)
    */
-  isValidLatitude(lat: number): boolean {
+  public isValidLatitude(lat: number): boolean {
     return lat >= -90 && lat <= 90;
   }
 
   /**
    * Validate longitude (-180 to 180)
    */
-  isValidLongitude(lng: number): boolean {
+  public isValidLongitude(lng: number): boolean {
     return lng >= -180 && lng <= 180;
   }
 
   /**
    * Validate radius (1 to 50 miles)
    */
-  isValidRadius(radius: number): boolean {
+  public isValidRadius(radius: number): boolean {
     return radius >= 1 && radius <= 50;
   }
 
   /**
    * Reset to default settings
    */
-  reset(): void {
+  public reset(): void {
     const defaultSettings: IMockLocation = {
       enabled: false,
       latitude: 40.7128,

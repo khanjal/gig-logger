@@ -1,6 +1,7 @@
 import type { IAddress } from '@interfaces/entities/address.interface';
 import type { IDaily } from '@interfaces/sheets/daily.interface';
 import type { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { ILocation } from '@interfaces/entities/location.interface';
 import type { IMonthly } from '@interfaces/sheets/monthly.interface';
 import type { IName } from '@interfaces/entities/name.interface';
 import type { IPlace } from '@interfaces/entities/place.interface';
@@ -15,7 +16,8 @@ import type { IWeekday } from '@interfaces/sheets/weekday.interface';
 import type { IWeekly } from '@interfaces/sheets/weekly.interface';
 import type { IYearly } from '@interfaces/sheets/yearly.interface';
 import type { IExpense } from '@interfaces/entities/expense.interface';
-import Dexie, { Table } from 'dexie';
+import type { Table } from 'dexie';
+import Dexie from 'dexie';
 
 // https://dexie.org/docs/Tutorial/Angular
 
@@ -84,30 +86,40 @@ const SCHEMA_V3 = {
     yearly: '++id, year'
 };
 
+// Version 4: deliveries is now loaded directly from the server-computed Deliveries sheet
+// (RaptorSheets.Gig) instead of being derived client-side; added a matching locations
+// table backed by the new server-computed Locations sheet.
+const SCHEMA_V4 = {
+    ...SCHEMA_V3,
+    locations: '++id, place, address'
+};
+
 export class AppDB extends Dexie {
-    addresses!: Table<IAddress, number>;
-    daily!: Table<IDaily, number>;
-    deliveries!: Table<IDelivery, number>;
-    expenses!: Table<IExpense, number>;
-    monthly!: Table<IMonthly, number>;
-    names!: Table<IName, number>;
-    places!: Table<IPlace, number>;
-    ratings!: Table<IRating, number>;
-    regions!: Table<IRegion, number>;
-    services!: Table<IService, number>;
-    setup!: Table<ISetup, number>;
-    shifts!: Table<IShift, number>;
-    trips!: Table<ITrip, number>;
-    types!: Table<IType, number>;
-    weekdays!: Table<IWeekday, number>;
-    weekly!: Table<IWeekly, number>;
-    yearly!: Table<IYearly, number>;
+    public addresses!: Table<IAddress, number>;
+    public daily!: Table<IDaily, number>;
+    public deliveries!: Table<IDelivery, number>;
+    public expenses!: Table<IExpense, number>;
+    public locations!: Table<ILocation, number>;
+    public monthly!: Table<IMonthly, number>;
+    public names!: Table<IName, number>;
+    public places!: Table<IPlace, number>;
+    public ratings!: Table<IRating, number>;
+    public regions!: Table<IRegion, number>;
+    public services!: Table<IService, number>;
+    public setup!: Table<ISetup, number>;
+    public shifts!: Table<IShift, number>;
+    public trips!: Table<ITrip, number>;
+    public types!: Table<IType, number>;
+    public weekdays!: Table<IWeekday, number>;
+    public weekly!: Table<IWeekly, number>;
+    public yearly!: Table<IYearly, number>;
 
     constructor() {
         super('spreadsheetDB');
         this.version(1).stores(SCHEMA_V1);
         this.version(2).stores(SCHEMA_V2);
         this.version(3).stores(SCHEMA_V3);
+        this.version(4).stores(SCHEMA_V4);
 
         // Fires when db.delete() can't complete because another connection
         // (typically another open tab of this app) is still holding the

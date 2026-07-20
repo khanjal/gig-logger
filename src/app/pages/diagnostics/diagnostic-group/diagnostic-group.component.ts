@@ -4,7 +4,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
+import type { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
 import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
@@ -15,46 +15,46 @@ import { BaseFabButtonComponent } from '@components/base';
   styleUrl: './diagnostic-group.component.scss'
 })
 export class DiagnosticGroupComponent {
-  @Input() group: IDiagnosticRecord[] = [];
-  @Input() groupIndex = 0;
-  @Input() itemType: DiagnosticEntityType = 'trip';
-  @Input() selectedValue: IDiagnosticRecord | undefined;
-  @Input() selectedShiftToDelete: number | undefined;
+  @Input() public group: IDiagnosticRecord[] = [];
+  @Input() public groupIndex = 0;
+  @Input() public itemType: DiagnosticEntityType = 'trip';
+  @Input() public selectedValue: IDiagnosticRecord | undefined;
+  @Input() public selectedShiftToDelete: number | undefined;
 
-  @Output() selectedValueChange = new EventEmitter<IDiagnosticRecord>();
-  @Output() selectedShiftToDeleteChange = new EventEmitter<number>();
-  @Output() merge = new EventEmitter<{ group: IDiagnosticRecord[], value: IDiagnosticRecord, itemType: DiagnosticEntityType }>();
-  @Output() deleteShift = new EventEmitter<{ group: IDiagnosticRecord[], shiftId: number, groupIndex: number }>();
+  @Output() public selectedValueChange = new EventEmitter<IDiagnosticRecord>();
+  @Output() public selectedShiftToDeleteChange = new EventEmitter<number>();
+  @Output() public merge = new EventEmitter<{ group: IDiagnosticRecord[], value: IDiagnosticRecord, itemType: DiagnosticEntityType }>();
+  @Output() public deleteShift = new EventEmitter<{ group: IDiagnosticRecord[], shiftId: number, groupIndex: number }>();
 
-  get canMerge(): boolean {
+  public get canMerge(): boolean {
     return ['place', 'name', 'address', 'service', 'type', 'region'].includes(this.itemType);
   }
 
-  get canDelete(): boolean {
+  public get canDelete(): boolean {
     return this.itemType === 'shift';
   }
 
-  hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
+  public hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
     return group.some(item => item.markedForDelete);
   }
 
-  onMergeClick(): void {
+  public onMergeClick(): void {
     if (this.selectedValue) {
       this.merge.emit({ group: this.group, value: this.selectedValue, itemType: this.itemType });
     }
   }
 
-  onDeleteClick(): void {
+  public onDeleteClick(): void {
     if (this.selectedShiftToDelete) {
       this.deleteShift.emit({ group: this.group, shiftId: this.selectedShiftToDelete, groupIndex: this.groupIndex });
     }
   }
 
-  onValueChange(value: IDiagnosticRecord): void {
+  public onValueChange(value: IDiagnosticRecord): void {
     this.selectedValueChange.emit(value);
   }
 
-  onShiftChange(value: number): void {
+  public onShiftChange(value: number): void {
     this.selectedShiftToDeleteChange.emit(value);
   }
 }

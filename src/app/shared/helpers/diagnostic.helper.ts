@@ -1,15 +1,15 @@
-import { TripService } from '@services/sheets/trip.service';
-import { ShiftService } from '@services/sheets/shift.service';
+import type { TripService } from '@services/sheets/trip.service';
+import type { ShiftService } from '@services/sheets/shift.service';
 import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ITrip } from '@interfaces/entities/trip.interface';
-import type { IPlace } from '@interfaces/entities/place.interface';
+import type { ILocation } from '@interfaces/entities/location.interface';
 import type { IDiagnosticItem, IDiagnosticRecord, IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/stats/diagnostic.interface';
 
 export class DiagnosticHelper {
   /**
    * Find trips that don't have a corresponding shift
    */
-  static findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
+  public static findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
     const shiftKeys = new Set(shifts.map(s => s.key));
     return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
   }
@@ -17,7 +17,7 @@ export class DiagnosticHelper {
   /**
    * Find shifts with start/end times but no calculated duration
    */
-  static findShiftsWithoutDuration(shifts: IShift[]): IShift[] {
+  public static findShiftsWithoutDuration(shifts: IShift[]): IShift[] {
     return shifts.filter(shift => {
       const hasStartTime = shift.start && shift.start.trim().length > 0;
       const hasEndTime = shift.finish && shift.finish.trim().length > 0;
@@ -30,7 +30,7 @@ export class DiagnosticHelper {
   /**
    * Find trips with pickup/dropoff times but no calculated duration
    */
-  static findTripsWithoutDuration(trips: ITrip[]): ITrip[] {
+  public static findTripsWithoutDuration(trips: ITrip[]): ITrip[] {
     return trips.filter(trip => {
       const hasPickupTime = trip.pickupTime && trip.pickupTime.trim().length > 0;
       const hasDropoffTime = trip.dropoffTime && trip.dropoffTime.trim().length > 0;
@@ -43,9 +43,9 @@ export class DiagnosticHelper {
   /**
    * Find trips with a place but no start address
    */
-  static findTripsWithPlaceNoAddress(
+  public static findTripsWithPlaceNoAddress(
     trips: ITrip[],
-    places: IPlace[],
+    locations: ILocation[],
     selectedAddress: Record<number, string>
   ): (ITrip & { availableAddresses: string[] })[] {
     // Validate selectedAddress parameter
@@ -53,22 +53,26 @@ export class DiagnosticHelper {
       throw new Error('selectedAddress parameter must be a valid object');
     }
 
-    const placeMap = new Map<string, IPlace>();
-    places.forEach(p => placeMap.set(p.place, p));
+    // Address breakdown now comes from the server-computed Locations sheet (RaptorSheets.Gig)
+    const addressesByPlace = new Map<string, string[]>();
+    for (const location of locations) {
+      const existing = addressesByPlace.get(location.place) || [];
+      existing.push(location.address);
+      addressesByPlace.set(location.place, existing);
+    }
 
     return trips.filter(trip => {
       const hasPlace = trip.place && trip.place.trim().length > 0;
       const hasStartAddress = trip.startAddress && trip.startAddress.trim().length > 0;
       return hasPlace && !hasStartAddress;
     }).map(trip => {
-      const place = placeMap.get(trip.place);
-      const availableAddresses = place?.addresses?.map(a => a.address) || [];
-      
+      const availableAddresses = addressesByPlace.get(trip.place) || [];
+
       // Auto-select if only one address available
       if (availableAddresses.length === 1) {
         selectedAddress[trip.rowId] = availableAddresses[0];
       }
-      
+
       return {
         ...trip,
         availableAddresses
@@ -79,7 +83,7 @@ export class DiagnosticHelper {
   /**
    * Merge duplicate groups from multiple detection strategies (equals + contains)
    */
-  static mergeDuplicateGroups<T>(
+  public static mergeDuplicateGroups<T>(
     primary: IDuplicateGroup<T>[],
     secondary: IDuplicateGroup<T>[]
   ): IDuplicateResult<T> {
@@ -122,7 +126,7 @@ export class DiagnosticHelper {
   /**
    * Recompute trip/shift counts for a group after merging duplicates
    */
-  static async recomputeGroupCounts(
+  public static async recomputeGroupCounts(
     itemType: DiagnosticEntityType,
     group: IDiagnosticRecord[],
     tripService: TripService,
@@ -182,7 +186,7 @@ export class DiagnosticHelper {
   /**
    * Custom address comparator for finding duplicates with variations
    */
-  static createAddressComparator(): (a: string, b: string) => boolean {
+  public static createAddressComparator(): (a: string, b: string) => boolean {
     return (a: string, b: string): boolean => {
       const stripCountry = (s: string) => s.replace(/,\s*usa$/i, '');
       const normalize = (s: string) => stripCountry(s).trim().replace(/\s+/g, ' ');
@@ -239,7 +243,7 @@ export class DiagnosticHelper {
   /**
    * Mark orphaned-trip diagnostic items as fixed for the provided shift keys
    */
-  static markOrphanedTripsFixed(diagnostic: IDiagnosticItem | undefined, keys: string[]) {
+  public static markOrphanedTripsFixed(diagnostic: IDiagnosticItem | undefined, keys: string[]) {
     if (!diagnostic || !diagnostic.items || !Array.isArray(keys) || keys.length === 0) return;
 
     for (const key of keys) {

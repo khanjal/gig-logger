@@ -18,7 +18,7 @@ export class StatHelper {
         });
     }
 
-    static getTripsTotal(trips: ITrip[] = []): IStatItem {
+    public static getTripsTotal(trips: ITrip[] = []): IStatItem {
         const item = {} as IStatItem;
         
         item.trips = trips.length;
@@ -37,11 +37,11 @@ export class StatHelper {
         return item;
     }
 
-    static formatDateLabel(dateString: string): string {
+    public static formatDateLabel(dateString: string): string {
         return DateHelper.formatLocaleDateString(dateString, 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
-    static getWeekdayAggregatesFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): Record<string, { count: number; total: number; perTimeSum: number; trips: number }> {
+    public static getWeekdayAggregatesFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): Record<string, { count: number; total: number; perTimeSum: number; trips: number }> {
         const map: Record<string, { count: number; total: number; perTimeSum: number; trips: number }> = {};
 
         const filtered = this.filterDailyByDate(dailyData, startDate, endDate);
@@ -59,7 +59,7 @@ export class StatHelper {
         return map;
     }
 
-    static getBusiestDayFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): { label: string; count: number; date: string } {
+    public static getBusiestDayFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): { label: string; count: number; date: string } {
         const filtered = this.filterDailyByDate(dailyData, startDate, endDate);
 
         if (!filtered.length) return { label: '—', count: 0, date: '' };
@@ -76,7 +76,7 @@ export class StatHelper {
         };
     }
 
-    static getHighestEarningDayFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): { label: string; total: number; date: string } {
+    public static getHighestEarningDayFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): { label: string; total: number; date: string } {
         const filtered = this.filterDailyByDate(dailyData, startDate, endDate);
 
         if (!filtered.length) return { label: '—', total: 0, date: '' };

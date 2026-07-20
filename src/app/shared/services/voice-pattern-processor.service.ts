@@ -3,7 +3,7 @@ import { DropdownDataService } from '@services/dropdown-data.service';
 import { NumberHelper } from '@helpers/number.helper';
 import { AddressHelper } from '@helpers/address.helper';
 import { VOICE_PATTERNS } from '@components/voice-input/voice-patterns.config';
-import { IVoiceParseResult } from '@interfaces/external/voice-parse-result.interface';
+import type { IVoiceParseResult } from '@interfaces/external/voice-parse-result.interface';
 
 /**
  * Pattern match result with metadata
@@ -35,7 +35,7 @@ export class VoicePatternProcessorService {
    * @param dropdownData Optional dropdown data for best-match validation
    * @returns Parsed result with extracted fields
    */
-  parseTranscript(
+  public parseTranscript(
     transcript: string,
     dropdownData?: {
       serviceList?: string[];

@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 import { StatsComponent } from './stats.component';
 import { ShiftService } from '@services/sheets/shift.service';

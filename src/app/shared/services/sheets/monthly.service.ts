@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { from } from "rxjs";
 import { spreadsheetDB } from "@data/spreadsheet.db";
-import { IMonthly } from "@interfaces/sheets/monthly.interface";
+import type { IMonthly } from "@interfaces/sheets/monthly.interface";
 import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 
@@ -13,6 +13,6 @@ export class MonthlyService  extends GenericCrudService<IMonthly> {
       super(spreadsheetDB.monthly); // Pass the table reference
     }
     
-    monthly$ = from(liveQuery(() => spreadsheetDB.monthly.toArray()));
+    public monthly$ = from(liveQuery(() => spreadsheetDB.monthly.toArray()));
 
 }

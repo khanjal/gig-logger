@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ExpensesComponent } from './expenses.component';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ExpensesService } from '@services/sheets/expenses.service';
@@ -12,7 +13,7 @@ import { ActionEnum } from '@enums/action.enum';
 import { BehaviorSubject, of } from 'rxjs';
 import type { IExpense } from '@interfaces/entities/expense.interface';
 import type { UserProfile } from '@interfaces/auth/user-profile.interface';
-import { MatDialogRef } from '@angular/material/dialog';
+import type { MatDialogRef } from '@angular/material/dialog';
 import { provideNativeDateAdapter } from '@angular/material/core';
 
 describe('ExpensesComponent', () => {

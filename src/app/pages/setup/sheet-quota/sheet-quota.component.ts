@@ -1,4 +1,5 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { NumberHelper } from '@helpers/number.helper';
 import { LoggerService } from '@services/logger.service';
 
@@ -11,10 +12,10 @@ export class SheetQuotaComponent implements OnInit {
   private _logger = inject(LoggerService);
 
 
-  quota = signal<string | undefined>(undefined);
-  usage = signal<string | undefined>(undefined);
+  public quota = signal<string | undefined>(undefined);
+  public usage = signal<string | undefined>(undefined);
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     await this.showEstimatedQuota();
   }
   

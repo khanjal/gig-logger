@@ -19,13 +19,13 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./base-accordion-item.component.scss']
 })
 export class BaseAccordionItemComponent {
-  @Input() title = '';
-  @Input() expanded = false;
-  @Output() toggled = new EventEmitter<boolean>();
+  @Input() public title = '';
+  @Input() public expanded = false;
+  @Output() public toggled = new EventEmitter<boolean>();
 
-  @HostBinding('class.accordion-item-host') host = true;
+  @HostBinding('class.accordion-item-host') public host = true;
 
-  toggle() {
+  public toggle() {
     this.expanded = !this.expanded;
     this.toggled.emit(this.expanded);
   }

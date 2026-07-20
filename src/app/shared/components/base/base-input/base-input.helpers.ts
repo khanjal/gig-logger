@@ -1,5 +1,5 @@
-import { AbstractControl, FormControl } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
+import type { AbstractControl, FormControl } from '@angular/forms';
+import type { Subject, Subscription } from 'rxjs';
 
 export function subscribeControlStatus(control: FormControl | AbstractControl | null | undefined, stateChanges: Subject<void>): Subscription | undefined {
   try {

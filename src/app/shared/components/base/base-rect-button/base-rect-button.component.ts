@@ -8,13 +8,13 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
   templateUrl: './base-rect-button.component.html'
 })
 export class BaseRectButtonComponent {
-  @Input() icon?: string;
-  @Input() iconColor?: string;
-  @Input() label?: string;
-  @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
-  @Input() noBackground = false;
-  @Input() disabled = false;
-  @Input() loading = false;
-  @Input() fullWidth = false;
-  @Output() clicked = new EventEmitter<void>();
+  @Input() public icon?: string;
+  @Input() public iconColor?: string;
+  @Input() public label?: string;
+  @Input() public variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
+  @Input() public noBackground = false;
+  @Input() public disabled = false;
+  @Input() public loading = false;
+  @Input() public fullWidth = false;
+  @Output() public clicked = new EventEmitter<void>();
 }

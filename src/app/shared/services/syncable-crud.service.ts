@@ -9,11 +9,11 @@ export class SyncableCrudService<T extends IActionRecord> extends GenericCrudSer
     super(table);
   }
 
-  async getUnsaved(): Promise<T[]> {
+  public async getUnsaved(): Promise<T[]> {
     return (await this.list()).filter(x => !x.saved);
   }
 
-  async saveUnsaved(
+  public async saveUnsaved(
     saveStartedAt: number = Date.now(),
     syncedIds?: ReadonlySet<number>
   ): Promise<void> {
@@ -56,13 +56,13 @@ export class SyncableCrudService<T extends IActionRecord> extends GenericCrudSer
     }
   }
 
-  async getMaxRowId(): Promise<number> {
+  public async getMaxRowId(): Promise<number> {
     const items = await this.list();
     if (items.length === 0) return 1;
     return Math.max(1, ...items.map(x => x.rowId || 0));
   }
 
-  async deleteItem(item: T): Promise<void> {
+  public async deleteItem(item: T): Promise<void> {
     if (!item.saved) {
       await this.delete(item.id!);
       await this.updateRowIds(item.rowId);
@@ -74,7 +74,7 @@ export class SyncableCrudService<T extends IActionRecord> extends GenericCrudSer
     }
   }
 
-  async updateRowIds(rowId: number): Promise<void> {
+  public async updateRowIds(rowId: number): Promise<void> {
     const maxId = await this.getMaxRowId();
     let nextRowId = rowId + 1;
     const itemsToUpdate: T[] = [];

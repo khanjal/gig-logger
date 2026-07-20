@@ -8,19 +8,19 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
   templateUrl: './base-field-button.component.html'
 })
 export class BaseFieldButtonComponent {
-  @Input() icon?: string;
-  @Input() iconColor = 'var(--color-text-primary)';
-  @Input() size: 'sm' | 'md' | 'lg' = 'sm';
-  @Input() disabled = false;
-  @Input() loading = false;
-  @Input() fab = false;
-  @Input() fabStyle: 'regular' | 'mini' = 'regular';
-  @Input() color?: string;
-  @Input('aria-label') ariaLabel?: string;
-  @Input() title?: string;
-  @Output() clicked = new EventEmitter<void>();
+  @Input() public icon?: string;
+  @Input() public iconColor = 'var(--color-text-primary)';
+  @Input() public size: 'sm' | 'md' | 'lg' = 'sm';
+  @Input() public disabled = false;
+  @Input() public loading = false;
+  @Input() public fab = false;
+  @Input() public fabStyle: 'regular' | 'mini' = 'regular';
+  @Input() public color?: string;
+  @Input('aria-label') public ariaLabel?: string;
+  @Input() public title?: string;
+  @Output() public clicked = new EventEmitter<void>();
 
-  get variant(): 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' {
+  public get variant(): 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' {
     if (!this.color) return 'icon';
     if (this.color === 'accent') return 'secondary';
     if (this.color === 'primary') return 'primary';

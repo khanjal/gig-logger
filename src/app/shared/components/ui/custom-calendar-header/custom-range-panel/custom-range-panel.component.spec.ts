@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { CustomRangePanelComponent } from './custom-range-panel.component';
 import { MAT_DATE_LOCALE } from '@angular/material/core';

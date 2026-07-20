@@ -1,10 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 
 import { SearchInputComponent } from './search-input.component';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { AddressService } from '@services/sheets/address.service';
+import { DeliveryService } from '@services/sheets/delivery.service';
+import { LocationService } from '@services/sheets/location.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
@@ -15,12 +18,14 @@ import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
 import { MockLocationService } from '@services/mock-location.service';
 import type { ISearchItem } from '@interfaces/search/search-item.interface';
+import type { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { ILocation } from '@interfaces/entities/location.interface';
 import type { IPlace } from '@interfaces/entities/place.interface';
 import type { IName } from '@interfaces/entities/name.interface';
 import type { IAutocompleteResult } from '@interfaces/external/google-places.interface';
 import type { IService } from '@interfaces/entities/service.interface';
 import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
-import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import type { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 // Exposes the private/internal surface of SearchInputComponent that these
 // class-only tests exercise directly, to avoid `any` casts.
@@ -29,8 +34,8 @@ interface SearchInputComponentInternals {
   googlePredictionsCache: Map<string, ISearchItem[]>;
   CACHE_SIZE_LIMIT: number;
   syncSelectionStateForExternalValue(value: string): Promise<void>;
-  mapPlacesToSearchItems(places: IPlace[]): ISearchItem[];
-  mapNamesToSearchItems(names: IName[]): ISearchItem[];
+  mapPlacesToSearchItems(places: IPlace[]): Promise<ISearchItem[]>;
+  mapNamesToSearchItems(names: IName[]): Promise<ISearchItem[]>;
   appendDropdownMatches(existingItems: ISearchItem[], type: DropdownType, value: string): Promise<ISearchItem[]>;
   transformGooglePredictions(predictions: IAutocompleteResult[]): ISearchItem[];
   manageCacheSize(): void;
@@ -46,6 +51,8 @@ interface SearchInputComponentInternals {
 describe('SearchInputComponent (class-only)', () => {
   let comp: SearchInputComponent;
   const addressService = jasmine.createSpyObj('AddressService', ['includes', 'find']);
+  const deliveryService = jasmine.createSpyObj('DeliveryService', ['query']);
+  const locationService = jasmine.createSpyObj('LocationService', ['query']);
   const nameService = jasmine.createSpyObj('NameService', ['includes', 'find']);
   const placeService = jasmine.createSpyObj('PlaceService', ['includes', 'find']);
   const regionService = jasmine.createSpyObj('RegionService', ['filter']);
@@ -61,6 +68,8 @@ describe('SearchInputComponent (class-only)', () => {
   beforeEach(() => {
     addressService.includes.and.returnValue(Promise.resolve([]));
     addressService.find.and.returnValue(Promise.resolve(null));
+    deliveryService.query.and.returnValue(Promise.resolve([]));
+    locationService.query.and.returnValue(Promise.resolve([]));
     nameService.includes.and.returnValue(Promise.resolve([]));
     placeService.includes.and.returnValue(Promise.resolve([]));
     placeService.find.and.returnValue(Promise.resolve(null));
@@ -77,6 +86,8 @@ describe('SearchInputComponent (class-only)', () => {
       providers: [
         { provide: MatDialog, useValue: dialog },
         { provide: AddressService, useValue: addressService },
+        { provide: DeliveryService, useValue: deliveryService },
+        { provide: LocationService, useValue: locationService },
         { provide: NameService, useValue: nameService },
         { provide: PlaceService, useValue: placeService },
         { provide: RegionService, useValue: regionService },
@@ -128,27 +139,24 @@ describe('SearchInputComponent (class-only)', () => {
     expect(comp.getViewportHeight()).toBe(comp.getItemSize() * 10);
   });
 
-  it('mapPlacesToSearchItems sorts addresses and includes base item', () => {
-    const place = {
-      id: 1,
-      place: 'P1',
-      saved: true,
-      trips: 3,
-      addresses: [
-        { address: 'A1', lastTrip: '2020-01-01', trips: 1 },
-        { address: 'A2', lastTrip: '2021-01-01', trips: 2 }
-      ]
-    } as unknown as IPlace;
+  it('mapPlacesToSearchItems sorts addresses and includes base item', async () => {
+    const place = { id: 1, place: 'P1', saved: true, trips: 3 } as unknown as IPlace;
+    locationService.query.and.returnValue(Promise.resolve([
+      { place: 'P1', address: 'A1', trips: 1, lastTrip: '2020-01-01' },
+      { place: 'P1', address: 'A2', trips: 2, lastTrip: '2021-01-01' }
+    ]));
 
-    const items = (comp as unknown as SearchInputComponentInternals).mapPlacesToSearchItems([place]);
+    const items = await (comp as unknown as SearchInputComponentInternals).mapPlacesToSearchItems([place]);
     expect(items.length).toBeGreaterThan(1);
     // first address should be the one with later lastTrip
     expect(items.some((it: ISearchItem) => it.address === 'A2')).toBeTrue();
   });
 
-  it('mapNamesToSearchItems includes addresses', () => {
-    const name = { id: 2, name: 'N1', saved: false, trips: 0, addresses: ['Addr1'] } as unknown as IName;
-    const items = (comp as unknown as SearchInputComponentInternals).mapNamesToSearchItems([name]);
+  it('mapNamesToSearchItems includes addresses', async () => {
+    const name = { id: 2, name: 'N1', saved: false, trips: 0 } as unknown as IName;
+    deliveryService.query.and.returnValue(Promise.resolve([{ name: 'N1', address: 'Addr1', trips: 1 }]));
+
+    const items = await (comp as unknown as SearchInputComponentInternals).mapNamesToSearchItems([name]);
     expect(items.length).toBe(2);
     expect(items[1].address).toBe('Addr1');
   });
@@ -220,6 +228,8 @@ describe('SearchInputComponent', () => {
   let dropdownDataSpy: jasmine.SpyObj<DropdownDataService>;
   let addressService: AddressService;
   let placeService: PlaceService;
+  let deliveryService: DeliveryService;
+  let locationService: LocationService;
 
   beforeEach(async () => {
     dropdownDataSpy = jasmine.createSpyObj('DropdownDataService', ['filterDropdown']);
@@ -233,11 +243,13 @@ describe('SearchInputComponent', () => {
       ]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(SearchInputComponent);
     component = fixture.componentInstance;
     addressService = TestBed.inject(AddressService);
     placeService = TestBed.inject(PlaceService);
+    deliveryService = TestBed.inject(DeliveryService);
+    locationService = TestBed.inject(LocationService);
     fixture.detectChanges();
   });
 
@@ -406,28 +418,28 @@ describe('SearchInputComponent', () => {
     expect(results[0].placeId).toBe('pid');
   });
 
-  it('mapPlacesToSearchItems sorts addresses by lastTrip and includes base item', () => {
-    const place = {
-      id: 1,
-      place: 'My Place',
-      saved: true,
-      trips: 5,
-      addresses: [
-        { address: 'Old Addr', lastTrip: '2020-01-01', trips: 1 },
-        { address: 'New Addr', lastTrip: '2022-01-01', trips: 3 }
-      ]
-    } as unknown as IPlace;
+  it('mapPlacesToSearchItems sorts addresses by lastTrip and includes base item', async () => {
+    const place = { id: 1, place: 'My Place', saved: true, trips: 5 } as unknown as IPlace;
+    spyOn(locationService, 'query').and.returnValue(Promise.resolve([
+      { place: 'My Place', address: 'Old Addr', trips: 1, lastTrip: '2020-01-01' },
+      { place: 'My Place', address: 'New Addr', trips: 3, lastTrip: '2022-01-01' }
+    ] as unknown as ILocation[]));
 
-    const items = (component as unknown as SearchInputComponentInternals).mapPlacesToSearchItems([place]);
+    const items = await (component as unknown as SearchInputComponentInternals).mapPlacesToSearchItems([place]);
     // first item is base (no address), then entries sorted by lastTrip (New Addr first)
     expect(items[0].name).toBe('My Place');
     expect(items[1].address).toBe('New Addr');
     expect(items[2].address).toBe('Old Addr');
   });
 
-  it('mapNamesToSearchItems includes addresses when present', () => {
-    const name = { id: 2, name: 'John', saved: false, trips: 2, addresses: ['A1', 'A2'] } as unknown as IName;
-    const items = (component as unknown as SearchInputComponentInternals).mapNamesToSearchItems([name]);
+  it('mapNamesToSearchItems includes addresses when present', async () => {
+    const name = { id: 2, name: 'John', saved: false, trips: 2 } as unknown as IName;
+    spyOn(deliveryService, 'query').and.returnValue(Promise.resolve([
+      { name: 'John', address: 'A1', trips: 1 },
+      { name: 'John', address: 'A2', trips: 1 }
+    ] as unknown as IDelivery[]));
+
+    const items = await (component as unknown as SearchInputComponentInternals).mapNamesToSearchItems([name]);
     expect(items.length).toBe(3); // base + 2 addresses
     expect(items[1].address).toBe('A1');
   });

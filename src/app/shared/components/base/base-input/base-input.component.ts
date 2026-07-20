@@ -1,5 +1,6 @@
 import { Component, Input, inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormGroupDirective } from '@angular/forms';
+import type { ControlValueAccessor} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, NgControl, FormGroupDirective } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
@@ -14,36 +15,36 @@ import { firstErrorMessage, controlHasError } from './base-input.helpers';
   styleUrl: './base-input.component.scss'
 })
 export class BaseInputComponent implements ControlValueAccessor {
-  ngControl = inject(NgControl, { optional: true, self: true });
+  public ngControl = inject(NgControl, { optional: true, self: true });
   private parentForm = inject(FormGroupDirective, { optional: true });
 
 
   private _disabled = false;
-  @Input() get disabled(): boolean { return this._disabled; }
-  set disabled(v: boolean) {
+  @Input() public get disabled(): boolean { return this._disabled; }
+  public set disabled(v: boolean) {
     this._disabled = v;
   }
 
   // --- visual inputs ---
-  @Input() label?: string;
-  @Input() type = 'text';
-  @Input() placeholder = '';
-  @Input() hint?: string;
-  @Input() error?: string;
-  @Input() icon?: string;
-  @Input() iconPosition: 'left' | 'right' = 'right';
-  @Input() required = false;
-  @Input() showClear = true;
+  @Input() public label?: string;
+  @Input() public type = 'text';
+  @Input() public placeholder = '';
+  @Input() public hint?: string;
+  @Input() public error?: string;
+  @Input() public icon?: string;
+  @Input() public iconPosition: 'left' | 'right' = 'right';
+  @Input() public required = false;
+  @Input() public showClear = true;
 
   // --- value / touched tracking ---
   private _value: string | number | null = null;
-  get value(): string | number | null { return this._value; }
-  set value(val: string | number | null) { this._value = val; }
+  public get value(): string | number | null { return this._value; }
+  public set value(val: string | number | null) { this._value = val; }
   private _touched = false;
 
   // --- ControlValueAccessor callbacks ---
-  onChange: (value: string | number | null) => void = () => {};
-  onTouched: () => void = () => {};
+  public onChange: (value: string | number | null) => void = () => {};
+  public onTouched: () => void = () => {};
 
   /**
    * Reusable form input implementing ControlValueAccessor.
@@ -56,12 +57,12 @@ export class BaseInputComponent implements ControlValueAccessor {
   }
 
   // --- ControlValueAccessor ---
-  writeValue(value: string | number | null): void { this.value = value; }
-  registerOnChange(fn: (value: string | number | null) => void): void { this.onChange = fn; }
-  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
-  setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
+  public writeValue(value: string | number | null): void { this.value = value; }
+  public registerOnChange(fn: (value: string | number | null) => void): void { this.onChange = fn; }
+  public registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  public setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
 
-  onValueChange(newValue: string): void {
+  public onValueChange(newValue: string): void {
     if (this.type === 'number') {
       if (newValue === '') {
         this.value = null;
@@ -77,7 +78,7 @@ export class BaseInputComponent implements ControlValueAccessor {
     this.onChange(this.value);
   }
 
-  onBlur(): void {
+  public onBlur(): void {
     if (this.type === 'number') {
       const rawValue = typeof this.value === 'string' ? this.value.trim() : this.value;
 
@@ -98,28 +99,28 @@ export class BaseInputComponent implements ControlValueAccessor {
     this._touched = true;
   }
 
-  onClear(): void {
+  public onClear(): void {
     this.value = null;
     this.onChange(this.value);
   }
 
-  get showClearButton(): boolean {
+  public get showClearButton(): boolean {
     return this.showClear && !this.empty && !this.disabled;
   }
 
   // --- validation helpers / public API ---
-  hasError(errorCode?: string): boolean {
+  public hasError(errorCode?: string): boolean {
     const control = this.ngControl?.control;
     const submitted = !!this.parentForm?.submitted;
     const touched = !!control?.touched;
     return controlHasError(control, errorCode, this.required, touched || this._touched, submitted, this.empty);
   }
 
-  getErrorMessage(): string | null {
+  public getErrorMessage(): string | null {
     return firstErrorMessage(this.ngControl?.control, this.required, !!this._touched, !!this.parentForm?.submitted, this.empty);
   }
 
-  get isRequired(): boolean {
+  public get isRequired(): boolean {
     if (this.required) return true;
     try {
       const control = this.ngControl?.control;
@@ -135,9 +136,9 @@ export class BaseInputComponent implements ControlValueAccessor {
   }
 
   // --- derived state used by validation helpers ---
-  get empty(): boolean { return this.value === null || this.value === undefined || this.value === ''; }
+  public get empty(): boolean { return this.value === null || this.value === undefined || this.value === ''; }
 
-  get errorState(): boolean {
+  public get errorState(): boolean {
     const control = this.ngControl?.control;
     const submitted = !!this.parentForm?.submitted;
     if (control) {

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
@@ -35,31 +36,31 @@ import { BaseRectButtonComponent } from '@components/base';
     ],
 })
 export class ShiftsQuickViewComponent implements OnInit {
-  dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private shiftService = inject(ShiftService);
   private _router = inject(Router);
 
-  ActionEnum = ActionEnum;
-  dateFormats = DATE_FORMATS;
-  @Input() shift: IShift = {} as IShift;
-  @Input() index!: number;
-  @Input() inlineMode = false;
-  @Input() isDuplicate = false;
-  @Output() parentReload = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<IShift>();
+  public ActionEnum = ActionEnum;
+  public dateFormats = DATE_FORMATS;
+  @Input() public shift: IShift = {} as IShift;
+  @Input() public index!: number;
+  @Input() public inlineMode = false;
+  @Input() public isDuplicate = false;
+  @Output() public parentReload = new EventEmitter<void>();
+  @Output() public edit = new EventEmitter<IShift>();
 
-  isExpanded = false;
-  prefers24Hour = false;
+  public isExpanded = false;
+  public prefers24Hour = false;
 
-  ngOnInit() {
+  public ngOnInit() {
     this.prefers24Hour = DateHelper.prefers24Hour();
   }
 
-  toggleExpansion() {
+  public toggleExpansion() {
     this.isExpanded = !this.isExpanded;
   }
 
-  async confirmDeleteShiftDialog(shift: IShift) {
+  public async confirmDeleteShiftDialog(shift: IShift) {
     const message = `Shift will be deleted from your spreadsheet. Associated trips will not be deleted. Are you sure you want to delete this?`;
 
     const dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -81,7 +82,7 @@ export class ShiftsQuickViewComponent implements OnInit {
     });
   }
 
-  async deleteShift(shift: IShift) {
+  public async deleteShift(shift: IShift) {
     await this.shiftService.deleteItem(shift);
     this.parentReload.emit();
   }
@@ -89,21 +90,21 @@ export class ShiftsQuickViewComponent implements OnInit {
   /**
    * Format distance for display with appropriate unit
    */
-  formatDistance(distance: number): string {
+  public formatDistance(distance: number): string {
     return UnitHelper.formatDistance(distance);
   }
 
-  canDeleteShift(): boolean {
+  public canDeleteShift(): boolean {
     // Enable delete if duplicate shift is true, or if both grandTotal and totalTrips are 0 or falsy
     return !!this.isDuplicate || (((this.shift.grandTotal === 0 || !this.shift.grandTotal) && (this.shift.totalTrips === 0 || !this.shift.totalTrips)));
   }
 
-  canEditShift(): boolean {
+  public canEditShift(): boolean {
     // Only allow edit if not deleted
     return this.shift && this.shift.action !== ActionEnum.Delete;
   }
 
-  async editShift() {
+  public async editShift() {
     // Emit edit event and navigate only when not embedded inline
     this.edit.emit(this.shift);
     if (!this.inlineMode) {

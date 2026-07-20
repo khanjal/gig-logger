@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import type { ControlValueAccessor} from '@angular/forms';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -31,19 +32,19 @@ import { BaseFieldButtonComponent } from '@components/base/base-field-button/bas
   ]
 })
 export class TimeInputComponent implements ControlValueAccessor {
-  @Input() label = 'Time';
-  @Input() placeholder = 'Select time';
-  @Input() fieldClass = 'field-third-width';
-  @Input() disabled = false;
+  @Input() public label = 'Time';
+  @Input() public placeholder = 'Select time';
+  @Input() public fieldClass = 'field-third-width';
+  @Input() public disabled = false;
 
-  @Output() timeChanged = new EventEmitter<string>();
+  @Output() public timeChanged = new EventEmitter<string>();
 
-  value = '';
+  public value = '';
   
   private onChange = (_value: string) => {};
   private onTouched = () => {};
 
-  setCurrentTime() {
+  public setCurrentTime() {
     const now = new Date();
     const currentTime = now.toLocaleTimeString('en-US', { 
       hour12: true, 
@@ -57,14 +58,14 @@ export class TimeInputComponent implements ControlValueAccessor {
     this.timeChanged.emit(currentTime);
   }
 
-  clearTime() {
+  public clearTime() {
     this.value = '';
     this.onChange('');
     this.onTouched();
     this.timeChanged.emit('');
   }
 
-  onTimeChange(event: unknown) {
+  public onTimeChange(event: unknown) {
     // Handle different event types from ngx-mat-timepicker
     let timeValue: string;
 
@@ -86,19 +87,19 @@ export class TimeInputComponent implements ControlValueAccessor {
   }
 
   // ControlValueAccessor methods
-  writeValue(value: string): void {
+  public writeValue(value: string): void {
     this.value = value || '';
   }
 
-  registerOnChange(fn: (value: string) => void): void {
+  public registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: () => void): void {
+  public registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
 }

@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -9,17 +10,22 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { BaseRectButtonComponent, BaseFabButtonComponent } from '@components/base';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { DiagnosticHelper } from '@helpers/diagnostic.helper';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 import { updateAction } from '@utils/action.utils';
+import { openSnackbar } from '@utils/snackbar.util';
 import { ActionEnum } from '@enums/action.enum';
+import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
+import { LocationService } from '@services/sheets/location.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { ServiceService } from '@services/sheets/service.service';
@@ -47,6 +53,7 @@ export class DiagnosticsComponent implements OnInit {
   private _shiftService = inject(ShiftService);
   private _tripService = inject(TripService);
   private _addressService = inject(AddressService);
+  private _locationService = inject(LocationService);
   private _placeService = inject(PlaceService);
   private _nameService = inject(NameService);
   private _serviceService = inject(ServiceService);
@@ -56,42 +63,49 @@ export class DiagnosticsComponent implements OnInit {
   private _gigCalculator = inject(GigCalculatorService);
   private _gigWorkflow = inject(GigWorkflowService);
   private _uiPreferences = inject(UiPreferencesService);
+  private _snackBar = inject(MatSnackBar);
 
-  dataDiagnostics = signal<IDiagnosticItem[]>([]);
-  isLoading = signal(false);
-  isBulkFixing = signal(false);
-  selectedValue: (IDiagnosticRecord | undefined)[] = [];
-  selectedAddress: Record<number, string> = {};
-  selectedShiftToDelete: Record<number, number | undefined> = {};
+  private readonly _diagnosticsState = createAsyncOperationState();
+  public readonly isLoading = this._diagnosticsState.isLoading;
+  public readonly hasError = this._diagnosticsState.hasError;
 
-  trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
+  public dataDiagnostics = signal<IDiagnosticItem[]>([]);
+  public isBulkFixing = signal(false);
+  public selectedValue: (IDiagnosticRecord | undefined)[] = [];
+  public selectedAddress: Record<number, string> = {};
+  public selectedShiftToDelete: Record<number, number | undefined> = {};
+
+  public trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
     return item.name ?? index;
   }
 
-  trackByGroup(_index: number, group: IDiagnosticRecord[]): string | number {
+  public trackByGroup(_index: number, group: IDiagnosticRecord[]): string | number {
     const first = group?.[0];
     return first?.rowId ?? first?.id ?? first?.key ?? first?.name ?? group.length;
   }
 
-  trackByProblemItem(index: number, item: IDiagnosticRecord): string | number {
+  public trackByProblemItem(index: number, item: IDiagnosticRecord): string | number {
     // Prefer rowId, id, key, or fallback to index
     return item?.rowId ?? item?.id ?? item?.key ?? index;
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     // Automatically run diagnostics on page load
     this.runDiagnostics();
   }
 
-  async runDiagnostics() {
-    this.isLoading.set(true);
+  public async runDiagnostics() {
+    this._diagnosticsState.setLoading();
     this.dataDiagnostics.set([]);
     this.selectedValue = [];
 
     try {
       await this.checkDataIntegrity();
-    } finally {
-      this.isLoading.set(false);
+      this._diagnosticsState.setSuccess();
+    } catch (error) {
+      this._logger.error('Failed to run diagnostics', error);
+      this._diagnosticsState.setError();
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DIAGNOSTICS_CHECK_FAILED);
     }
   }
 
@@ -99,7 +113,7 @@ export class DiagnosticsComponent implements OnInit {
     const diagnostics: IDiagnosticItem[] = [];
     const shifts = await this._shiftService.list();
     const trips = await this._tripService.list();
-    const places = await this._placeService.list();
+    const locations = await this._locationService.list();
 
     // Duplicate shifts via shared utility (same key)
     const shiftGroups = await this._shiftService.findDuplicates('key', { mode: 'equals', caseInsensitive: false, normalize: true });
@@ -287,7 +301,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for trips with place but no start address
-    const tripsWithPlaceNoAddress = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, this.selectedAddress);
+    const tripsWithPlaceNoAddress = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, locations, this.selectedAddress);
     this._logger.debug('Trips with place but no address found:', tripsWithPlaceNoAddress);
     diagnostics.push({
       name: 'Trip Places Missing Address',
@@ -304,7 +318,7 @@ export class DiagnosticsComponent implements OnInit {
 
 
 
-  getSeverityIcon(severity: string): string {
+  public getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
       case 'warning': return 'warning';
@@ -312,7 +326,7 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  getSeverityColor(severity: string): string {
+  public getSeverityColor(severity: string): string {
     switch (severity) {
       case 'error': return 'warn';
       case 'warning': return 'accent';
@@ -320,17 +334,17 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  getCountBySeverity(severity: 'info' | 'warning' | 'error'): number {
+  public getCountBySeverity(severity: 'info' | 'warning' | 'error'): number {
     return this.dataDiagnostics()
       .filter(item => item.severity === severity)
       .reduce((sum, item) => sum + item.count, 0);
   }
 
-  getTotalIssues(): number {
+  public getTotalIssues(): number {
     return this.dataDiagnostics().reduce((sum, item) => sum + item.count, 0);
   }
 
-  async mergeDuplicates(group: IDiagnosticRecord[], selectedItem: IDiagnosticRecord, itemType: DiagnosticEntityType) {
+  public async mergeDuplicates(group: IDiagnosticRecord[], selectedItem: IDiagnosticRecord, itemType: DiagnosticEntityType) {
     const trips = await this._tripService.list();
     const shifts = await this._shiftService.list();
 
@@ -410,7 +424,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async fixShiftDuration(record: IDiagnosticRecord) {
+  public async fixShiftDuration(record: IDiagnosticRecord) {
     const shift = record as unknown as IShift;
     if (!shift.start || !shift.finish) return;
     const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
@@ -423,7 +437,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async fixTripDuration(record: IDiagnosticRecord) {
+  public async fixTripDuration(record: IDiagnosticRecord) {
     const trip = record as unknown as ITrip;
     await this._gigCalculator.updateTripDuration(trip);
 
@@ -433,7 +447,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async bulkFixShiftDurations() {
+  public async bulkFixShiftDurations() {
     this.isBulkFixing.set(true);
     try {
       // Ensure autosave is disabled before long-running batch updates
@@ -456,7 +470,7 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  async bulkFixTripDurations() {
+  public async bulkFixTripDurations() {
     this.isBulkFixing.set(true);
     try {
       // Ensure autosave is disabled before long-running batch updates
@@ -474,7 +488,7 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  async applyAddressToTrip(record: IDiagnosticRecord, address: string) {
+  public async applyAddressToTrip(record: IDiagnosticRecord, address: string) {
     record.startAddress = address;
     record.addressApplied = true;
     const trip = record as unknown as ITrip;
@@ -484,7 +498,7 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async createShiftFromTrip(record: IDiagnosticRecord) {
+  public async createShiftFromTrip(record: IDiagnosticRecord) {
     // Delegate to the batch flow so single-create reuses same logic
     await this.createShiftsFromTrips([record]);
   }
@@ -496,7 +510,7 @@ export class DiagnosticsComponent implements OnInit {
    * - Persists all new shifts, then calls `calculateShiftTotals` once with the array
    * - Marks matching orphaned trips as fixed in diagnostics
    */
-  async createShiftsFromTrips(records: IDiagnosticRecord[]) {
+  public async createShiftsFromTrips(records: IDiagnosticRecord[]) {
     if (!records || records.length === 0) return;
     const trips = records as unknown as ITrip[];
 
@@ -557,13 +571,13 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
+  public hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
     return group.some(s => s.markedForDelete);
   }
 
 
 
-  async markShiftForDelete(group: IDiagnosticRecord[], rowId: number, groupIndex: number) {
+  public async markShiftForDelete(group: IDiagnosticRecord[], rowId: number, groupIndex: number) {
     const record = group.find(s => s.rowId === rowId);
     if (!record) return;
     const shift = record as unknown as IShift;

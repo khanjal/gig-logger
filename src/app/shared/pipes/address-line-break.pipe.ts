@@ -1,11 +1,12 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
 
 @Pipe({
     name: 'addresslinebreak',
     standalone: true
 })
 export class AddressLineBreakPipe implements PipeTransform {
-    transform(address: string, minLength = 30): string {
+    public transform(address: string, minLength = 30): string {
         if (!address || address.length <= minLength) {
             return address;
         }

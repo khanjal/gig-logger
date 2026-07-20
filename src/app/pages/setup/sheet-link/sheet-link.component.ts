@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -28,10 +28,10 @@ export class SheetLinkComponent {
   private dialog = inject(MatDialog);
   private _logger = inject(LoggerService);
 
-  @Output() parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
-  readonly sheetLinkState = createAsyncOperationState();
+  @Output() public parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
+  public readonly sheetLinkState = createAsyncOperationState();
 
-  async openCreateSheetDialog() {
+  public async openCreateSheetDialog() {
     this.sheetLinkState.setLoading();
     try {
       const dialogRef = this.dialog.open(SheetCreateComponent, {
@@ -76,7 +76,7 @@ export class SheetLinkComponent {
     }
   }
 
-  async openListSheetsDialog() {
+  public async openListSheetsDialog() {
     this.sheetLinkState.setLoading();
     try {
       const dialogRef = this.dialog.open(SheetListComponent, {
@@ -108,7 +108,7 @@ export class SheetLinkComponent {
     }
   }
 
-  async linkSheet(sheet: ISheet): Promise<void> {
+  public async linkSheet(sheet: ISheet): Promise<void> {
     this.sheetLinkState.setLoading();
     const existingSheet = await this._spreadsheetService.findSheet(sheet.properties.id);
     if (existingSheet) {

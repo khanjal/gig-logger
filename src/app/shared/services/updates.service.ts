@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import type { IUpdateEntry } from '@interfaces/sync/update.interface';
@@ -29,7 +30,7 @@ export class UpdatesService {
     );
   }
 
-  getUpdates(): Observable<IUpdateEntry[]> {
+  public getUpdates(): Observable<IUpdateEntry[]> {
     return this.updatesSubject.asObservable();
   }
 }

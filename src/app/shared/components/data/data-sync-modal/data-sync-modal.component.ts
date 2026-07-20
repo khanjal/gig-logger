@@ -1,9 +1,11 @@
 // Angular imports
-import { Component, ElementRef, ViewChild, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import type { ElementRef, OnInit, OnDestroy} from '@angular/core';
+import { Component, ViewChild, signal, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
-import { map, Subscription, timer } from 'rxjs';
+import type { Subscription} from 'rxjs';
+import { map, timer } from 'rxjs';
 
 // Application-specific imports - Helpers
 import { DateHelper } from '@helpers/date.helper';
@@ -60,15 +62,15 @@ interface DataSyncConfig {
     imports: [NgClass, BaseRectButtonComponent]
 })
 export class DataSyncModalComponent implements OnInit, OnDestroy {
-    config = inject<DataSyncConfig | SyncType>(MAT_DIALOG_DATA);
-    dialogRef = inject<MatDialogRef<DataSyncModalComponent>>(MatDialogRef);
+    public config = inject<DataSyncConfig | SyncType>(MAT_DIALOG_DATA);
+    public dialogRef = inject<MatDialogRef<DataSyncModalComponent>>(MatDialogRef);
     private _gigLoggerService = inject(GigWorkflowService);
     private _sheetService = inject(SpreadsheetService);
     private _unsavedDataService = inject(UnsavedDataService);
     private _timerService = inject(TimerService);
     private _logger = inject(LoggerService);
 
-    @ViewChild('terminal', { static: false }) terminalElement!: ElementRef;
+    @ViewChild('terminal', { static: false }) public terminalElement!: ElementRef;
     
     // Configuration inputs
     public type: SyncType;
@@ -78,9 +80,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     
     // Timer related properties
     private timerSubscription: Subscription | null = null;
-    currentTime = signal(0);
-    time = 0;
-    currentTimeString = "";
+    public currentTime = signal(0);
+    public time = 0;
+    public currentTimeString = "";
 
     // Sync state management
     protected syncState = signal<SyncState>({
@@ -92,13 +94,13 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     });
 
     // Terminal messages
-    terminalMessages = signal<TerminalMessage[]>([]);
+    public terminalMessages = signal<TerminalMessage[]>([]);
     
     // Data management
     protected data: ISheet | null = null;
     protected defaultSheet!: ISpreadsheet;
 
-    get syncStatusLabel(): string {
+    public get syncStatusLabel(): string {
         if (this.type === 'save') return 'saved';
         if (this.type === 'load') return 'loaded';
         return 'created and loaded';
@@ -120,7 +122,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
     }
 
-    async ngOnInit(): Promise<void> {
+    public async ngOnInit(): Promise<void> {
         switch (this.type) {
             case 'save':
                 this.defaultSheet = await this._sheetService.getDefaultSheet();
@@ -146,7 +148,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         await this.completeSync();
     }
 
-    async warmup(startFrom = 0) {
+    public async warmup(startFrom = 0) {
         this.startTimer(startFrom);
         this.appendToTerminal("Checking service status...");
         
@@ -160,7 +162,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         this.time = this.currentTime();
     }
 
-    async saveData() {
+    public async saveData() {
         const sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
@@ -441,11 +443,11 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
     }
 
-    cancelSync() {
+    public cancelSync() {
         this.dialogRef.close(false);
     }
 
-    async continueLoad() {
+    public async continueLoad() {
         if (!this.data) {
             this.appendToTerminal("No data to continue with", 'error');
             return;
@@ -457,7 +459,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         await this.completeSync();
     }
 
-    async retryLoad() {
+    public async retryLoad() {
         await this.warmup(this.currentTime());
         await this.getData();
     }
@@ -506,7 +508,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }, 0);
     }
 
-    ngOnDestroy(): void {
+    public ngOnDestroy(): void {
         // Clean up timer subscription to prevent memory leaks
         this.stopTimer();
     }

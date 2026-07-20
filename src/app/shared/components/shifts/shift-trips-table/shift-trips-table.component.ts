@@ -1,4 +1,5 @@
-import { Component, Input, OnChanges, OnInit, signal, SimpleChanges, inject } from '@angular/core';
+import type { OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import { Component, Input, signal, inject } from '@angular/core';
 import { NgClass, CurrencyPipe } from '@angular/common';
 import { TripService } from '@services/sheets/trip.service';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
@@ -31,23 +32,23 @@ export class ShiftTripsTableComponent implements OnInit, OnChanges {
   private dialog = inject(MatDialog);
   private _logger = inject(LoggerService);
 
-  @Input() tripKey = '';
-  prefers24Hour = false;
-  displayedColumns: string[] = [];
-  trips = signal<ITrip[]>([]);
+  @Input() public tripKey = '';
+  public prefers24Hour = false;
+  public displayedColumns: string[] = [];
+  public trips = signal<ITrip[]>([]);
   private loadToken = 0;
 
-  trackByTrip(index: number, t: ITrip): number {
+  public trackByTrip(index: number, t: ITrip): number {
     return t?.id ?? t?.rowId ?? index;
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.prefers24Hour = DateHelper.prefers24Hour();
     this.displayedColumns = ['place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     void this.loadTripsForKey(this.tripKey);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     if (changes['tripKey']) {
       void this.loadTripsForKey(this.tripKey);
     }
@@ -81,7 +82,7 @@ export class ShiftTripsTableComponent implements OnInit, OnChanges {
     }
   }
 
-  async viewTrips(trips: ITrip[]) {
+  public async viewTrips(trips: ITrip[]) {
     this.dialog.open(TripsModalComponent, {
       data: { title: 'Shift trips', trips },
       height: '550px',

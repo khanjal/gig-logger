@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { SheetQuickViewComponent } from './sheet-quick-view.component';
 import { TruncatePipe } from '@pipes/truncate.pipe';
-import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
 describe('SheetQuickViewComponent', () => {
   let component: SheetQuickViewComponent;

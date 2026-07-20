@@ -1,4 +1,5 @@
-import { EventEmitter, Injectable, OnDestroy, Output, inject } from '@angular/core';
+import type { OnDestroy} from '@angular/core';
+import { EventEmitter, Injectable, Output, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
@@ -10,7 +11,8 @@ import { SyncStatusService } from './sync-status.service';
 import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import type { Subscription } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { AuthGoogleService } from './auth-google.service';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
@@ -27,7 +29,7 @@ export class PollingService implements OnDestroy {
   private _logger = inject(LoggerService);
   protected authService = inject(AuthGoogleService);
 
-  @Output() parentReload = new EventEmitter<void>();
+  @Output() public parentReload = new EventEmitter<void>();
 
   private worker: Worker | null = null;
   private fallbackTimer: number | null = null;
@@ -41,7 +43,7 @@ export class PollingService implements OnDestroy {
   private visibilityChangeListener: (() => void) | null = null;
   private enabledState = new BehaviorSubject<boolean>(false);
 
-  pollingEnabled$ = this.enabledState.asObservable();
+  public pollingEnabled$ = this.enabledState.asObservable();
 
   constructor() {
     this.initializeWorker();
@@ -180,7 +182,7 @@ export class PollingService implements OnDestroy {
    * activate/deactivate the timer as the dirty state changes. This keeps the
    * app idle — no timer, no repeated IndexedDB scans — when nothing is pending.
    */
-  async startPolling(interval: number = DEFAULT_INTERVAL) {
+  public async startPolling(interval: number = DEFAULT_INTERVAL) {
     // Guard against multiple starts
     if (this.armed) {
       this.safeLog('warn', 'Polling already enabled, skipping start');
@@ -197,7 +199,7 @@ export class PollingService implements OnDestroy {
       .subscribe(hasUnsaved => this.onDirtyChange(hasUnsaved));
   }
 
-  stopPolling() {
+  public stopPolling() {
     // Guard against multiple stops
     if (!this.armed && !this.enabled) {
       this.safeLog('warn', 'Polling already disabled, skipping stop');
@@ -419,26 +421,26 @@ export class PollingService implements OnDestroy {
   // Public methods
 
   /** True when auto-save is armed (regardless of whether the timer is currently ticking). */
-  isPollingEnabled(): boolean {
+  public isPollingEnabled(): boolean {
     return this.armed;
   }
 
   /** True when the save timer is actively running (armed AND unsaved data present). */
-  isPollingActive(): boolean {
+  public isPollingActive(): boolean {
     return this.enabled;
   }
 
-  isProcessing(): boolean {
+  public isProcessing(): boolean {
     return this.processing;
   }
 
-  async forceSave(): Promise<boolean> {
+  public async forceSave(): Promise<boolean> {
     const wasProcessing = this.processing;
     await this.saveData();
     return !wasProcessing;
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.stopPolling();
     this.unsavedSub?.unsubscribe();
     this.unsavedSub = undefined;

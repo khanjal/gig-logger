@@ -28,7 +28,7 @@ export class ApiMessageHelper {
      * @param options Filtering and processing options
      * @returns Object containing success status, error message, and filtered messages
      */
-    static processApiMessages(messages: ApiMessage[], options: MessageFilterOptions = {}): MessageProcessingResult {
+    public static processApiMessages(messages: ApiMessage[], options: MessageFilterOptions = {}): MessageProcessingResult {
         const {
             messageType,
             errorLevels = ['ERROR'],
@@ -71,7 +71,7 @@ export class ApiMessageHelper {
      * @param messages Array of messages from postSheetData response
      * @returns Processed result focused on SAVE_DATA messages
      */
-    static processSheetSaveResponse(messages: ApiMessage[]): MessageProcessingResult {
+    public static processSheetSaveResponse(messages: ApiMessage[]): MessageProcessingResult {
         if (!messages || !Array.isArray(messages)) {
             return {
                 success: false,
@@ -125,7 +125,7 @@ export class ApiMessageHelper {
      * @param messages Array of messages from getSheetData response
      * @returns Processed result focused on LOAD_DATA messages
      */
-    static processSheetLoadResponse(messages: ApiMessage[]): MessageProcessingResult {
+    public static processSheetLoadResponse(messages: ApiMessage[]): MessageProcessingResult {
         return this.processApiMessages(messages, {
             messageType: 'LOAD_DATA',
             errorLevels: ['ERROR']

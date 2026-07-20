@@ -16,24 +16,24 @@ export type { ITripsModalData };
   imports: [MatIconModule, BaseFabButtonComponent, TripsQuickViewComponent]
 })
 export class TripsModalComponent {
-  data = inject<ITripsModalData>(MAT_DIALOG_DATA);
-  dialogRef = inject<MatDialogRef<TripsModalComponent>>(MatDialogRef);
+  public data = inject<ITripsModalData>(MAT_DIALOG_DATA);
+  public dialogRef = inject<MatDialogRef<TripsModalComponent>>(MatDialogRef);
 
 
-  get tripCount(): number {
+  public get tripCount(): number {
     return this.data.trips.length;
   }
 
-  closeModal(): void {
+  public closeModal(): void {
     this.dialogRef.close();
   }
 
-  onEditClicked(): void {
+  public onEditClicked(): void {
     // Close the dialog when edit is clicked
     this.dialogRef.close();
   }
 
-  trackByTrip(index: number, trip: ITrip): number {
+  public trackByTrip(index: number, trip: ITrip): number {
     return trip?.rowId ?? trip?.id ?? index;
   }
 }

@@ -10,20 +10,20 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
 })
 
 export class BaseFabButtonComponent {
-  @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
-  @Input() fabStyle: 'regular' | 'mini' | 'micro' = 'regular';
-  @Input() extended = false;
-  @Input() icon?: string;
-  @Input() iconColor?: string;
-  @Input() loading = false;
-  @Input() disabled = false;
-  @Input() noBackground = false;
-  @Input() type: 'button' | 'submit' | 'reset' = 'button';
-  @Input() class = '';
+  @Input() public variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
+  @Input() public fabStyle: 'regular' | 'mini' | 'micro' = 'regular';
+  @Input() public extended = false;
+  @Input() public icon?: string;
+  @Input() public iconColor?: string;
+  @Input() public loading = false;
+  @Input() public disabled = false;
+  @Input() public noBackground = false;
+  @Input() public type: 'button' | 'submit' | 'reset' = 'button';
+  @Input() public class = '';
 
-  @Output() clicked = new EventEmitter<void>();
+  @Output() public clicked = new EventEmitter<void>();
 
-  handleClick(): void {
+  public handleClick(): void {
     this.clicked.emit();
   }
 }

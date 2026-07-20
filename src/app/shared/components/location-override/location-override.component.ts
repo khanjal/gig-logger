@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild, signal, inject } from '@angular/core';
+import type { ElementRef, OnInit} from '@angular/core';
+import { Component, ViewChild, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint } from '@angular/material/form-field';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -34,33 +35,33 @@ import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRect
   styleUrl: './location-override.component.scss'
 })
 export class LocationOverrideComponent implements OnInit {
-  mockLocationService = inject(MockLocationService);
+  public mockLocationService = inject(MockLocationService);
   private snackBar = inject(MatSnackBar);
 
-  @ViewChild('mockLocationCard') mockLocationCard?: ElementRef<HTMLElement>;
-  enabled = signal(false);
-  latitude = signal(40.7128);
-  longitude = signal(-74.0060);
-  radius = signal(25);
-  locationName = signal('');
-  selectedPreset = signal<IPresetLocation | null>(null);
-  currentRealLocation = signal<{ lat: number; lng: number } | null>(null);
-  gettingLocation = signal(false);
+  @ViewChild('mockLocationCard') public mockLocationCard?: ElementRef<HTMLElement>;
+  public enabled = signal(false);
+  public latitude = signal(40.7128);
+  public longitude = signal(-74.0060);
+  public radius = signal(25);
+  public locationName = signal('');
+  public selectedPreset = signal<IPresetLocation | null>(null);
+  public currentRealLocation = signal<{ lat: number; lng: number } | null>(null);
+  public gettingLocation = signal(false);
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.loadSettings();
     this.getCurrentRealLocation();
   }
 
-  get usPresets(): IPresetLocation[] {
+  public get usPresets(): IPresetLocation[] {
     return this.getSortedPresets('US');
   }
 
-  get canadaPresets(): IPresetLocation[] {
+  public get canadaPresets(): IPresetLocation[] {
     return this.getSortedPresets('CA');
   }
 
-  loadSettings(): void {
+  public loadSettings(): void {
     const settings = this.mockLocationService.getMockLocation();
     this.enabled.set(settings.enabled);
     this.latitude.set(settings.latitude);
@@ -72,7 +73,7 @@ export class LocationOverrideComponent implements OnInit {
     ) ?? null);
   }
 
-  onToggleChange(): void {
+  public onToggleChange(): void {
     if (this.enabled()) {
       this.mockLocationService.enable();
       this.saveSettings();
@@ -83,7 +84,7 @@ export class LocationOverrideComponent implements OnInit {
     }
   }
 
-  onPresetSelect(preset: IPresetLocation | null): void {
+  public onPresetSelect(preset: IPresetLocation | null): void {
     if (!preset) {
       this.selectedPreset.set(null);
       return;
@@ -97,23 +98,23 @@ export class LocationOverrideComponent implements OnInit {
     openSnackbar(this.snackBar, `Location set to ${preset.name}`, { action: SNACKBAR_DEFAULT_ACTION, duration: 2000 });
   }
 
-  onCoordinatesChange(): void {
+  public onCoordinatesChange(): void {
     if (this.validateCoordinates()) {
       this.saveSettings();
     }
   }
 
-  onLatitudeChange(value: number): void {
+  public onLatitudeChange(value: number): void {
     this.latitude.set(value);
     this.onCoordinatesChange();
   }
 
-  onLongitudeChange(value: number): void {
+  public onLongitudeChange(value: number): void {
     this.longitude.set(value);
     this.onCoordinatesChange();
   }
 
-  onRadiusChange(value: number): void {
+  public onRadiusChange(value: number): void {
     if (this.mockLocationService.isValidRadius(value)) {
       this.radius.set(value);
       this.mockLocationService.setRadius(value);
@@ -122,7 +123,7 @@ export class LocationOverrideComponent implements OnInit {
     }
   }
 
-  validateCoordinates(): boolean {
+  public validateCoordinates(): boolean {
     if (!this.mockLocationService.isValidLatitude(this.latitude())) {
       openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LATITUDE_INVALID, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
       return false;
@@ -134,21 +135,21 @@ export class LocationOverrideComponent implements OnInit {
     return true;
   }
 
-  saveSettings(): void {
+  public saveSettings(): void {
     if (this.validateCoordinates()) {
       this.mockLocationService.setCoordinates(this.latitude(), this.longitude(), this.locationName());
       this.mockLocationService.setRadius(this.radius());
     }
   }
 
-  resetToDefaults(): void {
+  public resetToDefaults(): void {
     this.mockLocationService.reset();
     this.loadSettings();
     openSnackbar(this.snackBar, SNACKBAR_MESSAGES.RESET_TO_DEFAULT_SETTINGS, { action: SNACKBAR_DEFAULT_ACTION, duration: 2000 });
     this.scrollToCard();
   }
 
-  async getCurrentRealLocation(): Promise<void> {
+  public async getCurrentRealLocation(): Promise<void> {
     this.gettingLocation.set(true);
     try {
       const position = await this.getRealGeolocation();
@@ -182,7 +183,7 @@ export class LocationOverrideComponent implements OnInit {
     });
   }
 
-  useCurrentLocation(): void {
+  public useCurrentLocation(): void {
     if (this.currentRealLocation()) {
       this.latitude.set(this.currentRealLocation()!.lat);
       this.longitude.set(this.currentRealLocation()!.lng);
@@ -192,7 +193,7 @@ export class LocationOverrideComponent implements OnInit {
     }
   }
 
-  formatCoordinate(value: number): string {
+  public formatCoordinate(value: number): string {
     return value.toFixed(3);
   }
 

@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -18,9 +19,9 @@ import { BaseInputComponent } from './base-input.component';
 class HostComponent {
   private fb = inject(FormBuilder);
 
-  form = this.fb.group({ name: ['', Validators.required] });
-  submitted = false;
-  onSubmit() { this.submitted = true; }
+  public form = this.fb.group({ name: ['', Validators.required] });
+  public submitted = false;
+  public onSubmit() { this.submitted = true; }
 }
 
 @Component({
@@ -35,7 +36,7 @@ class HostComponent {
 class NumberHostComponent {
   private fb = inject(FormBuilder);
 
-  form = this.fb.group({ amount: [null as number | string | null] });
+  public form = this.fb.group({ amount: [null as number | string | null] });
 }
 
 describe('BaseInputComponent (integration)', () => {

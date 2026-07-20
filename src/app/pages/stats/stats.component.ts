@@ -1,4 +1,5 @@
-import { Component, DestroyRef, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, DestroyRef, ViewEncapsulation, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
@@ -28,23 +29,23 @@ export class StatsComponent implements OnInit {
   private _shiftService = inject(ShiftService);
   private _tripService = inject(TripService);
 
-  readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
+  public readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   private readonly destroyRef = inject(DestroyRef);
-  places = signal<IStatItem[]>([]);
-  services = signal<IStatItem[]>([]);
-  types = signal<IStatItem[]>([]);
-  regions = signal<IStatItem[]>([]);
-  trips = signal<ITrip[]>([]);
-  shifts = signal<IShift[]>([]);
-  startDate = signal<string>('2000-01-01');
-  endDate = signal<string>(DateHelper.toISO());
+  public places = signal<IStatItem[]>([]);
+  public services = signal<IStatItem[]>([]);
+  public types = signal<IStatItem[]>([]);
+  public regions = signal<IStatItem[]>([]);
+  public trips = signal<ITrip[]>([]);
+  public shifts = signal<IShift[]>([]);
+  public startDate = signal<string>('2000-01-01');
+  public endDate = signal<string>(DateHelper.toISO());
 
-  range = new FormGroup({
+  public range = new FormGroup({
     start: new FormControl(),
     end: new FormControl(),
   });
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.range.valueChanges
       .pipe(
         startWith(this.range.value),
@@ -94,7 +95,7 @@ export class StatsComponent implements OnInit {
     return { startDate, endDate };
   }
 
-  getTripList(trips: ITrip[], name: 'place' | 'type'): IStatItem[] {
+  public getTripList(trips: ITrip[], name: 'place' | 'type'): IStatItem[] {
     let itemList = trips.map((x) => x[name]);
     itemList = [...new Set(itemList)].sort();
     const items: IStatItem[] = [];
@@ -122,7 +123,7 @@ export class StatsComponent implements OnInit {
     return items;
   }
 
-  getShiftList(shifts: IShift[], name: 'service' | 'region'): IStatItem[] {
+  public getShiftList(shifts: IShift[], name: 'service' | 'region'): IStatItem[] {
     let itemList = shifts.map((x) => x[name]);
     itemList = [...new Set(itemList)].sort();
     const items: IStatItem[] = [];

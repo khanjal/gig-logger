@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IService } from '@interfaces/entities/service.interface';
+import type { IService } from '@interfaces/entities/service.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
 import { LoggerService } from '../logger.service';
 import { Injectable } from '@angular/core';
@@ -15,7 +15,7 @@ export class ServiceService extends GenericCrudService<IService> {
       super(spreadsheetDB.services); // Pass the table reference
     }
     
-    services$ = liveQuery(() => spreadsheetDB.services.toArray());
+    public services$ = liveQuery(() => spreadsheetDB.services.toArray());
 
     public async deleteUnsaved() {
         const services = await this.getUnsaved();

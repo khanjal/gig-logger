@@ -16,7 +16,7 @@ export class VoiceSuggestionService {
    * @param placeList Available place options
    * @returns Random example phrase
    */
-  getRandomSuggestion(
+  public getRandomSuggestion(
     serviceList: string[] = [],
     typeList: string[] = [],
     placeList: string[] = []

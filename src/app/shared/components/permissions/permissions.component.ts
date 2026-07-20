@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
@@ -27,7 +28,7 @@ export class PermissionsComponent implements OnInit {
   private logger = inject(LoggerService);
   private _permissionService = inject(PermissionService);
 
-  locationPermission = signal<PermissionStatus>({
+  public locationPermission = signal<PermissionStatus>({
     name: 'Location',
     icon: 'location_on',
     state: 'checking',
@@ -36,7 +37,7 @@ export class PermissionsComponent implements OnInit {
     canRevoke: false
   });
 
-  microphonePermission = signal<PermissionStatus>({
+  public microphonePermission = signal<PermissionStatus>({
     name: 'Microphone',
     icon: 'mic',
     state: 'checking',
@@ -45,7 +46,7 @@ export class PermissionsComponent implements OnInit {
     canRevoke: false
   });
 
-  async ngOnInit() {
+  public async ngOnInit() {
     this.updateLocationPermissionState(this._permissionService.getLocationState());
     this.updateMicrophonePermissionState(this._permissionService.getMicrophoneState());
 
@@ -61,7 +62,7 @@ export class PermissionsComponent implements OnInit {
     this.microphonePermission.update(p => ({ ...p, state, canRequest: state === 'prompt', canRevoke: false }));
   }
 
-  async requestLocation() {
+  public async requestLocation() {
     try {
       const state = await this._permissionService.requestLocation();
       this.updateLocationPermissionState(state);
@@ -70,7 +71,7 @@ export class PermissionsComponent implements OnInit {
     }
   }
 
-  async requestMicrophone() {
+  public async requestMicrophone() {
     try {
       const state = await this._permissionService.requestMicrophone();
       this.updateMicrophonePermissionState(state);
@@ -79,7 +80,7 @@ export class PermissionsComponent implements OnInit {
     }
   }
 
-  getStateColor(state: PermissionState): string {
+  public getStateColor(state: PermissionState): string {
     switch (state) {
       case 'granted':
         return 'text-success';
@@ -96,7 +97,7 @@ export class PermissionsComponent implements OnInit {
     }
   }
 
-  getStateIcon(state: PermissionState): string {
+  public getStateIcon(state: PermissionState): string {
     switch (state) {
       case 'granted':
         return 'check_circle';
@@ -113,7 +114,7 @@ export class PermissionsComponent implements OnInit {
     }
   }
 
-  getStateText(state: PermissionState): string {
+  public getStateText(state: PermissionState): string {
     switch (state) {
       case 'granted':
         return 'Granted';
@@ -130,7 +131,7 @@ export class PermissionsComponent implements OnInit {
     }
   }
 
-  openBrowserSettings() {
+  public openBrowserSettings() {
     alert('To change permissions:\n\n1. Click the lock icon in your browser\'s address bar\n2. Find the permission you want to change\n3. Select "Allow" or "Block"\n4. Refresh this page');
   }
 }

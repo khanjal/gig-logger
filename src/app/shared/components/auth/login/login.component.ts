@@ -1,4 +1,5 @@
-import { Component, OnInit, Type, inject } from '@angular/core';
+import type { OnInit, Type} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGoogleService } from '@services/auth-google.service';
@@ -22,18 +23,18 @@ const MODULES: Type<unknown>[] = [
 export class LoginComponent implements OnInit {
   protected authService = inject(AuthGoogleService);
 
-  isAuthenticated = false;
+  public isAuthenticated = false;
 
-  async ngOnInit() {
+  public async ngOnInit() {
     // Check authentication state (this may trigger a refresh)
     this.isAuthenticated = await this.authService.canSync();
   }
 
-  signInWithGoogle() {
+  public signInWithGoogle() {
     this.authService.login();
   }
 
-  async signOut() {
+  public async signOut() {
     await this.authService.logout();
     window.location.reload();
   }

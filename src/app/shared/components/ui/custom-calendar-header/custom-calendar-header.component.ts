@@ -2,10 +2,12 @@
 // https://dev.to/paullaros/using-angular-materials-calendar-with-date-ranges-and-range-presets-221j
 // https://qupaya.com/blog/angular-date-range-picker-with-custom-range-presets/
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject } from '@angular/core';
+import type { OnDestroy} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
+import type {
+  MatDateFormats} from '@angular/material/core';
 import {
   DateAdapter,
-  MatDateFormats,
   MAT_DATE_FORMATS,
 } from '@angular/material/core';
 import { MatCalendar } from '@angular/material/datepicker';
@@ -40,7 +42,7 @@ export class CustomCalendarHeaderComponent<D> implements OnDestroy {
   }
 
   // active date label rendered between the arrow buttons
-  get periodLabel(): string {
+  public get periodLabel(): string {
     // use date adapter to format the label, e.g. "SEP 2020"
     return this.dateAdapter
       .format(this.calendar.activeDate, this.dateFormats.display.monthYearLabel)
@@ -48,12 +50,12 @@ export class CustomCalendarHeaderComponent<D> implements OnDestroy {
   }
 
   // called when user clicks on one of the left buttons
-  previousClicked(mode: 'month' | 'year'): void {
+  public previousClicked(mode: 'month' | 'year'): void {
     this.changeDate(mode, -1);
   }
 
   // called when user clicks on one of the right buttons
-  nextClicked(mode: 'month' | 'year'): void {
+  public nextClicked(mode: 'month' | 'year'): void {
     this.changeDate(mode, 1);
   }
 
@@ -65,7 +67,7 @@ export class CustomCalendarHeaderComponent<D> implements OnDestroy {
         : this.dateAdapter.addCalendarYears(this.calendar.activeDate, amount);
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.destroy$.next(); // will trigger unsubscription in takeUntil
   }
 }

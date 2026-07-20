@@ -12,7 +12,7 @@ export class AddressService extends GenericCrudService<IAddress> {
       super(spreadsheetDB.addresses); // Pass the table reference
     }
 
-    addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
+    public addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
 
     public async deleteUnsaved() {
         const addresses = await this.getUnsaved();
@@ -38,22 +38,6 @@ export class AddressService extends GenericCrudService<IAddress> {
                 existingAddress.tip += address.tip;
                 existingAddress.total += address.total;
                 existingAddress.trips += address.trips;
-
-                if (!existingAddress.names) {
-                    existingAddress.names = [];
-                }
-
-                if (address.names) {
-                    existingAddress.names.push(...address.names);
-                }
-
-                if (!existingAddress.notes) {
-                    existingAddress.notes = [];
-                }
-
-                if (address.notes) {
-                    existingAddress.notes.push(...address.notes);
-                }
 
                 // Replace with merged address
                 addresses[i] = existingAddress;

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ExpensesService } from './expenses.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IExpense } from '@interfaces/entities/expense.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 describe('ExpensesService', () => {
   let service: ExpensesService;

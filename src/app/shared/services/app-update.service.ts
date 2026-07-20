@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
+import type { VersionEvent, VersionReadyEvent } from '@angular/service-worker';
+import { SwUpdate } from '@angular/service-worker';
 import { LoggerService } from '@services/logger.service';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import type { Observable, Subscription } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import type { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
 
 @Injectable({

@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { AppUpdateService } from './app-update.service';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import type { VersionReadyEvent } from '@angular/service-worker';
+import { SwUpdate } from '@angular/service-worker';
 import { LoggerService } from '@services/logger.service';
-import { Subject, BehaviorSubject, Subscription } from 'rxjs';
-import { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
+import type { BehaviorSubject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import type { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
 
 interface SwUpdateMock {
   isEnabled: boolean;

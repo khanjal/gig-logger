@@ -1,4 +1,4 @@
-import { IShift } from '@interfaces/entities/shift.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 
 /**
  * Wire-format for a shift row when saving to Google Sheets.

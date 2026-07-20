@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
 import { StringHelper } from '@helpers/string.helper';
 
 @Pipe({
@@ -7,7 +8,7 @@ import { StringHelper } from '@helpers/string.helper';
 })
 export class TruncatePipe implements PipeTransform {
 
-  transform(text: string, length = 20, suffix = '...'): string {
+  public transform(text: string, length = 20, suffix = '...'): string {
     text = StringHelper.truncate(text, length, suffix);
 
     return text;

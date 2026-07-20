@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
   providedIn: 'root'
 })
 export class TimerService {
-    delay(ms: number) {
+    public delay(ms: number) {
         return new Promise( resolve => setTimeout(resolve, ms) );
     }
 }

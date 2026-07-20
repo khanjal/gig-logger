@@ -1,4 +1,4 @@
-import { IPeriodicBase } from "@interfaces/sheets/periodic-base.interface";
+import type { IPeriodicBase } from "@interfaces/sheets/periodic-base.interface";
 
 export interface IMonthly extends IPeriodicBase {
     rowId: number;

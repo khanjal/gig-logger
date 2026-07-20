@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { from } from "rxjs";
 import { spreadsheetDB } from "@data/spreadsheet.db";
-import { IWeekday } from "@interfaces/sheets/weekday.interface";
+import type { IWeekday } from "@interfaces/sheets/weekday.interface";
 import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 
@@ -13,7 +13,7 @@ export class WeekdayService  extends GenericCrudService<IWeekday> {
       super(spreadsheetDB.weekdays); // Pass the table reference
     }
     
-    weekdays$ = from(liveQuery(() => spreadsheetDB.weekdays.toArray()));
+    public weekdays$ = from(liveQuery(() => spreadsheetDB.weekdays.toArray()));
 
     public async getCurrentTotal() {
         let total = 0;

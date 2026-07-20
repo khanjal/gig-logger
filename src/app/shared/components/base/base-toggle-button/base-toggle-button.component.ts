@@ -8,11 +8,11 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
   templateUrl: './base-toggle-button.component.html'
 })
 export class BaseToggleButtonComponent {
-  @Input() active = false;
-  @Input() icon?: string;
-  @Input() iconColor?: string;
-  @Input() variant?: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon';
-  @Input() disabled = false;
-  @Input() loading = false;
-  @Output() clicked = new EventEmitter<void>();
+  @Input() public active = false;
+  @Input() public icon?: string;
+  @Input() public iconColor?: string;
+  @Input() public variant?: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon';
+  @Input() public disabled = false;
+  @Input() public loading = false;
+  @Output() public clicked = new EventEmitter<void>();
 }

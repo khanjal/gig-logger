@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
-import { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
+import type { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
 import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
@@ -14,36 +14,36 @@ import { BaseFabButtonComponent } from '@components/base';
   styleUrl: './diagnostic-item.component.scss'
 })
 export class DiagnosticItemComponent {
-  @Input() item: IDiagnosticRecord = {};
-  @Input() itemType: DiagnosticEntityType = 'trip';
-  @Input() diagnosticName = '';
-  @Input() selectedAddress: string | undefined;
+  @Input() public item: IDiagnosticRecord = {};
+  @Input() public itemType: DiagnosticEntityType = 'trip';
+  @Input() public diagnosticName = '';
+  @Input() public selectedAddress: string | undefined;
 
-  @Output() selectedAddressChange = new EventEmitter<string>();
-  @Output() fixShiftDuration = new EventEmitter<IDiagnosticRecord>();
-  @Output() fixTripDuration = new EventEmitter<IDiagnosticRecord>();
-  @Output() applyAddress = new EventEmitter<{ item: IDiagnosticRecord, address: string }>();
-  @Output() createShift = new EventEmitter<IDiagnosticRecord>();
+  @Output() public selectedAddressChange = new EventEmitter<string>();
+  @Output() public fixShiftDuration = new EventEmitter<IDiagnosticRecord>();
+  @Output() public fixTripDuration = new EventEmitter<IDiagnosticRecord>();
+  @Output() public applyAddress = new EventEmitter<{ item: IDiagnosticRecord, address: string }>();
+  @Output() public createShift = new EventEmitter<IDiagnosticRecord>();
 
-  onFixShiftDuration(): void {
+  public onFixShiftDuration(): void {
     this.fixShiftDuration.emit(this.item);
   }
 
-  onFixTripDuration(): void {
+  public onFixTripDuration(): void {
     this.fixTripDuration.emit(this.item);
   }
 
-  onApplyAddress(): void {
+  public onApplyAddress(): void {
     if (this.selectedAddress) {
       this.applyAddress.emit({ item: this.item, address: this.selectedAddress });
     }
   }
 
-  onCreateShift(): void {
+  public onCreateShift(): void {
     this.createShift.emit(this.item);
   }
 
-  onAddressChange(value: string): void {
+  public onAddressChange(value: string): void {
     this.selectedAddressChange.emit(value);
   }
 }

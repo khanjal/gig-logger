@@ -18,7 +18,7 @@ export class SpreadsheetService {
     private _gigLoggerService = inject(GigWorkflowService);
     private _logger = inject(LoggerService);
 
-    spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
+    public spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
     
     public async add(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.add(spreadsheet);

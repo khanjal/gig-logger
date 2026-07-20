@@ -1,8 +1,9 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
 
 @Pipe({ name: 'orderBy', standalone: true })
 export class OrderByPipe implements PipeTransform {
-  transform<T>(array: T[], property: keyof T, direction: 'asc' | 'desc' = 'asc'): T[] {
+  public transform<T>(array: T[], property: keyof T, direction: 'asc' | 'desc' = 'asc'): T[] {
     if (!Array.isArray(array) || !property) return array;
     const sorted = [...array].sort((a, b) => {
       if (a[property] == null) return 1;

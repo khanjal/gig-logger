@@ -2,7 +2,8 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { AppComponent } from './app.component';
 import { Subject } from 'rxjs';
-import { Router, NavigationEnd, Event as RouterEvent, UrlTree } from '@angular/router';
+import type { Event as RouterEvent, UrlTree } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 
 describe('AppComponent', () => {
   let routerEvents$: Subject<RouterEvent>;

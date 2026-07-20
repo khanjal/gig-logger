@@ -155,17 +155,17 @@
       <div class="my-5">
         <app-base-accordion>
           <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
-            @for (delivery of selectedNameDeliveries; track delivery) {
+            @for (delivery of selectedNameDeliveries; track delivery.address) {
               <div class="flex flex-col gap-1">
                 @if (!delivery.address) {
                   <div class="text-secondary font-medium">
-                    Unknown Address ({{delivery.visits}})
+                    Unknown Address ({{delivery.trips}})
                   </div>
                 }
                 @if (delivery.address) {
-                  <app-base-rect-button variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})</app-base-rect-button>
+                  <app-base-rect-button variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.trips }})</app-base-rect-button>
                 }
-                <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
+                <app-trips-table-basic class="trips-table" [trips]="delivery.tripsList"></app-trips-table-basic>
               </div>
             }
           </app-base-accordion-item>
@@ -193,17 +193,17 @@
       <div class="my-5">
         <app-base-accordion>
           <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
-            @for (delivery of selectedAddressDeliveries; track delivery) {
+            @for (delivery of selectedAddressDeliveries; track delivery.name) {
               <div class="flex flex-col gap-1">
                 @if (!delivery.name) {
                   <div class="text-secondary font-medium">
-                    Unknown Name ({{delivery.visits}})
+                    Unknown Name ({{delivery.trips}})
                   </div>
                 }
                 @if (delivery.name) {
-                  <app-base-rect-button variant="outlined" class="name-button" [fullWidth]="true" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.visits }})</app-base-rect-button>
+                  <app-base-rect-button variant="outlined" class="name-button" [fullWidth]="true" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.trips }})</app-base-rect-button>
                 }
-                <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
+                <app-trips-table-basic class="trips-table" [trips]="delivery.tripsList"></app-trips-table-basic>
               </div>
             }
           </app-base-accordion-item>

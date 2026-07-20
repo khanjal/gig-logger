@@ -1,4 +1,5 @@
-import { Component, OnInit, effect, signal, computed, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, effect, signal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
@@ -51,25 +52,25 @@ export class PendingChangesComponent implements OnInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  trips = signal<ITrip[]>([]);
-  shifts = signal<IShift[]>([]);
-  expenses = signal<IExpense[]>([]);
-  duplicateShiftKeys = signal<Set<string>>(new Set());
+  public trips = signal<ITrip[]>([]);
+  public shifts = signal<IShift[]>([]);
+  public expenses = signal<IExpense[]>([]);
+  public duplicateShiftKeys = signal<Set<string>>(new Set());
 
   /** Which single section is currently expanded (accordion is single-select). */
-  expandedSection = signal<PendingSectionKey | null>(null);
+  public expandedSection = signal<PendingSectionKey | null>(null);
   /** Which section types are visible; empty means "show all". */
   private typeFilter = signal<Set<PendingSectionKey>>(new Set(SECTION_KEYS));
 
-  sections = computed<IPendingSection[]>(() =>
+  public sections = computed<IPendingSection[]>(() =>
     SECTION_KEYS.map(key => ({ key, label: SECTION_LABELS[key], count: this.itemsFor(key).length }))
   );
 
-  visibleSections = computed(() =>
+  public visibleSections = computed(() =>
     this.sections().filter(section => section.count > 0 && this.typeFilter().has(section.key))
   );
 
-  hasAnyPending = computed(() => this.sections().some(section => section.count > 0));
+  public hasAnyPending = computed(() => this.sections().some(section => section.count > 0));
 
   private queryParams = toSignal(this.route.queryParams, { initialValue: {} as Record<string, string> });
   private lastHandledSection: string | undefined;
@@ -86,23 +87,23 @@ export class PendingChangesComponent implements OnInit {
     });
   }
 
-  trackBySection(index: number, section: IPendingSection): PendingSectionKey {
+  public trackBySection(index: number, section: IPendingSection): PendingSectionKey {
     return section.key;
   }
 
-  trackByShift(index: number, s: IShift): string | number {
+  public trackByShift(index: number, s: IShift): string | number {
     return s?.rowId ?? s?.key ?? index;
   }
 
-  trackByTrip(index: number, t: ITrip): string | number {
+  public trackByTrip(index: number, t: ITrip): string | number {
     return t?.rowId ?? t?.key ?? index;
   }
 
-  trackByExpense(index: number, e: IExpense): string | number {
+  public trackByExpense(index: number, e: IExpense): string | number {
     return e?.id ?? e?.rowId ?? index;
   }
 
-  itemsFor(key: PendingSectionKey): (ITrip | IShift | IExpense)[] {
+  public itemsFor(key: PendingSectionKey): (ITrip | IShift | IExpense)[] {
     switch (key) {
       case 'trips':
         return this.trips();
@@ -113,11 +114,11 @@ export class PendingChangesComponent implements OnInit {
     }
   }
 
-  isFilterActive(key: PendingSectionKey): boolean {
+  public isFilterActive(key: PendingSectionKey): boolean {
     return this.typeFilter().has(key);
   }
 
-  toggleFilter(key: PendingSectionKey): void {
+  public toggleFilter(key: PendingSectionKey): void {
     const next = new Set(this.typeFilter());
     if (next.has(key)) {
       next.delete(key);
@@ -128,7 +129,7 @@ export class PendingChangesComponent implements OnInit {
     this.typeFilter.set(next.size > 0 ? next : new Set(SECTION_KEYS));
   }
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     await this.load();
   }
 
@@ -175,7 +176,7 @@ export class PendingChangesComponent implements OnInit {
     this.expandedSection.set(this.sections().find(s => s.count > 0)?.key ?? null);
   }
 
-  openTripEditor(t: ITrip): void {
+  public openTripEditor(t: ITrip): void {
     this.dialog
       .open(TripFormComponent, {
         width: '720px',
@@ -187,7 +188,7 @@ export class PendingChangesComponent implements OnInit {
       .subscribe(() => void this.load());
   }
 
-  openShiftEditor(s: IShift): void {
+  public openShiftEditor(s: IShift): void {
     this.dialog
       .open(ShiftFormComponent, {
         width: '720px',
@@ -199,7 +200,7 @@ export class PendingChangesComponent implements OnInit {
       .subscribe(() => void this.load());
   }
 
-  openExpenseEditor(e: IExpense): void {
+  public openExpenseEditor(e: IExpense): void {
     // Expenses are edited inline on the expenses page; open it on that row.
     this.router.navigate(['/expenses'], { queryParams: { edit: e.rowId } });
   }

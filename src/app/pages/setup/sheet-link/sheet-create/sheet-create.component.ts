@@ -14,17 +14,17 @@ import { BaseInputComponent } from '@components/base/base-input/base-input.compo
 export class SheetCreateComponent {
   private dialogRef = inject<MatDialogRef<SheetCreateComponent>>(MatDialogRef);
 
-  sheetCreate = new FormGroup({
+  public sheetCreate = new FormGroup({
     sheetName: new FormControl('')
   });
 
-  createSheet() {
+  public createSheet() {
     this.dialogRef.close({
       sheetName: this.sheetCreate.value.sheetName?.trim() || 'New Sheet'
     });
   }
 
-  closeModal() {
+  public closeModal() {
     this.dialogRef.close(null);
   }
 }

@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SimpleChange } from '@angular/core';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import type { SimpleChange } from '@angular/core';
 
 import { StatsTableComponent } from './stats-table.component';
-import { IStatItem } from '@interfaces/stats/stat-item.interface';
+import type { IStatItem } from '@interfaces/stats/stat-item.interface';
 
 describe('ServiceStatsComponent', () => {
   let component: StatsTableComponent;

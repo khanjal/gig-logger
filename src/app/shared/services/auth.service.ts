@@ -5,7 +5,7 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Injectable()
 export class AuthService {
-    jwtHelper = inject(JwtHelperService);
+    public jwtHelper = inject(JwtHelperService);
     private _logger = inject(LoggerService);
 
 

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { SearchService } from './search.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ITrip } from '@interfaces/entities/trip.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 describe('SearchService', () => {
   let service: SearchService;

@@ -13,7 +13,7 @@ export class SheetSerializerHelper {
      * Prepares a trip for sheet serialization by converting 0 → null for input fields.
      * Calculated fields (total, amountPerDistance, amountPerTime) are preserved.
      */
-    static serializeTrip(trip: ITrip): ITripSheetRow {
+    public static serializeTrip(trip: ITrip): ITripSheetRow {
         return {
             ...trip,
             // Input fields: convert 0 → null
@@ -31,7 +31,7 @@ export class SheetSerializerHelper {
     /**
      * Prepares a shift for sheet serialization by converting 0 → null for input fields.
      */
-    static serializeShift(shift: IShift): IShiftSheetRow {
+    public static serializeShift(shift: IShift): IShiftSheetRow {
         return {
             ...shift,
             // Input fields: convert 0 → null
@@ -46,14 +46,14 @@ export class SheetSerializerHelper {
     /**
      * Serializes all trips in an array.
      */
-    static serializeTrips(trips: ITrip[]): ITripSheetRow[] {
+    public static serializeTrips(trips: ITrip[]): ITripSheetRow[] {
         return trips.map(trip => this.serializeTrip(trip));
     }
 
     /**
      * Serializes all shifts in an array.
      */
-    static serializeShifts(shifts: IShift[]): IShiftSheetRow[] {
+    public static serializeShifts(shifts: IShift[]): IShiftSheetRow[] {
         return shifts.map(shift => this.serializeShift(shift));
     }
 }

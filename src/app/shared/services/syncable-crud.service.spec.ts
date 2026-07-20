@@ -1,6 +1,6 @@
 import { SyncableCrudService } from './syncable-crud.service';
 import { ActionEnum } from '@enums/action.enum';
-import { IActionRecord } from '@interfaces/sheets/action-record.interface';
+import type { IActionRecord } from '@interfaces/sheets/action-record.interface';
 import type { Table } from 'dexie';
 
 interface SyncEntity extends IActionRecord {
@@ -20,23 +20,23 @@ class FakeTable<T extends { id?: number }> {
     initial.forEach(i => this.add(i));
   }
 
-  add = async (item: T) => {
+  public add = async (item: T) => {
     if (!item.id) item.id = this.nextId++;
     this.items.push({ ...item });
   };
 
-  delete = async (id: number) => {
+  public delete = async (id: number) => {
     this.items = this.items.filter(i => i.id !== id);
   };
 
-  put = async (item: T) => {
+  public put = async (item: T) => {
     if (!item.id) return this.add(item);
     this.items = this.items.map(i => (i.id === item.id ? { ...item } : i));
   };
 
-  toArray = async () => [...this.items];
+  public toArray = async () => [...this.items];
 
-  where(field: string) {
+  public where(field: string) {
     const get = (item: T) => (item as Record<string, unknown>)[field];
     return {
       equals: (value: unknown) => {

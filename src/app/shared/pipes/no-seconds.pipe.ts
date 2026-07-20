@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 
 @Pipe({
@@ -7,7 +8,7 @@ import { DateHelper } from '@helpers/date.helper';
 })
 export class NoSecondsPipe implements PipeTransform {
 
-    transform(text: string, use24Hour?: boolean): string {
+    public transform(text: string, use24Hour?: boolean): string {
         if (!text) {
             return "";
         }

@@ -13,7 +13,7 @@ export class PlaceService extends GenericCrudService<IPlace> {
       super(spreadsheetDB.places); // Pass the table reference
     }
     
-    places$ = from(liveQuery(() => spreadsheetDB.places.toArray()));
+    public places$ = from(liveQuery(() => spreadsheetDB.places.toArray()));
 
     public async deleteUnsaved() {
         const places = await this.getUnsaved();
@@ -34,7 +34,6 @@ export class PlaceService extends GenericCrudService<IPlace> {
 
             if (remotePlace) {
                 place.id = remotePlace.id;
-                place.addresses.push(...remotePlace.addresses);
                 place.bonus += remotePlace.bonus;
                 place.cash += remotePlace.cash;
                 place.pay += remotePlace.pay;

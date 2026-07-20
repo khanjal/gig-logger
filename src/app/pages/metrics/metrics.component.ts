@@ -1,7 +1,9 @@
 // Imports
-import { Component, DestroyRef, OnInit, inject, signal, ViewEncapsulation } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, DestroyRef, inject, signal, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
+import type { ChartOptions, ChartData} from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
 import type { IShift } from '@interfaces/entities/shift.interface';
 import { ThemeService } from '@services/theme.service';
@@ -12,7 +14,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
-import ChartDataLabels, { Context as DataLabelsContext } from 'chartjs-plugin-datalabels';
+import type { Context as DataLabelsContext } from 'chartjs-plugin-datalabels';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
 import { combineLatest, from, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
@@ -43,22 +46,22 @@ export class MetricsComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private themeService = inject(ThemeService);
 
-  readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  shifts = signal<IShift[]>([]);
-  filteredShifts = signal<IShift[]>([]);
-  aggregationType = signal<'day' | 'week' | 'month' | 'quarter' | 'year'>('day');
+  public readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
+  public shifts = signal<IShift[]>([]);
+  public filteredShifts = signal<IShift[]>([]);
+  public aggregationType = signal<'day' | 'week' | 'month' | 'quarter' | 'year'>('day');
   private readonly destroyRef = inject(DestroyRef);
 
   // Chart Data
-  tripsData = signal<ChartData<'bar'>>({ labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] });
-  distanceData = signal<ChartData<'line'>>({ labels: [], datasets: [] });
-  payData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
-  dailyEarningsData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
-  servicePieData = signal<ChartData<'pie'>>({ labels: [], datasets: [] });
-  yoyData: ChartData<'bar'> = { labels: [], datasets: [] };
+  public tripsData = signal<ChartData<'bar'>>({ labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] });
+  public distanceData = signal<ChartData<'line'>>({ labels: [], datasets: [] });
+  public payData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
+  public dailyEarningsData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
+  public servicePieData = signal<ChartData<'pie'>>({ labels: [], datasets: [] });
+  public yoyData: ChartData<'bar'> = { labels: [], datasets: [] };
 
   // Chart Options
-  barOptions: ChartOptions<'bar'> = {
+  public barOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -101,7 +104,7 @@ export class MetricsComponent implements OnInit {
     }
   };
 
-  lineOptions: ChartOptions<'line'> = {
+  public lineOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -133,7 +136,7 @@ export class MetricsComponent implements OnInit {
     }
   };
 
-  pieOptions: ChartOptions = {
+  public pieOptions: ChartOptions = {
     responsive: true,
     plugins: {
       legend: { 
@@ -154,7 +157,7 @@ export class MetricsComponent implements OnInit {
   };
 
   // Date Range
-  range = new FormGroup({ start: new FormControl(), end: new FormControl() });
+  public range = new FormGroup({ start: new FormControl(), end: new FormControl() });
 
   private getTextColor(): string {
     // Provide sensible fallbacks depending on the active theme so tests
@@ -273,7 +276,7 @@ export class MetricsComponent implements OnInit {
     return labels;
   }
 
-  updateCharts(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  public updateCharts(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const grouped: Record<string, { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number }> = {};
     filteredShifts.forEach(s => {
       // Always use local date for label
@@ -336,7 +339,7 @@ export class MetricsComponent implements OnInit {
     });
   }
 
-  updateDailyEarnings(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  public updateDailyEarnings(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const earningsByLabel: Record<string, Record<string, number>> = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
@@ -386,7 +389,7 @@ export class MetricsComponent implements OnInit {
     });
   }
 
-  updateServicePie(filteredShifts = this.shifts()) {
+  public updateServicePie(filteredShifts = this.shifts()) {
     const serviceCounts: Record<string, number> = {};
     filteredShifts.forEach(s => {
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);
@@ -409,7 +412,7 @@ export class MetricsComponent implements OnInit {
     });
   }
 
-  updateYearlyComparison(filteredShifts = this.shifts()) {
+  public updateYearlyComparison(filteredShifts = this.shifts()) {
     const grouped: Record<string, { pay: number; tips: number; bonus: number; cash: number }> = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
@@ -432,7 +435,7 @@ export class MetricsComponent implements OnInit {
     };
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     const dateRange$ = this.range.valueChanges.pipe(
       startWith(this.range.value),
       map(() => this.getDateRangeFilter()),

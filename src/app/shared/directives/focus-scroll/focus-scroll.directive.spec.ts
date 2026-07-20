@@ -1,9 +1,12 @@
-import { Component, DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import type { DebugElement } from '@angular/core';
+import { Component } from '@angular/core';
+import type { ComponentFixture} from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 import { FocusScrollDirective } from './focus-scroll.directive';
-import { ViewportService, ViewportSnapshot } from '@services/viewport.service';
+import type { ViewportSnapshot } from '@services/viewport.service';
+import { ViewportService } from '@services/viewport.service';
 
 class MockViewportService {
   private subj = new BehaviorSubject({ height: 500, offsetTop: 0, keyboardHeight: 200, windowInnerHeight: 800 });
@@ -20,9 +23,9 @@ class MockViewportService {
   template: `<input appFocusScroll [enableBottomPadding]="enableBottomPadding" [delayDropdownOnMobile]="delay" [suppressDropdownAfterSelection]="suppress">`
 })
 class HostComponent {
-  enableBottomPadding = false;
-  delay = true;
-  suppress = false;
+  public enableBottomPadding = false;
+  public delay = true;
+  public suppress = false;
 }
 
 describe('FocusScrollDirective (integration)', () => {

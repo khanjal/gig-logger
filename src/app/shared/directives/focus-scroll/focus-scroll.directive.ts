@@ -1,5 +1,6 @@
-import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy, inject } from '@angular/core';
-import { Subscription } from 'rxjs';
+import type { OnDestroy} from '@angular/core';
+import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, inject } from '@angular/core';
+import type { Subscription } from 'rxjs';
 import { ViewportService } from '@services/viewport.service';
 
 @Directive({
@@ -11,14 +12,14 @@ export class FocusScrollDirective implements OnDestroy {
   private ngZone = inject(NgZone);
   private viewport = inject(ViewportService);
 
-  @Input() enableBottomPadding = false;
-  @Input() delayDropdownOnMobile = true;
-  @Input() suppressDropdownAfterSelection = false;
-  @Input() topBuffer = 100;
+  @Input() public enableBottomPadding = false;
+  @Input() public delayDropdownOnMobile = true;
+  @Input() public suppressDropdownAfterSelection = false;
+  @Input() public topBuffer = 100;
 
-  @Output() scrollComplete = new EventEmitter<void>();
-  @Output() scrollStart = new EventEmitter<void>();
-  @Output() dropdownReady = new EventEmitter<void>();
+  @Output() public scrollComplete = new EventEmitter<void>();
+  @Output() public scrollStart = new EventEmitter<void>();
+  @Output() public dropdownReady = new EventEmitter<void>();
 
   private initialScrollTimerId: number | undefined;
   private maxScrollWindowTimerId: number | undefined;
@@ -33,7 +34,7 @@ export class FocusScrollDirective implements OnDestroy {
   private paddingApplied = 0;
 
   @HostListener('focus')
-  onFocus() {
+  public onFocus() {
     if (!this.isMobileDevice()) return;
 
     this.scrollStart.emit();
@@ -66,11 +67,11 @@ export class FocusScrollDirective implements OnDestroy {
   }
 
   @HostListener('blur')
-  onBlur() {
+  public onBlur() {
     this.finishScrolling();
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.finishScrolling();
   }
 

@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import type { OnInit, OnDestroy} from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { getCurrentUserId } from '@utils/user-id.util';
@@ -34,18 +35,18 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   // Authentication status
-  isAuthenticated = signal(false);
-  hasAccessToken = signal(false);
-  localStorageAuth = signal(false);
+  public isAuthenticated = signal(false);
+  public hasAccessToken = signal(false);
+  public localStorageAuth = signal(false);
 
   // User ID
-  userId = signal('');
+  public userId = signal('');
   
   // Token info
-  accessTokenPreview = signal('');
-  lastUpdated = signal(new Date());
+  public accessTokenPreview = signal('');
+  public lastUpdated = signal(new Date());
 
-  async ngOnInit() {
+  public async ngOnInit() {
     // Initial status check
     await this.updateStatus();
     
@@ -62,12 +63,12 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
     }, 5000);
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  async updateStatus() {
+  public async updateStatus() {
     // Check localStorage
     this.localStorageAuth.set(localStorage.getItem(SESSION_CONSTANTS.IS_AUTHENTICATED) === 'true');
     
@@ -89,12 +90,12 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
     this.lastUpdated.set(new Date());
   }
 
-  onReconnect() {
+  public onReconnect() {
     // Start login flow
     this.authService.login();
   }
 
-  getStatusIcon(): string {
+  public getStatusIcon(): string {
     if (this.isAuthenticated() && this.hasAccessToken() && this.localStorageAuth()) {
       return 'check_circle';
     } else if (this.localStorageAuth() || this.hasAccessToken()) {

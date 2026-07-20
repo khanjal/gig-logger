@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import type { PermissionState } from '@interfaces/auth/permission.interface';
 
@@ -15,15 +16,15 @@ export class PermissionService {
     this.initLocationPermission();
   }
 
-  isSpeechRecognitionSupported(): boolean {
+  public isSpeechRecognitionSupported(): boolean {
     return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   }
 
-  getMicrophoneState$(): Observable<PermissionState> {
+  public getMicrophoneState$(): Observable<PermissionState> {
     return this.microphoneState$.asObservable();
   }
 
-  getMicrophoneState(): PermissionState {
+  public getMicrophoneState(): PermissionState {
     return this.microphoneState$.value;
   }
 
@@ -86,20 +87,20 @@ export class PermissionService {
     }
   }
 
-  async hasMicrophonePermission(): Promise<boolean> {
+  public async hasMicrophonePermission(): Promise<boolean> {
     const state = this.microphoneState$.value;
     if (state === 'denied') return false;
     // For prompt/granted/unsupported/checking treat as allowed to attempt (only explicit denied blocks)
     return true;
   }
 
-  async hasLocationPermission(): Promise<boolean> {
+  public async hasLocationPermission(): Promise<boolean> {
     const state = this.locationState$.value;
     if (state === 'denied') return false;
     return true;
   }
 
-  async requestMicrophone(): Promise<PermissionState> {
+  public async requestMicrophone(): Promise<PermissionState> {
     try {
       if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
         this.microphoneState$.next('unsupported');
@@ -115,7 +116,7 @@ export class PermissionService {
     }
   }
 
-  async requestLocation(): Promise<PermissionState> {
+  public async requestLocation(): Promise<PermissionState> {
     try {
       if (!('geolocation' in navigator) || !navigator.geolocation) {
         this.locationState$.next('unsupported');
@@ -136,11 +137,11 @@ export class PermissionService {
     }
   }
 
-  getLocationState$(): Observable<PermissionState> {
+  public getLocationState$(): Observable<PermissionState> {
     return this.locationState$.asObservable();
   }
 
-  getLocationState(): PermissionState {
+  public getLocationState(): PermissionState {
     return this.locationState$.value;
   }
 }

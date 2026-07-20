@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { PlaceService } from './place.service';
-import { IPlace } from '@interfaces/entities/place.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('PlaceService', () => {
@@ -11,8 +11,6 @@ describe('PlaceService', () => {
     rowId: overrides.rowId ?? 1,
     saved: overrides.saved ?? true,
     place: overrides.place ?? 'Target',
-    addresses: overrides.addresses ?? [],
-    types: overrides.types ?? [],
     trips: overrides.trips ?? 5,
     pay: overrides.pay ?? 50,
     tip: overrides.tip ?? 10,

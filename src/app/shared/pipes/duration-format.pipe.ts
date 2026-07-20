@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
 
 /**
  * Formats a duration in seconds or minutes as h:mm or m:ss.
@@ -7,7 +8,7 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 @Pipe({ name: 'durationFormat', standalone: true })
 export class DurationFormatPipe implements PipeTransform {
-  transform(value: number | string | null | undefined): string {
+  public transform(value: number | string | null | undefined): string {
     if (value == null || value === '') return '';
     let totalSeconds: number;
     if (typeof value === 'string') {
