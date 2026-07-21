@@ -41,23 +41,25 @@ describe('DataLoaderService', () => {
 
   const emptySheet = (): ISheet => ({
     properties: { id: 'sheet-id', name: 'Sheet' },
-    addresses: [],
-    daily: [],
-    deliveries: [],
-    expenses: [],
-    locations: [],
-    monthly: [],
-    names: [],
-    places: [],
-    regions: [],
-    services: [],
-    setup: [],
-    shifts: [],
-    trips: [],
-    types: [],
-    weekdays: [],
-    weekly: [],
-    yearly: [],
+    sheets: {
+      addresses: [],
+      daily: [],
+      deliveries: [],
+      expenses: [],
+      locations: [],
+      monthly: [],
+      names: [],
+      places: [],
+      regions: [],
+      services: [],
+      setup: [],
+      shifts: [],
+      trips: [],
+      types: [],
+      weekdays: [],
+      weekly: [],
+      yearly: []
+    },
     messages: []
   });
 

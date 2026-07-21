@@ -162,7 +162,10 @@ public class SheetsControllerTests
         var sheetEntity = new SheetEntity
         {
             Properties = new PropertyEntity { Id = "sheet-1" },
-            Trips = Enumerable.Range(0, 10001).Select(_ => new TripEntity()).ToList()
+            Sheets = new GigSheets
+            {
+                Trips = Enumerable.Range(0, 10001).Select(_ => new TripEntity()).ToList()
+            }
         };
 
         // Act & Assert
