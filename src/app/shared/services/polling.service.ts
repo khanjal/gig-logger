@@ -358,9 +358,11 @@ export class PollingService implements OnDestroy {
       sheetData.properties = { id: defaultSheet.id, name: "" };
       
       // Apply serialization to convert 0 → null for input fields
-      sheetData.trips = SheetSerializerHelper.serializeTrips(unsavedTrips);
-      sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
-      sheetData.expenses = unsavedExpenses;
+      sheetData.sheets = {
+        trips: SheetSerializerHelper.serializeTrips(unsavedTrips),
+        shifts: SheetSerializerHelper.serializeShifts(unsavedShifts),
+        expenses: unsavedExpenses
+      };
 
       // Start background sync with status updates
       this._syncStatusService.startSync('auto-save', counts.total);

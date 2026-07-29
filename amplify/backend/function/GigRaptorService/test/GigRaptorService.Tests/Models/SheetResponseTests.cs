@@ -28,9 +28,12 @@ public class SheetResponseTests
         return new SheetEntity
         {
             Properties = new PropertyEntity { Name = "TestSpreadsheet" },
-            Trips = new List<TripEntity>
+            Sheets = new GigSheets
             {
-                new() { RowId = 2, Number = 1, Pay = 12.5m }
+                Trips = new List<TripEntity>
+                {
+                    new() { RowId = 2, Number = 1, Pay = 12.5m }
+                }
             },
             Messages = new List<MessageEntity>
             {
@@ -90,7 +93,7 @@ public class SheetResponseTests
 
         // Assert - spot-check the nested shape survived the JsonNode round trip
         var sheetEntityElement = parsed.RootElement.GetProperty("sheetEntity");
-        var trips = sheetEntityElement.GetProperty("trips");
+        var trips = sheetEntityElement.GetProperty("sheets").GetProperty("trips");
         Assert.Equal(1, trips.GetArrayLength());
         Assert.Equal(1, trips[0].GetProperty("number").GetInt32());
         Assert.Equal("TestSpreadsheet", sheetEntityElement.GetProperty("properties").GetProperty("name").GetString());

@@ -161,7 +161,7 @@ public class SheetsController : ControllerBase
             throw new ArgumentException("Request body is required for Save.");
         if (sheetEntity.Properties == null)
             throw new ArgumentException("SheetEntity.Properties is required for Save.");
-        if (sheetEntity.Trips != null && sheetEntity.Trips.Count > MaxTripsPerSave)
+        if (sheetEntity.Sheets?.Trips != null && sheetEntity.Sheets.Trips.Count > MaxTripsPerSave)
             throw new ArgumentException($"Too many trips in a single request (max {MaxTripsPerSave}).");
     }
 

@@ -184,9 +184,11 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         const saveStartedAt = Date.now();
 
         // Apply serialization to convert 0 → null for input fields (wire-format)
-        sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
-        sheetData.trips = SheetSerializerHelper.serializeTrips(unsavedTrips);
-        sheetData.expenses = unsavedExpenses;
+        sheetData.sheets = {
+            shifts: SheetSerializerHelper.serializeShifts(unsavedShifts),
+            trips: SheetSerializerHelper.serializeTrips(unsavedTrips),
+            expenses: unsavedExpenses
+        };
 
         const syncedShiftIds = new Set(unsavedShifts.filter(shift => shift.id !== undefined).map(shift => shift.id!));
         const syncedTripIds = new Set(unsavedTrips.filter(trip => trip.id !== undefined).map(trip => trip.id!));

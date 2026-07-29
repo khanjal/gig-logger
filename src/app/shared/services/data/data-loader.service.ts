@@ -58,25 +58,25 @@ export class DataLoaderService {
             // Deliveries/Locations are server-computed aggregates (RaptorSheets.Gig Deliveries/
             // Locations sheets) - loaded directly, no client-side linking needed.
             await Promise.all([
-                this._addressService.load(sheetData.addresses),
-                this._dailyService.load(sheetData.daily),
-                this._deliveryService.load(sheetData.deliveries),
-                this._expenseService.load(sheetData.expenses),
-                this._locationService.load(sheetData.locations),
-                this._monthlyService.load(sheetData.monthly),
-                this._nameService.load(sheetData.names),
-                this._placeService.load(sheetData.places),
-                this._regionService.load(sheetData.regions),
-                this._serviceService.load(sheetData.services),
-                this._typeService.load(sheetData.types),
-                this._weekdayService.load(sheetData.weekdays),
-                this._weeklyService.load(sheetData.weekly),
-                this._yearlyService.load(sheetData.yearly)
+                this._addressService.load(sheetData.sheets.addresses),
+                this._dailyService.load(sheetData.sheets.daily),
+                this._deliveryService.load(sheetData.sheets.deliveries),
+                this._expenseService.load(sheetData.sheets.expenses),
+                this._locationService.load(sheetData.sheets.locations),
+                this._monthlyService.load(sheetData.sheets.monthly),
+                this._nameService.load(sheetData.sheets.names),
+                this._placeService.load(sheetData.sheets.places),
+                this._regionService.load(sheetData.sheets.regions),
+                this._serviceService.load(sheetData.sheets.services),
+                this._typeService.load(sheetData.sheets.types),
+                this._weekdayService.load(sheetData.sheets.weekdays),
+                this._weeklyService.load(sheetData.sheets.weekly),
+                this._yearlyService.load(sheetData.sheets.yearly)
             ]);
 
             // Load shifts and trips sequentially (they may depend on other data)
-            await this._shiftService.load(sheetData.shifts);
-            await this._tripService.load(sheetData.trips);
+            await this._shiftService.load(sheetData.sheets.shifts);
+            await this._tripService.load(sheetData.sheets.trips);
 
             this._logger.info('Data loading completed successfully');
         } catch (error) {
@@ -89,12 +89,12 @@ export class DataLoaderService {
         try {
             this._logger.info('Appending data');
 
-            await this._addressService.append(sheetData.addresses);
-            await this._nameService.append(sheetData.names);
+            await this._addressService.append(sheetData.sheets.addresses);
+            await this._nameService.append(sheetData.sheets.names);
             // Deliveries/Locations are always a complete, freshly-computed snapshot from the
             // server, so re-load rather than append.
-            await this._deliveryService.load(sheetData.deliveries);
-            await this._locationService.load(sheetData.locations);
+            await this._deliveryService.load(sheetData.sheets.deliveries);
+            await this._locationService.load(sheetData.sheets.locations);
 
             this._logger.info('Data appending completed');
         } catch (error) {

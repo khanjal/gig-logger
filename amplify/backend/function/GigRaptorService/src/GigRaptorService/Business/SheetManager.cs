@@ -10,6 +10,11 @@ using RaptorSheets.Core.Entities;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
+// RaptorSheets.Gig v4 renamed GoogleSheetManager/IGoogleSheetManager to SheetManager/ISheetManager,
+// which collides with this file's own wrapper types of the same name.
+using GoogleSheetManager = RaptorSheets.Gig.Managers.SheetManager;
+using IGoogleSheetManager = RaptorSheets.Gig.Managers.ISheetManager;
+
 namespace GigRaptorService.Business;
 
 public interface ISheetManager
@@ -170,7 +175,7 @@ public class SheetManager : ISheetManager
     public async Task<SheetResponse> SaveData(SheetEntity sheetEntity)
     {
         var returnEntity = new SheetEntity { Messages = new List<MessageEntity>() };
-        returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS.GetDescription(), SheetEnum.SHIFTS.GetDescription(), SheetEnum.EXPENSES.GetDescription()], sheetEntity)).Messages);
+        returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetName.TRIPS.GetDescription(), SheetName.SHIFTS.GetDescription(), SheetName.EXPENSES.GetDescription()], sheetEntity)).Messages);
 
         // Save operations typically have small responses, so we don't need to check size
         return SheetResponse.FromSheetEntity(returnEntity);
