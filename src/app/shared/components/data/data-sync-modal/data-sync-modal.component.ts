@@ -375,14 +375,21 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
         // Subscribe to logger messages during load
         const logSubscription = this._logger.onLog.subscribe((msg: { level: string; message: string }) => {
-            this.appendToTerminal(msg.message);
+            const messageLevel: MessageType = msg.level === 'error' ? 'error' : msg.level === 'warn' ? 'warning' : 'info';
+            this.appendToTerminal(msg.message, messageLevel);
         });
 
-        await this._sheetService.loadSpreadsheetData(data);
-        
+        try {
+            await this._sheetService.loadSpreadsheetData(data);
+        } catch {
+            logSubscription.unsubscribe();
+            this.processFailure('ERROR');
+            return;
+        }
+
         // Unsubscribe after load completes
         logSubscription.unsubscribe();
-        
+
         this.appendToLastMessage(`LOADED (${this.currentTime() - this.time}s)`);
     }
 

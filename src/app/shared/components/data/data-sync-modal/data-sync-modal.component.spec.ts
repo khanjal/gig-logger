@@ -286,6 +286,57 @@ describe('DataSyncModalComponent', () => {
     expect(component.type).toBe('load');
   });
 
+  it('load flow should reach an ERROR state (not hang) when loadSpreadsheetData rejects', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'load' });
+
+    const defaultSheet: ISpreadsheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 };
+    sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    sheetSpy.getSpreadsheetData.and.resolveTo({
+      properties: { id: 'sheet-1', name: 'Default' },
+      messages: []
+    } as unknown as ISheet);
+    sheetSpy.getSpreadsheets.and.resolveTo([defaultSheet]);
+    sheetSpy.loadSpreadsheetData.and.rejectWith(new Error('loadData failed'));
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    // A rejection here previously escaped as an unhandled promise rejection instead of
+    // resolving into an ERROR terminal state; awaiting to completion is itself part of the assertion.
+    await component.ngOnInit();
+
+    expect(dialogRefSpy.close).not.toHaveBeenCalledWith(true);
+    expect(component.terminalMessages().some(m => m.type === 'error')).toBeTrue();
+  });
+
+  it('load flow should render logger error messages with error styling, not info', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'load' });
+
+    const defaultSheet: ISpreadsheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 };
+    sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    sheetSpy.getSpreadsheetData.and.resolveTo({
+      properties: { id: 'sheet-1', name: 'Default' },
+      messages: []
+    } as unknown as ISheet);
+    sheetSpy.getSpreadsheets.and.resolveTo([defaultSheet]);
+
+    // Mirrors DataLoaderService.handleError: log the failure to onLog, then throw.
+    sheetSpy.loadSpreadsheetData.and.callFake(async () => {
+      (loggerSpy.onLog as Subject<{ level: string; message: string }>).next({ level: 'error', message: 'loadData failed' });
+      throw new Error('loadData failed');
+    });
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    const forwarded = component.terminalMessages().find(m => m.text.startsWith('loadData failed'));
+    expect(forwarded?.type).toBe('error');
+  });
+
   it('should close dialog on cancel', () => {
     fixture = TestBed.createComponent(DataSyncModalComponent);
     component = fixture.componentInstance;
