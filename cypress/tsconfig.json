@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "types": ["cypress", "node"]
+  },
+  "include": ["**/*.ts", "**/*.js", "../cypress.config.js"]
+}

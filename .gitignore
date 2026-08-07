@@ -44,6 +44,10 @@ TestResults/
 *.cobertura.xml
 coverage.cobertura.xml
 
+# Cypress run artifacts
+/cypress/screenshots
+/cypress/videos
+
 # System Files
 .DS_Store
 Thumbs.db
