@@ -355,5 +355,49 @@ describe('TripHelper', () => {
       // But region comes from form
       expect(result.region).toBe('midtown');
     });
+
+    describe('tags pass-through', () => {
+      // RaptorSheets 5.0.x added a Tags column the frontend does not model yet. A value typed
+      // straight into the sheet must survive an app-side edit - createFromFormValue mutates the
+      // existing trip rather than rebuilding it, which is what keeps the undeclared field alive.
+      // If that ever becomes a rebuild, this fails instead of the user silently losing tags.
+      const tagFormValue: TripFormValue = {
+        service: 'uber',
+        region: 'downtown',
+        startAddress: '123 Main St',
+        endAddress: '456 Oak Ave',
+        endUnit: '',
+        distance: 5,
+        pay: 10,
+        tip: 0,
+        bonus: 0,
+        cash: 0,
+        startOdometer: 0,
+        endOdometer: 0,
+        place: 'hub',
+        name: 'Jane',
+        type: 'Pickup',
+        note: '',
+        orderNumber: '',
+        pickupTime: '09:00',
+        dropoffTime: '09:15',
+        exclude: null,
+      };
+
+      it('keeps tags when editing an existing trip', async () => {
+        const existing = { id: 7, rowId: 7, tags: 'rain, surge' } as unknown as ITrip;
+
+        const result = await TripHelper.createFromFormValue(tagFormValue, mockShift, existing);
+
+        expect((result as unknown as Record<string, unknown>)['tags']).toBe('rain, surge');
+      });
+
+      it('does not invent tags on a new trip', async () => {
+        const result = await TripHelper.createFromFormValue(tagFormValue, mockShift, undefined, 100);
+
+        expect('tags' in (result as unknown as Record<string, unknown>)).toBeFalse();
+      });
+    });
+
   });
 });

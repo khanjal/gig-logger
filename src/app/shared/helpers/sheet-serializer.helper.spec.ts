@@ -69,3 +69,41 @@ describe('SheetSerializerHelper', () => {
     expect(arr[1].tip).toBeNull();
   });
 });
+
+describe('SheetSerializerHelper - Tags pass-through', () => {
+  // RaptorSheets 5.0.x added a Tags column to Trips and Shifts, and the backend serializes it as
+  // `tags` (camelCase policy, no JsonPropertyName override). The frontend has no tags concept yet,
+  // so nothing here declares the field - these tests pin that a value typed directly into the
+  // sheet still survives an app-side edit rather than being silently wiped on save.
+  it('preserves an undeclared tags field on a trip', () => {
+    const trip = {
+      id: 1,
+      pay: 5,
+      tags: 'rain, surge, airport'
+    } as unknown as ITrip;
+
+    const serialized = SheetSerializerHelper.serializeTrip(trip) as unknown as Record<string, unknown>;
+
+    expect(serialized['tags']).toBe('rain, surge, airport');
+  });
+
+  it('preserves an undeclared tags field on a shift', () => {
+    const shift = {
+      id: 1,
+      pay: 5,
+      tags: 'weekend, double'
+    } as unknown as IShift;
+
+    const serialized = SheetSerializerHelper.serializeShift(shift) as unknown as Record<string, unknown>;
+
+    expect(serialized['tags']).toBe('weekend, double');
+  });
+
+  it('does not invent a tags field when the sheet has none', () => {
+    const trip = { id: 1, pay: 5 } as unknown as ITrip;
+
+    const serialized = SheetSerializerHelper.serializeTrip(trip) as unknown as Record<string, unknown>;
+
+    expect('tags' in serialized).toBeFalse();
+  });
+});
