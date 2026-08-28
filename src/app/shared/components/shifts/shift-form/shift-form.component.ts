@@ -224,6 +224,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     const newShift: IShift = {
       id: undefined,
       rowId: this.maxRowId + 1,
+      tags: [],
       date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
       distance: formValue.distance,
       active: formValue.active || '',

@@ -23,6 +23,7 @@ describe('ShiftFormComponent', () => {
   const makeShift = (overrides: Partial<IShift> = {}): IShift => ({
     id: overrides.id ?? 1,
     rowId: overrides.rowId ?? 2,
+    tags: [],
     date: overrides.date ?? '2024-01-15',
     service: overrides.service ?? 'DoorDash',
     region: overrides.region ?? 'Downtown',
@@ -61,6 +62,7 @@ describe('ShiftFormComponent', () => {
   const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
     id: overrides.id ?? 1,
     rowId: overrides.rowId ?? 2,
+    tags: [],
     date: overrides.date ?? '2024-01-15',
     key: overrides.key ?? '19372-1-DoorDash',
     service: overrides.service ?? 'DoorDash',
@@ -152,6 +154,7 @@ describe('ShiftFormComponent', () => {
     it('loads existing shift when editing', async () => {
       const shift = makeShift({ 
         rowId: 5, 
+        tags: [],
         service: 'DoorDash',
         number: 2,
         active: '3:45:00'
@@ -294,6 +297,7 @@ describe('ShiftFormComponent', () => {
       expect(shiftServiceSpy.add).toHaveBeenCalledWith(
         jasmine.objectContaining({
           rowId: 11,
+          tags: [],
           action: ActionEnum.Add,
           saved: false,
           service: 'DoorDash'
@@ -395,6 +399,7 @@ describe('ShiftFormComponent', () => {
     it('updates linked trips when service changes and key changes', async () => {
       const shift = makeShift({
         rowId: 5,
+        tags: [],
         key: '19372-1-DoorDash',
         date: '2024-01-15',
         service: 'DoorDash',
@@ -440,6 +445,7 @@ describe('ShiftFormComponent', () => {
       const currentShift = makeShift({
         id: 1,
         rowId: 5,
+        tags: [],
         key: '19372-1-DoorDash',
         date: '2024-01-15',
         service: 'DoorDash',
@@ -448,6 +454,7 @@ describe('ShiftFormComponent', () => {
       const conflictingShift = makeShift({
         id: 2,
         rowId: 9,
+        tags: [],
         key: '19377-1-UberEats',
         date: '2024-01-20',
         service: 'UberEats',

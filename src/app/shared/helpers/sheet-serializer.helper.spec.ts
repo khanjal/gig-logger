@@ -70,40 +70,66 @@ describe('SheetSerializerHelper', () => {
   });
 });
 
-describe('SheetSerializerHelper - Tags pass-through', () => {
-  // RaptorSheets 5.0.x added a Tags column to Trips and Shifts, and the backend serializes it as
-  // `tags` (camelCase policy, no JsonPropertyName override). The frontend has no tags concept yet,
-  // so nothing here declares the field - these tests pin that a value typed directly into the
-  // sheet still survives an app-side edit rather than being silently wiped on save.
-  it('preserves an undeclared tags field on a trip', () => {
-    const trip = {
-      id: 1,
-      pay: 5,
-      tags: 'rain, surge, airport'
-    } as unknown as ITrip;
+describe('SheetSerializerHelper - Tags', () => {
+  // The sheet stores tags as one comma-delimited text cell (RaptorSheets treats it as opaque and
+  // leaves the convention to us); the app models them as an array. These pin the conversion in
+  // both directions, including the messy input a person actually types.
+  describe('parseTags', () => {
+    it('splits a comma-delimited cell', () => {
+      expect(SheetSerializerHelper.parseTags('rain, surge, airport')).toEqual(['rain', 'surge', 'airport']);
+    });
 
-    const serialized = SheetSerializerHelper.serializeTrip(trip) as unknown as Record<string, unknown>;
+    it('trims whitespace and drops empty entries', () => {
+      expect(SheetSerializerHelper.parseTags(' rain ,, surge , ')).toEqual(['rain', 'surge']);
+    });
 
-    expect(serialized['tags']).toBe('rain, surge, airport');
+    it('returns an empty array for an empty or missing cell', () => {
+      expect(SheetSerializerHelper.parseTags('')).toEqual([]);
+      expect(SheetSerializerHelper.parseTags(undefined)).toEqual([]);
+      expect(SheetSerializerHelper.parseTags(null)).toEqual([]);
+    });
+
+    it('passes an array through, still cleaning it', () => {
+      // Re-loading already-parsed data must not mangle it.
+      expect(SheetSerializerHelper.parseTags([' rain ', '', 'surge'])).toEqual(['rain', 'surge']);
+    });
   });
 
-  it('preserves an undeclared tags field on a shift', () => {
-    const shift = {
-      id: 1,
-      pay: 5,
-      tags: 'weekend, double'
-    } as unknown as IShift;
+  describe('formatTags', () => {
+    it('joins tags for the sheet', () => {
+      expect(SheetSerializerHelper.formatTags(['rain', 'surge'])).toBe('rain, surge');
+    });
 
-    const serialized = SheetSerializerHelper.serializeShift(shift) as unknown as Record<string, unknown>;
-
-    expect(serialized['tags']).toBe('weekend, double');
+    it('writes an empty cell rather than a stray separator', () => {
+      expect(SheetSerializerHelper.formatTags([])).toBe('');
+      expect(SheetSerializerHelper.formatTags(undefined)).toBe('');
+      expect(SheetSerializerHelper.formatTags(null)).toBe('');
+    });
   });
 
-  it('does not invent a tags field when the sheet has none', () => {
-    const trip = { id: 1, pay: 5 } as unknown as ITrip;
+  describe('round trip', () => {
+    it('survives sheet -> app -> sheet unchanged', () => {
+      const fromSheet = { id: 1, pay: 5, tags: 'rain, surge' } as unknown as ITrip;
 
-    const serialized = SheetSerializerHelper.serializeTrip(trip) as unknown as Record<string, unknown>;
+      const app = SheetSerializerHelper.deserializeTrip(fromSheet);
+      expect(app.tags).toEqual(['rain', 'surge']);
 
-    expect('tags' in serialized).toBeFalse();
+      const backToSheet = SheetSerializerHelper.serializeTrip(app);
+      expect(backToSheet.tags).toBe('rain, surge');
+    });
+
+    it('leaves a trip with no tags as an empty cell, not "undefined"', () => {
+      const app = SheetSerializerHelper.deserializeTrip({ id: 1, pay: 5 } as unknown as ITrip);
+      expect(app.tags).toEqual([]);
+      expect(SheetSerializerHelper.serializeTrip(app).tags).toBe('');
+    });
+
+    it('survives the same round trip for a shift', () => {
+      const fromSheet = { id: 1, pay: 5, tags: 'weekend, double' } as unknown as IShift;
+
+      const app = SheetSerializerHelper.deserializeShift(fromSheet);
+      expect(app.tags).toEqual(['weekend', 'double']);
+      expect(SheetSerializerHelper.serializeShift(app).tags).toBe('weekend, double');
+    });
   });
 });

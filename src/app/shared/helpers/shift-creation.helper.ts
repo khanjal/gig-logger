@@ -13,6 +13,7 @@ export class ShiftCreationHelper {
         const shift: IShift = {
             key: DateHelper.getDateKey(new Date(shiftDate)),
             rowId: 0,
+            tags: [],
             date: shiftDate,
             start: '',
             finish: '',

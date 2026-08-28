@@ -24,6 +24,8 @@ export class SheetSerializerHelper {
             distance: trip.distance === 0 ? null : trip.distance,
             startOdometer: trip.startOdometer === 0 ? null : trip.startOdometer,
             endOdometer: trip.endOdometer === 0 ? null : trip.endOdometer,
+            // Tags travel as comma-delimited text
+            tags: this.formatTags(trip.tags),
             // Calculated fields remain as-is (total, amountPerDistance, amountPerTime)
         } as ITripSheetRow;
     }
@@ -39,8 +41,66 @@ export class SheetSerializerHelper {
             tip: shift.tip === 0 ? null : shift.tip,
             bonus: shift.bonus === 0 ? null : shift.bonus,
             cash: shift.cash === 0 ? null : shift.cash,
+            // Tags travel as comma-delimited text
+            tags: this.formatTags(shift.tags),
             // Calculated fields remain as-is (total, totalPay, etc.)
         } as IShiftSheetRow;
+    }
+
+    /**
+     * Splits the sheet's comma-delimited tag text into the array the app works with.
+     * Trims whitespace and drops empties, so "rain, , surge," yields ['rain', 'surge'].
+     * RaptorSheets stores this column as opaque text and leaves the convention to us.
+     */
+    public static parseTags(value: unknown): string[] {
+        if (Array.isArray(value)) {
+            return value.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+        }
+
+        if (typeof value !== 'string') {
+            return [];
+        }
+
+        return value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+    }
+
+    /**
+     * Joins tags back into the sheet's comma-delimited text. Empty array yields an empty cell
+     * rather than a stray separator.
+     */
+    public static formatTags(tags: string[] | undefined | null): string {
+        if (!tags || tags.length === 0) {
+            return '';
+        }
+
+        return tags.map(tag => tag.trim()).filter(tag => tag.length > 0).join(', ');
+    }
+
+    /**
+     * Converts a trip as it arrives from the API into the app's shape. Only the tag column needs
+     * translating today; everything else already matches.
+     */
+    public static deserializeTrip(row: ITripSheetRow | ITrip): ITrip {
+        return {
+            ...row,
+            tags: this.parseTags((row as { tags?: unknown }).tags),
+        } as ITrip;
+    }
+
+    /** @see deserializeTrip */
+    public static deserializeShift(row: IShiftSheetRow | IShift): IShift {
+        return {
+            ...row,
+            tags: this.parseTags((row as { tags?: unknown }).tags),
+        } as IShift;
+    }
+
+    public static deserializeTrips(rows: (ITripSheetRow | ITrip)[]): ITrip[] {
+        return rows.map(row => this.deserializeTrip(row));
+    }
+
+    public static deserializeShifts(rows: (IShiftSheetRow | IShift)[]): IShift[] {
+        return rows.map(row => this.deserializeShift(row));
     }
 
     /**

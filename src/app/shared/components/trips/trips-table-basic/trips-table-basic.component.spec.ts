@@ -69,6 +69,7 @@ describe('TripsTableBasicComponent', () => {
     action: overrides.action ?? '',
     actionTime: overrides.actionTime ?? 0,
     rowId: overrides.rowId ?? 1,
+    tags: [],
     saved: overrides.saved ?? true,
   });
 

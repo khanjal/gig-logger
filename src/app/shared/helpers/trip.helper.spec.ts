@@ -20,6 +20,7 @@ describe('TripHelper', () => {
       action: '',
       actionTime: 0,
       rowId: 1,
+      tags: [],
       saved: false,
       trips: 5,
       distance: 100,
