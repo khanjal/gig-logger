@@ -17,6 +17,7 @@ import { DateHelper } from '@helpers/date.helper';
 import { NumberHelper } from '@helpers/number.helper';
 import { TripService } from '@services/sheets/trip.service';
 import { BaseFabButtonComponent, BaseInputComponent } from '@components/base';
+import { TagInputComponent } from '@inputs/tag-input/tag-input.component';
 import { updateAction } from '@utils/action.utils';
 import { BehaviorSubject } from 'rxjs';
 
@@ -38,8 +39,7 @@ interface ITripTotalsViewModel {
     CommonModule, ReactiveFormsModule, FormsModule,
     BaseDatepickerComponent, TimeInputComponent,
     MatNativeDateModule, SearchInputComponent, MatSlideToggleModule,
-    BaseFabButtonComponent, BaseInputComponent
-  ]
+    BaseFabButtonComponent, BaseInputComponent, TagInputComponent]
 })
 export class ShiftFormComponent implements OnInit, OnChanges {
   private shiftService = inject(ShiftService);
@@ -61,6 +61,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     start: new FormControl(''),
     time: new FormControl('', [Validators.pattern(/^([0-1]?\d|2[0-3]):[0-5]\d$/)]),
     note: new FormControl(''),
+    tags: new FormControl<string[]>([]),
     action: new FormControl(''),
     actionTime: new FormControl(),
     pay: new FormControl(),
@@ -121,6 +122,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
           start: this.shift.start ?? '',
           time: DateHelper.removeSeconds(this.shift.time) ?? '',
           note: this.shift.note ?? '',
+          tags: this.shift.tags ?? [],
           action: this.shift.action ?? '',
           actionTime: this.shift.actionTime ?? 0,
           pay: this.shift.pay ?? null,
@@ -224,7 +226,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     const newShift: IShift = {
       id: undefined,
       rowId: this.maxRowId + 1,
-      tags: [],
+      tags: this.shiftForm.value.tags ?? [],
       date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
       distance: formValue.distance,
       active: formValue.active || '',
@@ -295,6 +297,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
           ? DateHelper.getDurationString(DateHelper.getDurationSeconds(formValue.start, formValue.finish))
           : '';
         this.shift.note = formValue.note || '';
+        this.shift.tags = formValue.tags ?? [];
         this.shift.action = ActionEnum.Update;
         this.shift.actionTime = Date.now();
         this.shift.saved = false;

@@ -357,11 +357,9 @@ describe('TripHelper', () => {
       expect(result.region).toBe('midtown');
     });
 
-    describe('tags pass-through', () => {
-      // RaptorSheets 5.0.x added a Tags column the frontend does not model yet. A value typed
-      // straight into the sheet must survive an app-side edit - createFromFormValue mutates the
-      // existing trip rather than rebuilding it, which is what keeps the undeclared field alive.
-      // If that ever becomes a rebuild, this fails instead of the user silently losing tags.
+    describe('tags', () => {
+      // Tags are now a modelled field driven by the form. The form is the source of truth when
+      // it supplies them, but a caller whose form omits tags must not wipe what the sheet holds.
       const tagFormValue: TripFormValue = {
         service: 'uber',
         region: 'downtown',
@@ -385,18 +383,37 @@ describe('TripHelper', () => {
         exclude: null,
       };
 
-      it('keeps tags when editing an existing trip', async () => {
-        const existing = { id: 7, rowId: 7, tags: 'rain, surge' } as unknown as ITrip;
+      it('takes tags from the form when editing', async () => {
+        const existing = { id: 7, rowId: 7, tags: ['rain'] } as unknown as ITrip;
+
+        const result = await TripHelper.createFromFormValue(
+          { ...tagFormValue, tags: ['rain', 'surge'] }, mockShift, existing);
+
+        expect(result.tags).toEqual(['rain', 'surge']);
+      });
+
+      it('clears tags when the form clears them', async () => {
+        const existing = { id: 7, rowId: 7, tags: ['rain'] } as unknown as ITrip;
+
+        const result = await TripHelper.createFromFormValue(
+          { ...tagFormValue, tags: [] }, mockShift, existing);
+
+        expect(result.tags).toEqual([]);
+      });
+
+      it('keeps existing tags when the form does not supply them', async () => {
+        // Guards a caller whose form has no tag field: omitting them must not erase the sheet's.
+        const existing = { id: 7, rowId: 7, tags: ['rain', 'surge'] } as unknown as ITrip;
 
         const result = await TripHelper.createFromFormValue(tagFormValue, mockShift, existing);
 
-        expect((result as unknown as Record<string, unknown>)['tags']).toBe('rain, surge');
+        expect(result.tags).toEqual(['rain', 'surge']);
       });
 
-      it('does not invent tags on a new trip', async () => {
+      it('starts a new trip with no tags', async () => {
         const result = await TripHelper.createFromFormValue(tagFormValue, mockShift, undefined, 100);
 
-        expect('tags' in (result as unknown as Record<string, unknown>)).toBeFalse();
+        expect(result.tags).toEqual([]);
       });
     });
 

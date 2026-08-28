@@ -90,6 +90,9 @@
     <div class="flex gap-2">
       <app-base-input class="min-w-[90px] flex-1" [label]="'Note'" [type]="'text'" [placeholder]="'Notes'" formControlName="note"></app-base-input>
     </div>
+    <div class="mb-3">
+      <app-tag-input class="w-full" formControlName="tags"></app-tag-input>
+    </div>
     <div class="flex flex-row items-center justify-between gap-2 mt-6">
       <div class="flex gap-2">
         @if (!rowId) {
