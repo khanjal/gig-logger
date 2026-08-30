@@ -579,7 +579,14 @@ html.theme-dark {
 }
 
 .custom-modalbox {
-  max-width: calc(100vw - 2rem) !important;
+  /* Two caps, both needed.
+     - calc(100vw - 2rem) keeps a dialog inset on a phone rather than full-bleed.
+     - 800px stops one sprawling across a wide monitor when it is opened without an explicit
+       width, or with a viewport-relative one. A dialog that asked for 92vw previously got it,
+       because a maxWidth passed in dialog config loses to the !important here.
+     Sits above the widest deliberate width in the app (720px, the trip and shift forms opened
+     from pending-changes), so nothing currently rendered gets narrower. */
+  max-width: min(calc(100vw - 2rem), 800px) !important;
 
   .mat-mdc-dialog-container {
     border-radius: 1rem;

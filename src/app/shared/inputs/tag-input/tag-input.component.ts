@@ -75,9 +75,11 @@ export class TagInputComponent {
         // missing: hand-rolling a themed wrapper inside an unthemed container left white corners
         // in dark mode and a black title.
         panelClass: 'custom-modalbox',
-        // Mobile first: near-full width on a phone, capped so it does not sprawl on a desktop.
-        width: '92vw',
-        maxWidth: '28rem',
+        // A fixed width, as every other dialog here passes. `custom-modalbox` sets
+        // `max-width: calc(100vw - 2rem) !important`, which beats a maxWidth given in config - so
+        // asking for 92vw and capping it did not work, and the dialog spanned the whole desktop.
+        // Giving a fixed width instead lets that same rule clamp it on a phone.
+        width: '420px',
       })
       .afterClosed()
       .subscribe(result => {

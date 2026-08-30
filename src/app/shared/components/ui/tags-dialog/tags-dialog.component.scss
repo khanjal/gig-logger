@@ -12,13 +12,11 @@
   color: var(--color-text-primary);
 }
 
+// Fills whatever width the dialog was opened at, rather than setting one of its own - two places
+// deciding the width is how it ended up fighting itself.
 .tags-dialog__content {
   width: 100%;
   box-sizing: border-box;
-
-  @media (min-width: 480px) {
-    width: 24rem;
-  }
 }
 
 // Reserve room for a couple of rows so adding the first tag does not shove the buttons down the
