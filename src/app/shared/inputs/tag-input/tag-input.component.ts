@@ -70,8 +70,12 @@ export class TagInputComponent {
       .open<TagsDialogComponent, ITagsDialog, string[] | undefined>(TagsDialogComponent, {
         data: { tags: this.tags() },
         autoFocus: true,
+        // The shared panel class every other dialog uses. It themes .mdc-dialog__surface with
+        // --color-surface / --color-text-primary and clips the rounded corners, which is what was
+        // missing: hand-rolling a themed wrapper inside an unthemed container left white corners
+        // in dark mode and a black title.
+        panelClass: 'custom-modalbox',
         // Mobile first: near-full width on a phone, capped so it does not sprawl on a desktop.
-        // The dialog's own stylesheet fixes the content width so it stops resizing as tags change.
         width: '92vw',
         maxWidth: '28rem',
       })

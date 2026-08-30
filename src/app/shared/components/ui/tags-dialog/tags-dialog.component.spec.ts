@@ -119,6 +119,30 @@ describe('TagsDialogComponent', () => {
     expect(dialogRef.close).toHaveBeenCalledWith(undefined);
   });
 
+  it('renders each tag as its own row with a remove button', async () => {
+    // A list rather than chips: a chip's × is roughly a 16px target, well under what a thumb hits
+    // reliably, and this dialog is used one-handed on a phone.
+    await build(['rain', 'surge']);
+
+    const rows = (fixture.nativeElement as HTMLElement).querySelectorAll('.tags-dialog__row');
+    expect(rows.length).toBe(2);
+
+    rows.forEach(row => {
+      expect(row.querySelector('.tags-dialog__remove')).withContext('row has a remove button').not.toBeNull();
+    });
+  });
+
+  it('removes the tag whose row button is pressed', async () => {
+    await build(['rain', 'surge']);
+
+    const firstRemove = (fixture.nativeElement as HTMLElement)
+      .querySelector('.tags-dialog__row .tags-dialog__remove') as HTMLButtonElement;
+    firstRemove.click();
+    fixture.detectChanges();
+
+    expect(component.tags()).toEqual(['surge']);
+  });
+
   it('disables Add until something is typed', async () => {
     // The button is the primary way in on a phone, so it must not look pressable when it would
     // do nothing.

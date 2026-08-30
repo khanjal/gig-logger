@@ -1,9 +1,8 @@
-<div class="tags-dialog">
-<h2 mat-dialog-title>Tags</h2>
+<h2 mat-dialog-title class="tags-dialog__title">Tags</h2>
 
 <mat-dialog-content class="tags-dialog__content">
-  <!-- Input and Add sit on one row: on a phone the keyboard covers most of the screen, so the
-       action has to be reachable without scrolling or dismissing it. -->
+  <!-- Input and Add on one row: on a phone the keyboard covers most of the screen, so the action
+       has to be reachable without scrolling or dismissing it. -->
   <div class="flex items-start gap-2">
     <mat-form-field class="flex-1 min-w-0 rg-field-shell" appearance="fill">
       <mat-label>Add a tag</mat-label>
@@ -30,24 +29,26 @@
     </app-base-rect-button>
   </div>
 
+  <!-- A list, not chips: a chip's × is a ~16px target, which is well under what a thumb can hit
+       reliably. Each row is full width with a proper button on the end. -->
   <div class="tags-dialog__tags">
     @if (tags().length > 0) {
-      <div class="flex flex-wrap gap-2">
+      <ul class="tags-dialog__list">
         @for (tag of tags(); track tag) {
-          <span class="tag-chip inline-flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-sm">
-            {{ tag }}
+          <li class="tags-dialog__row">
+            <span class="tags-dialog__label">{{ tag }}</span>
             <button
               type="button"
               class="tags-dialog__remove"
               [attr.aria-label]="'Remove ' + tag"
               (click)="remove(tag)">
-              <mat-icon>cancel</mat-icon>
+              <mat-icon>delete_outline</mat-icon>
             </button>
-          </span>
+          </li>
         }
-      </div>
+      </ul>
     } @else {
-      <p class="text-sm text-tertiary m-0">No tags yet.</p>
+      <p class="tags-dialog__empty">No tags yet.</p>
     }
   </div>
 </mat-dialog-content>
@@ -56,4 +57,3 @@
   <app-base-rect-button [label]="'Cancel'" [variant]="'outlined'" (clicked)="onCancel()"></app-base-rect-button>
   <app-base-rect-button [label]="'Done'" [variant]="'primary'" (clicked)="onDone()"></app-base-rect-button>
 </mat-dialog-actions>
-</div>
