@@ -161,7 +161,6 @@ export class TripFormComponent implements OnInit {
   public showPickupAddress = false;
   public showOdometer = false;
   public showOrder = false;
-  public showTags = false;
   public showTimes = false;
 
   public selectedAddress: IAddress | undefined;
@@ -265,7 +264,6 @@ export class TripFormComponent implements OnInit {
     this.showPickupAddress = true;
     this.showTimes = true;
     this.showOrder = true;
-    this.showTags = true;
   
     // Handle dependent logic
     this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
@@ -618,7 +616,7 @@ export class TripFormComponent implements OnInit {
     });
   }
 
-  private toggleSection(section: 'showAdvancedPay' | 'showOdometer' | 'showOrder' | 'showPickupAddress' | 'showTags', showMsg: string, hideMsg: string) {
+  private toggleSection(section: 'showAdvancedPay' | 'showOdometer' | 'showOrder' | 'showPickupAddress', showMsg: string, hideMsg: string) {
     this[section] = !this[section];
     openSnackbar(this._snackBar, this[section] ? showMsg : hideMsg);
   }
@@ -632,11 +630,7 @@ export class TripFormComponent implements OnInit {
   }
 
   public toggleOrder() {
-    this.toggleSection('showOrder', 'Showing Order Fields', 'Hiding Order Fields');
-  }
-
-  public toggleTags() {
-    this.toggleSection('showTags', 'Showing Tags', 'Hiding Tags');
+    this.toggleSection('showOrder', 'Showing Order & Tag Fields', 'Hiding Order & Tag Fields');
   }
 
   public togglePickupAddress() {

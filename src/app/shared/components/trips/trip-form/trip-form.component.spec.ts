@@ -221,18 +221,11 @@ describe('TripFormComponent', () => {
     expect(component.showOrder).toBeFalse();
   });
 
-  it('toggleTags should toggle flag and show snack', () => {
-    component.toggleTags();
-    expect(component.showTags).toBeTrue();
-    expect(snackBar.open).toHaveBeenCalled();
-    component.toggleTags();
-    expect(component.showTags).toBeFalse();
-  });
-
-  it('starts with tags collapsed when adding a trip', () => {
-    // Adding happens mid-shift, so the form stays short by default. Tags follow the same rule as
-    // odometer, order and the other secondary fields rather than lengthening every entry.
-    expect(component.showTags).toBeFalse();
+  it('starts with the order section collapsed when adding a trip', () => {
+    // Tags live in this section too. On edit it is opened automatically, and on add the single
+    // tap that reveals Apt/Unit and Order Number reveals tags with them - so tags cost no extra
+    // interaction rather than needing a fifth toggle of their own.
+    expect(component.showOrder).toBeFalse();
   });
 
   it('togglePickupAddress should toggle flag and show snack', () => {
