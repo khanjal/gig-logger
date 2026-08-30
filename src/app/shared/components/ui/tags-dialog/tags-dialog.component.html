@@ -1,3 +1,4 @@
+<div class="tags-dialog">
 <h2 mat-dialog-title>Tags</h2>
 
 <mat-dialog-content class="tags-dialog__content">
@@ -51,7 +52,8 @@
   </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" class="tags-dialog__actions">
   <app-base-rect-button [label]="'Cancel'" [variant]="'outlined'" (clicked)="onCancel()"></app-base-rect-button>
   <app-base-rect-button [label]="'Done'" [variant]="'primary'" (clicked)="onDone()"></app-base-rect-button>
 </mat-dialog-actions>
+</div>
