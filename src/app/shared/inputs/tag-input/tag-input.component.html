@@ -1,31 +1,33 @@
-<mat-form-field class="w-full rg-field-shell" appearance="fill">
-  <mat-label>{{ fieldName }}</mat-label>
+<div class="app-tag-input">
+  <mat-form-field class="input-field rg-field-shell" appearance="fill">
+    <mat-label>{{ fieldName }}</mat-label>
 
-  <mat-chip-grid #chipGrid [attr.aria-label]="fieldName">
-    @for (tag of tags(); track tag) {
-      <mat-chip-row (removed)="remove(tag)" [editable]="false">
-        {{ tag }}
-        <button matChipRemove [attr.aria-label]="'Remove ' + tag" type="button">
-          <mat-icon>cancel</mat-icon>
-        </button>
-      </mat-chip-row>
-    }
-  </mat-chip-grid>
+    <mat-chip-grid #chipGrid [attr.aria-label]="fieldName">
+      @for (tag of tags(); track tag) {
+        <mat-chip-row (removed)="remove(tag)" [editable]="false">
+          {{ tag }}
+          <button matChipRemove [attr.aria-label]="'Remove ' + tag" type="button">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </mat-chip-grid>
 
-  <input
-    [placeholder]="placeholder"
-    [formControl]="inputControl"
-    [matChipInputFor]="chipGrid"
-    [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
-    [matAutocomplete]="auto"
-    [disabled]="disabled()"
-    (matChipInputTokenEnd)="add($event)"
-    (input)="onInput(inputControl.value ?? '')"
-    (blur)="onBlur()" />
+    <input
+      [placeholder]="placeholder"
+      [formControl]="inputControl"
+      [matChipInputFor]="chipGrid"
+      [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+      [matAutocomplete]="auto"
+      [disabled]="disabled()"
+      (matChipInputTokenEnd)="add($event)"
+      (input)="onInput(inputControl.value ?? '')"
+      (blur)="onBlur()" />
 
-  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-    @for (suggestion of suggestions(); track suggestion) {
-      <mat-option [value]="suggestion">{{ suggestion }}</mat-option>
-    }
-  </mat-autocomplete>
-</mat-form-field>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+      @for (suggestion of suggestions(); track suggestion) {
+        <mat-option [value]="suggestion">{{ suggestion }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</div>
