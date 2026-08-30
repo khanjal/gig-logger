@@ -1,30 +1,30 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
 
 import { TagInputComponent } from './tag-input.component';
-import { TagService } from '@services/tag.service';
 
 describe('TagInputComponent', () => {
   let fixture: ComponentFixture<TagInputComponent>;
   let component: TagInputComponent;
-  let tagService: jasmine.SpyObj<TagService>;
+  let dialog: jasmine.SpyObj<MatDialog>;
+
+  const dialogReturning = (result: string[] | undefined) =>
+    dialog.open.and.returnValue({ afterClosed: () => of(result) } as never);
 
   beforeEach(async () => {
-    tagService = jasmine.createSpyObj<TagService>('TagService', ['suggest', 'getAllTags']);
-    tagService.suggest.and.resolveTo([]);
-    tagService.getAllTags.and.resolveTo([]);
+    dialog = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
 
     await TestBed.configureTestingModule({
       imports: [TagInputComponent],
-      providers: [provideNoopAnimations(), { provide: TagService, useValue: tagService }],
+      providers: [provideNoopAnimations(), { provide: MatDialog, useValue: dialog }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TagInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-
-  const chipEvent = (value: string) => ({ value, chipInput: { clear: () => undefined } }) as never;
 
   it('writes an array value straight through', () => {
     component.writeValue(['rain', 'surge']);
@@ -47,54 +47,58 @@ describe('TagInputComponent', () => {
     expect(component.tags()).toEqual([]);
   });
 
-  it('adds a tag and notifies the form', async () => {
+  it('applies the dialog result and notifies the form', () => {
     const changes: string[][] = [];
     component.registerOnChange(value => changes.push(value));
+    dialogReturning(['rain', 'surge']);
 
-    await component.add(chipEvent('rain'));
+    component.openDialog();
 
-    expect(component.tags()).toEqual(['rain']);
-    expect(changes).toEqual([['rain']]);
+    expect(component.tags()).toEqual(['rain', 'surge']);
+    expect(changes).toEqual([['rain', 'surge']]);
   });
 
-  it('trims whitespace and ignores an empty entry', async () => {
-    await component.add(chipEvent('  rain  '));
-    await component.add(chipEvent('   '));
-
-    expect(component.tags()).toEqual(['rain']);
-  });
-
-  it('does not add the same tag twice, regardless of casing', async () => {
-    await component.add(chipEvent('rain'));
-    await component.add(chipEvent('Rain'));
-
-    expect(component.tags()).toEqual(['rain']);
-  });
-
-  it('removes a tag and notifies the form', async () => {
-    component.writeValue(['rain', 'surge']);
-    const changes: string[][] = [];
-    component.registerOnChange(value => changes.push(value));
-
-    await component.remove('rain');
-
-    expect(component.tags()).toEqual(['surge']);
-    expect(changes).toEqual([['surge']]);
-  });
-
-  it('excludes already-applied tags when asking for suggestions', async () => {
+  it('leaves tags untouched when the dialog is cancelled', () => {
     component.writeValue(['rain']);
+    const changes: string[][] = [];
+    component.registerOnChange(value => changes.push(value));
+    dialogReturning(undefined);
 
-    await component.onInput('r');
+    component.openDialog();
 
-    expect(tagService.suggest).toHaveBeenCalledWith('r', ['rain']);
+    expect(component.tags()).toEqual(['rain']);
+    expect(changes).toEqual([]);
   });
 
-  it('reports disabled state', () => {
-    component.setDisabledState(true);
-    expect(component.disabled()).toBeTrue();
+  it('writes through an empty result, which is a deliberate clear', () => {
+    // Distinct from cancelling: removing every tag must reach the form, not be ignored as "no
+    // change" the way an undefined result is.
+    component.writeValue(['rain']);
+    const changes: string[][] = [];
+    component.registerOnChange(value => changes.push(value));
+    dialogReturning([]);
 
-    component.setDisabledState(false);
-    expect(component.disabled()).toBeFalse();
+    component.openDialog();
+
+    expect(component.tags()).toEqual([]);
+    expect(changes).toEqual([[]]);
+  });
+
+  it('marks the control touched once the dialog closes', () => {
+    let touched = false;
+    component.registerOnTouched(() => (touched = true));
+    dialogReturning(undefined);
+
+    component.openDialog();
+
+    expect(touched).toBeTrue();
+  });
+
+  it('does not open the dialog while disabled', () => {
+    component.setDisabledState(true);
+
+    component.openDialog();
+
+    expect(dialog.open).not.toHaveBeenCalled();
   });
 });

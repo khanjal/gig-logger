@@ -1,33 +1,21 @@
-<div class="app-tag-input">
-  <mat-form-field class="input-field rg-field-shell" appearance="fill">
-    <mat-label>{{ fieldName }}</mat-label>
-
-    <mat-chip-grid #chipGrid [attr.aria-label]="fieldName">
-      @for (tag of tags(); track tag) {
-        <mat-chip-row (removed)="remove(tag)" [editable]="false">
-          {{ tag }}
-          <button matChipRemove [attr.aria-label]="'Remove ' + tag" type="button">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip-row>
-      }
-    </mat-chip-grid>
-
-    <input
-      [placeholder]="placeholder"
-      [formControl]="inputControl"
-      [matChipInputFor]="chipGrid"
-      [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
-      [matAutocomplete]="auto"
-      [disabled]="disabled()"
-      (matChipInputTokenEnd)="add($event)"
-      (input)="onInput(inputControl.value ?? '')"
-      (blur)="onBlur()" />
-
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-      @for (suggestion of suggestions(); track suggestion) {
-        <mat-option [value]="suggestion">{{ suggestion }}</mat-option>
-      }
-    </mat-autocomplete>
-  </mat-form-field>
+<div class="app-tag-input rg-field-shell flex items-center gap-2 px-3 py-2 rounded">
+  <div class="flex-1 min-w-0">
+    <div class="text-xs text-tertiary mb-1">{{ fieldName }}</div>
+    @if (tags().length > 0) {
+      <mat-chip-set>
+        @for (tag of tags(); track tag) {
+          <mat-chip [disableRipple]="true" [removable]="false">{{ tag }}</mat-chip>
+        }
+      </mat-chip-set>
+    } @else {
+      <span class="text-sm text-tertiary">None</span>
+    }
+  </div>
+  <app-base-rect-button
+    [icon]="'edit'"
+    [variant]="'icon'"
+    [disabled]="disabled()"
+    [attr.aria-label]="'Edit ' + fieldName"
+    (clicked)="openDialog()">
+  </app-base-rect-button>
 </div>

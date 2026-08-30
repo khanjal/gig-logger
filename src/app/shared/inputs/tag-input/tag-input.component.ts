@@ -1,38 +1,26 @@
 import { CommonModule } from '@angular/common';
-import type { OnInit } from '@angular/core';
 import { Component, Input, forwardRef, inject, signal } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ReactiveFormsModule, FormControl } from '@angular/forms';
-
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
-import type { MatChipInputEvent } from '@angular/material/chips';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
+import { MatChipsModule } from '@angular/material/chips';
 
-import { TagService } from '@services/tag.service';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { TagsDialogComponent } from '@components/ui/tags-dialog/tags-dialog.component';
 import { TAG_INPUT } from '@constants/tag.constants';
+import type { ITagsDialog } from '@interfaces/ui/tags-dialog.interface';
 
 /**
- * Multi-value tag entry backed by the tags already in use.
+ * Shows a trip or shift's tags, and opens a dialog to edit them.
  *
- * Deliberately separate from app-search-input: that one is single-value, tied to a fixed set of
- * search types and wired into Google Places. Tags are free text with no server-side vocabulary, so
- * sharing it would have meant bending it out of shape.
+ * Displays rather than accepts input: tags are a list, and a single-line field reads as "one
+ * value, then save" - the wrong expectation. The dialog makes the list and its multiplicity
+ * obvious, and keeps this row looking like every other row in the form.
  */
 @Component({
   selector: 'app-tag-input',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule,
-    MatChipsModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-  ],
+  imports: [CommonModule, MatChipsModule, MatIconModule, BaseRectButtonComponent],
   templateUrl: './tag-input.component.html',
   styleUrl: './tag-input.component.scss',
   providers: [
@@ -43,24 +31,16 @@ import { TAG_INPUT } from '@constants/tag.constants';
     },
   ],
 })
-export class TagInputComponent implements OnInit {
-  private _tagService = inject(TagService);
+export class TagInputComponent {
+  private _dialog = inject(MatDialog);
 
   @Input() public fieldName = TAG_INPUT.DEFAULT_LABEL;
-  @Input() public placeholder = TAG_INPUT.PLACEHOLDER;
 
   public readonly tags = signal<string[]>([]);
-  public readonly suggestions = signal<string[]>([]);
   public readonly disabled = signal(false);
-  public readonly separatorKeyCodes = TAG_INPUT.SEPARATOR_KEY_CODES;
-  public readonly inputControl = new FormControl('');
 
   private _onChange: (value: string[]) => void = () => undefined;
   private _onTouched: () => void = () => undefined;
-
-  public async ngOnInit(): Promise<void> {
-    await this.refreshSuggestions('');
-  }
 
   // #region ControlValueAccessor
   public writeValue(value: string[] | string | null | undefined): void {
@@ -82,62 +62,29 @@ export class TagInputComponent implements OnInit {
   }
   // #endregion
 
-  public async add(event: MatChipInputEvent): Promise<void> {
-    const added = this.commit(event.value);
-
-    if (added) {
-      event.chipInput?.clear();
-      this.inputControl.setValue('');
+  public openDialog(): void {
+    if (this.disabled()) {
+      return;
     }
 
-    await this.refreshSuggestions('');
-  }
+    this._dialog
+      .open<TagsDialogComponent, ITagsDialog, string[] | undefined>(TagsDialogComponent, {
+        data: { tags: this.tags() },
+        autoFocus: true,
+      })
+      .afterClosed()
+      .subscribe(result => {
+        this._onTouched();
 
-  public async selected(event: MatAutocompleteSelectedEvent): Promise<void> {
-    this.commit(event.option.viewValue);
-    this.inputControl.setValue('');
-    await this.refreshSuggestions('');
-  }
+        // undefined means cancelled - leave the existing tags untouched. An empty array is a
+        // deliberate "remove them all" and must be written through.
+        if (result === undefined) {
+          return;
+        }
 
-  public async remove(tag: string): Promise<void> {
-    this.tags.update(current => current.filter(existing => existing !== tag));
-    this.publish();
-    await this.refreshSuggestions(this.inputControl.value ?? '');
-  }
-
-  public async onInput(value: string): Promise<void> {
-    await this.refreshSuggestions(value);
-  }
-
-  public onBlur(): void {
-    this._onTouched();
-  }
-
-  /**
-   * Adds a tag if it is non-empty and not already present. Comparison is case-insensitive so a
-   * driver does not end up with both "Rain" and "rain" as separate tags.
-   */
-  private commit(raw: string | null | undefined): boolean {
-    const value = (raw ?? '').trim();
-
-    if (value.length === 0) {
-      return false;
-    }
-
-    const alreadyPresent = this.tags().some(tag => tag.toLowerCase() === value.toLowerCase());
-
-    if (alreadyPresent) {
-      return true; // Treat as handled: clear the input rather than leaving a duplicate sitting there.
-    }
-
-    this.tags.update(current => [...current, value]);
-    this.publish();
-
-    return true;
-  }
-
-  private publish(): void {
-    this._onChange(this.tags());
+        this.tags.set(result);
+        this._onChange(result);
+      });
   }
 
   private splitRaw(value: string | null | undefined): string[] {
@@ -146,9 +93,5 @@ export class TagInputComponent implements OnInit {
     }
 
     return value.split(TAG_INPUT.SEPARATOR).map(tag => tag.trim()).filter(tag => tag.length > 0);
-  }
-
-  private async refreshSuggestions(query: string): Promise<void> {
-    this.suggestions.set(await this._tagService.suggest(query, this.tags()));
   }
 }
