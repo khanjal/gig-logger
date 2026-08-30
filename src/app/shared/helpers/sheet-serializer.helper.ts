@@ -54,14 +54,30 @@ export class SheetSerializerHelper {
      */
     public static parseTags(value: unknown): string[] {
         if (Array.isArray(value)) {
-            return value.map(tag => String(tag).trim()).filter(tag => tag.length > 0);
+            return this.sortTags(value.map(tag => String(tag).trim()).filter(tag => tag.length > 0));
         }
 
         if (typeof value !== 'string') {
             return [];
         }
 
-        return value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        return this.sortTags(value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0));
+    }
+
+    /**
+     * Tags on a record are a set, not a sequence - the order they were typed carries no meaning.
+     * Sorting them here, at the single point where the wire format is read and written, means the
+     * sheet cell, the trips table, the shift quick view and the edit dialog all agree without any
+     * of them sorting for themselves.
+     *
+     * Case-insensitive so "Rain" and "airport" order the way a reader expects rather than by code
+     * point, which would group every capitalised tag ahead of every lowercase one.
+     *
+     * Note this is deliberately NOT applied to autocomplete suggestions: those are ranked by how
+     * often a tag has been used, and alphabetising them would discard that ranking.
+     */
+    private static sortTags(tags: string[]): string[] {
+        return [...tags].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     }
 
     /**
@@ -73,7 +89,7 @@ export class SheetSerializerHelper {
             return '';
         }
 
-        return tags.map(tag => tag.trim()).filter(tag => tag.length > 0).join(', ');
+        return this.sortTags(tags.map(tag => tag.trim()).filter(tag => tag.length > 0)).join(', ');
     }
 
     /**

@@ -76,7 +76,7 @@ describe('SheetSerializerHelper - Tags', () => {
   // both directions, including the messy input a person actually types.
   describe('parseTags', () => {
     it('splits a comma-delimited cell', () => {
-      expect(SheetSerializerHelper.parseTags('rain, surge, airport')).toEqual(['rain', 'surge', 'airport']);
+      expect(SheetSerializerHelper.parseTags('rain, surge, airport')).toEqual(['airport', 'rain', 'surge']);
     });
 
     it('trims whitespace and drops empty entries', () => {
@@ -107,6 +107,32 @@ describe('SheetSerializerHelper - Tags', () => {
     });
   });
 
+  describe('ordering', () => {
+    // Tags on a record are a set - the order they were typed carries no meaning - so sorting at
+    // this single boundary makes the sheet cell, the trips table, the shift quick view and the
+    // edit dialog all agree without any of them sorting for themselves.
+    it('sorts tags read from the sheet', () => {
+      expect(SheetSerializerHelper.parseTags('surge, airport, rain')).toEqual(['airport', 'rain', 'surge']);
+    });
+
+    it('sorts tags written back to the sheet', () => {
+      expect(SheetSerializerHelper.formatTags(['surge', 'airport', 'rain'])).toBe('airport, rain, surge');
+    });
+
+    it('sorts case-insensitively', () => {
+      // Ordering by code point would group every capitalised tag ahead of every lowercase one.
+      expect(SheetSerializerHelper.parseTags('Surge, airport, Rain')).toEqual(['airport', 'Rain', 'Surge']);
+    });
+
+    it('does not mutate the array it was given', () => {
+      const original = ['surge', 'airport'];
+
+      SheetSerializerHelper.formatTags(original);
+
+      expect(original).toEqual(['surge', 'airport']);
+    });
+  });
+
   describe('round trip', () => {
     it('survives sheet -> app -> sheet unchanged', () => {
       const fromSheet = { id: 1, pay: 5, tags: 'rain, surge' } as unknown as ITrip;
@@ -128,8 +154,8 @@ describe('SheetSerializerHelper - Tags', () => {
       const fromSheet = { id: 1, pay: 5, tags: 'weekend, double' } as unknown as IShift;
 
       const app = SheetSerializerHelper.deserializeShift(fromSheet);
-      expect(app.tags).toEqual(['weekend', 'double']);
-      expect(SheetSerializerHelper.serializeShift(app).tags).toBe('weekend, double');
+      expect(app.tags).toEqual(['double', 'weekend']);
+      expect(SheetSerializerHelper.serializeShift(app).tags).toBe('double, weekend');
     });
   });
 });

@@ -51,7 +51,8 @@ export class TagsDialogComponent {
   public readonly placeholder = TAG_INPUT.PLACEHOLDER;
 
   constructor() {
-    this.tags.set([...(this.data?.tags ?? [])]);
+    this.tags.set([...(this.data?.tags ?? [])]
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })));
     void this.refreshSuggestions('');
   }
 
@@ -99,7 +100,10 @@ export class TagsDialogComponent {
       return true; // Already present - clear the box rather than leaving a duplicate sitting there.
     }
 
-    this.tags.update(current => [...current, value]);
+    // Insert in order rather than appending: the list is alphabetical everywhere else, and a tag
+    // that jumps to the bottom until the dialog is reopened would be the one place it is not.
+    this.tags.update(current =>
+      [...current, value].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })));
 
     return true;
   }

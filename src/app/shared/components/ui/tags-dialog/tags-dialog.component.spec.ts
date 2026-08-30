@@ -143,6 +143,17 @@ describe('TagsDialogComponent', () => {
     expect(component.tags()).toEqual(['surge']);
   });
 
+  it('keeps the list alphabetical as tags are added', async () => {
+    // A newly added tag jumping to the bottom until the dialog reopened would be the one place
+    // the ordering did not hold.
+    await build(['rain']);
+
+    await component.add('airport');
+    await component.add('surge');
+
+    expect(component.tags()).toEqual(['airport', 'rain', 'surge']);
+  });
+
   it('disables Add until something is typed', async () => {
     // The button is the primary way in on a phone, so it must not look pressable when it would
     // do nothing.
