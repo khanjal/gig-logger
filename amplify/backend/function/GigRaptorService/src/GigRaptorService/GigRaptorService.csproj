@@ -27,7 +27,7 @@
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.100.7" />
     <PackageReference Include="AWSSDK.S3" Version="4.0.101.6" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.3.11" />
-    <PackageReference Include="RaptorSheets.Gig" Version="5.0.5" />
+    <PackageReference Include="RaptorSheets.Gig" Version="5.0.6" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
