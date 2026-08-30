@@ -221,6 +221,20 @@ describe('TripFormComponent', () => {
     expect(component.showOrder).toBeFalse();
   });
 
+  it('toggleTags should toggle flag and show snack', () => {
+    component.toggleTags();
+    expect(component.showTags).toBeTrue();
+    expect(snackBar.open).toHaveBeenCalled();
+    component.toggleTags();
+    expect(component.showTags).toBeFalse();
+  });
+
+  it('starts with tags collapsed when adding a trip', () => {
+    // Adding happens mid-shift, so the form stays short by default. Tags follow the same rule as
+    // odometer, order and the other secondary fields rather than lengthening every entry.
+    expect(component.showTags).toBeFalse();
+  });
+
   it('togglePickupAddress should toggle flag and show snack', () => {
     component.togglePickupAddress();
     expect(component.showPickupAddress).toBeTrue();
