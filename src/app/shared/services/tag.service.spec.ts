@@ -22,11 +22,19 @@ describe('TagService', () => {
     expect(await service.getAllTags()).toEqual(['rain', 'weekend']);
   });
 
-  it('orders by how often a tag is used, then alphabetically', async () => {
-    // A driver's habitual tags should be offered ahead of a one-off typed months ago.
+  it('orders alphabetically regardless of how often a tag is used', async () => {
+    // Ranked by use at first, so habitual tags surfaced first. That order is unstable - the list
+    // reshuffles as tags are used and a reader can never learn where anything sits - so a
+    // predictable order wins in a list that is scanned repeatedly.
     stub([{ tags: ['rain'] }, { tags: ['rain'] }, { tags: ['airport'] }, { tags: ['surge'] }], []);
 
-    expect(await service.getAllTags()).toEqual(['rain', 'airport', 'surge']);
+    expect(await service.getAllTags()).toEqual(['airport', 'rain', 'surge']);
+  });
+
+  it('sorts case-insensitively', async () => {
+    stub([{ tags: ['Surge'] }, { tags: ['airport'] }, { tags: ['Rain'] }], []);
+
+    expect(await service.getAllTags()).toEqual(['airport', 'Rain', 'Surge']);
   });
 
   it('treats differently-cased spellings as one tag, keeping the first seen', async () => {

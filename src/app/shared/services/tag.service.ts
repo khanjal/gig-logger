@@ -19,10 +19,12 @@ export class TagService {
     private _shiftService = inject(ShiftService);
 
     /**
-     * Every distinct tag across trips and shifts, most-used first then alphabetical.
+     * Every distinct tag across trips and shifts, alphabetically.
      *
-     * Frequency order matters more than it looks: a driver's handful of habitual tags should be the
-     * first thing offered, ahead of a one-off typed months ago.
+     * Ordered by use at first, on the theory that habitual tags should surface first. That was
+     * wrong: usage order is unstable, so the list reshuffles as tags are used and a reader can
+     * never learn where anything sits. A predictable order is worth more in a list that is scanned
+     * repeatedly, and it matches how tags are ordered everywhere else they are shown.
      */
     public async getAllTags(): Promise<string[]> {
         const [trips, shifts] = await Promise.all([
@@ -30,26 +32,22 @@ export class TagService {
             spreadsheetDB.shifts.toArray(),
         ]);
 
-        const counts = new Map<string, { display: string; count: number }>();
+        // Case-insensitive keys so "Rain" and "rain" are one suggestion, keeping the first spelling
+        // seen rather than imposing a casing on the user. Occurrences were counted here when the
+        // list was ranked by use; nothing needs the tally now the order is alphabetical.
+        const seen = new Map<string, string>();
 
         for (const tags of [...trips, ...shifts].map(row => SheetSerializerHelper.parseTags(row?.tags))) {
             for (const tag of tags) {
-                // Case-insensitive grouping so "Rain" and "rain" are one suggestion, but keep the
-                // first spelling seen rather than forcing a casing on the user.
                 const key = tag.toLowerCase();
-                const existing = counts.get(key);
 
-                if (existing) {
-                    existing.count += 1;
-                } else {
-                    counts.set(key, { display: tag, count: 1 });
+                if (!seen.has(key)) {
+                    seen.set(key, tag);
                 }
             }
         }
 
-        return [...counts.values()]
-            .sort((a, b) => b.count - a.count || a.display.localeCompare(b.display))
-            .map(entry => entry.display);
+        return [...seen.values()].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     }
 
     /**
