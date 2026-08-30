@@ -23,7 +23,7 @@ describe('ShiftFormComponent', () => {
   const makeShift = (overrides: Partial<IShift> = {}): IShift => ({
     id: overrides.id ?? 1,
     rowId: overrides.rowId ?? 2,
-    tags: [],
+    tags: overrides.tags ?? [],
     date: overrides.date ?? '2024-01-15',
     service: overrides.service ?? 'DoorDash',
     region: overrides.region ?? 'Downtown',
@@ -62,7 +62,7 @@ describe('ShiftFormComponent', () => {
   const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
     id: overrides.id ?? 1,
     rowId: overrides.rowId ?? 2,
-    tags: [],
+    tags: overrides.tags ?? [],
     date: overrides.date ?? '2024-01-15',
     key: overrides.key ?? '19372-1-DoorDash',
     service: overrides.service ?? 'DoorDash',

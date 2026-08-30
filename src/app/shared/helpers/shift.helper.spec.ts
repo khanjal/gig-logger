@@ -40,7 +40,7 @@ describe('ShiftHelper', () => {
     action: overrides.action ?? '',
     actionTime: overrides.actionTime ?? 0,
     rowId: overrides.rowId ?? 1,
-    tags: [],
+    tags: overrides.tags ?? [],
     saved: overrides.saved ?? true,
   });
 
@@ -76,7 +76,7 @@ describe('ShiftHelper', () => {
     action: overrides.action ?? '',
     actionTime: overrides.actionTime ?? 0,
     rowId: overrides.rowId ?? 1,
-    tags: [],
+    tags: overrides.tags ?? [],
     saved: overrides.saved ?? true,
   });
 

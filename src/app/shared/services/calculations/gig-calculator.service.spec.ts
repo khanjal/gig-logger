@@ -18,7 +18,7 @@ describe('GigCalculatorService', () => {
   const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
     id: overrides.id ?? 1,
     rowId: overrides.rowId ?? 1,
-    tags: [],
+    tags: overrides.tags ?? [],
     saved: overrides.saved ?? true,
     action: overrides.action ?? '',
     actionTime: overrides.actionTime ?? 0,
