@@ -4,7 +4,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -32,7 +31,6 @@ import { TagService } from '@services/tag.service';
     CommonModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
-    MatChipsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,

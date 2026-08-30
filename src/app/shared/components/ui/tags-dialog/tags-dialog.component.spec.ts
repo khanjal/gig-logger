@@ -119,6 +119,20 @@ describe('TagsDialogComponent', () => {
     expect(dialogRef.close).toHaveBeenCalledWith(undefined);
   });
 
+  it('disables Add until something is typed', async () => {
+    // The button is the primary way in on a phone, so it must not look pressable when it would
+    // do nothing.
+    const addButton = () =>
+      (fixture.nativeElement as HTMLElement).querySelector('.tags-dialog__add button') as HTMLButtonElement | null;
+
+    fixture.detectChanges();
+    expect(addButton()?.disabled).toBeTrue();
+
+    component.inputControl.setValue('rain');
+    fixture.detectChanges();
+    expect(addButton()?.disabled).toBeFalse();
+  });
+
   it('closes with an empty array when every tag is removed', async () => {
     // Distinct from cancelling - the caller must write this through rather than ignore it.
     await build(['rain']);

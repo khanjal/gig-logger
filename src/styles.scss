@@ -96,6 +96,24 @@ c
   .badge-success { background: var(--color-success); color: var(--color-text-inverse); }
 }
 
+/* Tag chips - readable in both themes.
+   The generic .bg-primary-soft + .text-primary pairing washed out in dark mode: the soft
+   background lifts toward the primary hue while the text token darkens, leaving too little
+   separation. These set both sides explicitly and add a border so a chip keeps its shape against
+   any surface it sits on. */
+.tag-chip {
+  background: color-mix(in srgb, var(--primary-600) 18%, var(--color-surface));
+  color: var(--color-text-primary);
+  border: 1px solid color-mix(in srgb, var(--primary-600) 40%, var(--color-surface));
+}
+
+html.theme-dark .tag-chip {
+  /* Lighter mix and a brighter border: on a dark surface the same percentages read as near-black. */
+  background: color-mix(in srgb, var(--primary-600) 32%, var(--color-surface));
+  color: var(--color-text-primary);
+  border-color: color-mix(in srgb, var(--primary-600) 60%, var(--color-surface));
+}
+
 /* Dark-mode tweaks for soft backgrounds (html.theme-dark is used by ThemeService) */
 html.theme-dark .bg-success-soft { background: color-mix(in srgb, var(--color-success) 35%, var(--color-surface)); }
 html.theme-dark .bg-primary-soft { background: color-mix(in srgb, var(--primary-600) 35%, var(--color-surface)); }

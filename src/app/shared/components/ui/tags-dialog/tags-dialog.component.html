@@ -1,36 +1,54 @@
 <h2 mat-dialog-title>Tags</h2>
 
-<mat-dialog-content>
-  <mat-form-field class="w-full rg-field-shell" appearance="fill">
-    <mat-label>Add a tag</mat-label>
-    <input
-      matInput
-      [placeholder]="placeholder"
-      [formControl]="inputControl"
-      [matAutocomplete]="auto"
-      (input)="onInput(inputControl.value ?? '')"
-      (keydown.enter)="add(inputControl.value); $event.preventDefault()" />
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-      @for (suggestion of suggestions(); track suggestion) {
-        <mat-option [value]="suggestion">{{ suggestion }}</mat-option>
-      }
-    </mat-autocomplete>
-  </mat-form-field>
+<mat-dialog-content class="tags-dialog__content">
+  <!-- Input and Add sit on one row: on a phone the keyboard covers most of the screen, so the
+       action has to be reachable without scrolling or dismissing it. -->
+  <div class="flex items-start gap-2">
+    <mat-form-field class="flex-1 min-w-0 rg-field-shell" appearance="fill">
+      <mat-label>Add a tag</mat-label>
+      <input
+        matInput
+        [placeholder]="placeholder"
+        [formControl]="inputControl"
+        [matAutocomplete]="auto"
+        (input)="onInput(inputControl.value ?? '')"
+        (keydown.enter)="add(inputControl.value); $event.preventDefault()" />
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+        @for (suggestion of suggestions(); track suggestion) {
+          <mat-option [value]="suggestion">{{ suggestion }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
 
-  @if (tags().length > 0) {
-    <mat-chip-set class="mt-2">
-      @for (tag of tags(); track tag) {
-        <mat-chip (removed)="remove(tag)">
-          {{ tag }}
-          <button matChipRemove [attr.aria-label]="'Remove ' + tag" type="button">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip>
-      }
-    </mat-chip-set>
-  } @else {
-    <p class="text-sm text-tertiary mt-2">No tags yet.</p>
-  }
+    <app-base-rect-button
+      class="tags-dialog__add"
+      [label]="'Add'"
+      [variant]="'primary'"
+      [disabled]="!(inputControl.value ?? '').trim()"
+      (clicked)="add(inputControl.value)">
+    </app-base-rect-button>
+  </div>
+
+  <div class="tags-dialog__tags">
+    @if (tags().length > 0) {
+      <div class="flex flex-wrap gap-2">
+        @for (tag of tags(); track tag) {
+          <span class="tag-chip inline-flex items-center gap-1 pl-3 pr-1 py-1 rounded-full text-sm">
+            {{ tag }}
+            <button
+              type="button"
+              class="tags-dialog__remove"
+              [attr.aria-label]="'Remove ' + tag"
+              (click)="remove(tag)">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </span>
+        }
+      </div>
+    } @else {
+      <p class="text-sm text-tertiary m-0">No tags yet.</p>
+    }
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

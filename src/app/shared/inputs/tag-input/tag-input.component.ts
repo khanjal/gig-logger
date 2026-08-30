@@ -3,7 +3,6 @@ import { Component, Input, forwardRef, inject, signal } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
 
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { TagsDialogComponent } from '@components/ui/tags-dialog/tags-dialog.component';
@@ -20,7 +19,7 @@ import type { ITagsDialog } from '@interfaces/ui/tags-dialog.interface';
 @Component({
   selector: 'app-tag-input',
   standalone: true,
-  imports: [CommonModule, MatChipsModule, MatIconModule, BaseRectButtonComponent],
+  imports: [CommonModule, MatIconModule, BaseRectButtonComponent],
   templateUrl: './tag-input.component.html',
   styleUrl: './tag-input.component.scss',
   providers: [
@@ -71,6 +70,10 @@ export class TagInputComponent {
       .open<TagsDialogComponent, ITagsDialog, string[] | undefined>(TagsDialogComponent, {
         data: { tags: this.tags() },
         autoFocus: true,
+        // Mobile first: near-full width on a phone, capped so it does not sprawl on a desktop.
+        // The dialog's own stylesheet fixes the content width so it stops resizing as tags change.
+        width: '92vw',
+        maxWidth: '28rem',
       })
       .afterClosed()
       .subscribe(result => {

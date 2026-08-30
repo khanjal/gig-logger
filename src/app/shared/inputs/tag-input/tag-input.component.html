@@ -1,21 +1,22 @@
-<div class="app-tag-input rg-field-shell flex items-center gap-2 px-3 py-2 rounded">
-  <div class="flex-1 min-w-0">
-    <div class="text-xs text-tertiary mb-1">{{ fieldName }}</div>
-    @if (tags().length > 0) {
-      <mat-chip-set>
-        @for (tag of tags(); track tag) {
-          <mat-chip [disableRipple]="true" [removable]="false">{{ tag }}</mat-chip>
-        }
-      </mat-chip-set>
-    } @else {
-      <span class="text-sm text-tertiary">None</span>
-    }
-  </div>
+<div class="app-tag-input rg-field-shell rounded p-3">
+  <div class="text-xs text-tertiary mb-2">{{ fieldName }}</div>
+
+  @if (tags().length > 0) {
+    <div class="flex flex-wrap gap-1 mb-3">
+      @for (tag of tags(); track tag) {
+        <span class="tag-chip px-2 py-0.5 rounded-full text-xs whitespace-nowrap">{{ tag }}</span>
+      }
+    </div>
+  } @else {
+    <div class="text-sm text-tertiary mb-3">None</div>
+  }
+
   <app-base-rect-button
-    [icon]="'edit'"
-    [variant]="'icon'"
+    [label]="'Manage Tags'"
+    [icon]="'label'"
+    [variant]="'outlined'"
+    [fullWidth]="true"
     [disabled]="disabled()"
-    [attr.aria-label]="'Edit ' + fieldName"
     (clicked)="openDialog()">
   </app-base-rect-button>
 </div>
