@@ -69,6 +69,7 @@ describe('TripsTableBasicComponent', () => {
     action: overrides.action ?? '',
     actionTime: overrides.actionTime ?? 0,
     rowId: overrides.rowId ?? 1,
+    tags: overrides.tags ?? [],
     saved: overrides.saved ?? true,
   });
 
@@ -86,9 +87,29 @@ describe('TripsTableBasicComponent', () => {
   });
 
   it('detects secondary data presence', () => {
-    expect(component.hasSecondaryData(makeTrip({ endUnit: '', note: '' }))).toBeFalse();
+    expect(component.hasSecondaryData(makeTrip({ endUnit: '', note: '', tags: [] }))).toBeFalse();
     expect(component.hasSecondaryData(makeTrip({ endUnit: '12B', note: '' }))).toBeTrue();
     expect(component.hasSecondaryData(makeTrip({ endUnit: '', note: 'Leave at door' }))).toBeTrue();
+    // Tags alone must open the detail row, or a trip tagged but otherwise unremarkable would
+    // show nothing and look as though the tags had not saved.
+    expect(component.hasSecondaryData(makeTrip({ endUnit: '', note: '', tags: ['rain'] }))).toBeTrue();
+  });
+
+  it('renders tags in the secondary row', () => {
+    component.trips = [makeTrip({ endUnit: '', note: '', tags: ['rain', 'surge'] })];
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('rain');
+    expect(text).toContain('surge');
+  });
+
+  it('renders no tag chips when a trip has none', () => {
+    component.trips = [makeTrip({ endUnit: '12B', note: '', tags: [] })];
+    fixture.detectChanges();
+
+    const chips = (fixture.nativeElement as HTMLElement).querySelectorAll('.rounded-full');
+    expect(chips.length).toBe(0);
   });
 
   it('renders trips rows and secondary row content', () => {

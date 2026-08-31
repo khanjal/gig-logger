@@ -7,7 +7,6 @@ export const SESSION_CONSTANTS = {
   MOCK_LOCATION: 'rg-mock-location',
   // sessionStorage keys (keep existing values to avoid behavior changes)
   APP_LOADED_ONCE: 'app_loaded_once',
-  AUTH_TOKEN: 'token',
   SW_PENDING_REFRESH: 'sw_pending_refresh',
   SW_ERROR_COUNT: 'sw_error_count',
 

@@ -1,0 +1,9 @@
+// Mirrors app-base-input's shell so a tag field sits on the same rhythm as every other field in a
+// form row - same full-width behaviour, same rg-field-shell treatment.
+.app-tag-input {
+  width: 100%;
+
+  .input-field {
+    width: 100%;
+  }
+}

@@ -21,14 +21,14 @@
     <UserSecretsId>e4bf42c1-9b3d-472f-948c-f2ff8cf7bbfa</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="10.1.1" />
-    <PackageReference Include="AWSSDK.CloudWatch" Version="4.0.101.2" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.101" />
-    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.100.2" />
-    <PackageReference Include="AWSSDK.S3" Version="4.0.100.2" />
+    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="10.2.0" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="4.0.103.1" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.102.1" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.100.7" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.101.6" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.3.11" />
-    <PackageReference Include="RaptorSheets.Gig" Version="4.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.1" />
+    <PackageReference Include="RaptorSheets.Gig" Version="5.0.8" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
   <ItemGroup>

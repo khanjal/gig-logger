@@ -27,6 +27,9 @@
           <app-base-rect-button variant="secondary" (clicked)="continueLoad()" [label]="'Continue'"></app-base-rect-button>
           <app-base-rect-button variant="primary" (clicked)="retryLoad()" [label]="'Retry'"></app-base-rect-button>
         }
+        @if (countdownSeconds() !== null) {
+          <app-base-rect-button variant="secondary" (clicked)="keepOpen()" [label]="'Keep Open · ' + countdownSeconds() + 's'"></app-base-rect-button>
+        }
       </div>
       <div class="ml-auto">
         <app-base-rect-button variant="danger" [disabled]="currentTime() < 60 && syncState().isAutoClose" (clicked)="cancelSync()" [label]="syncState().isAutoClose ? 'Cancel' : 'Close'"></app-base-rect-button>

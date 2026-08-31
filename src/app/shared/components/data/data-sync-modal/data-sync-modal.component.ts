@@ -13,6 +13,7 @@ import { ApiMessageHelper } from '@helpers/api-message.helper';
 import type { ApiMessage } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { SHEET_CONSTANTS } from '@constants/sheet.constants';
+import { SYNC_CLOSE } from '@constants/sync.constants';
 
 // Application-specific imports - Interfaces (type-only)
 
@@ -40,7 +41,6 @@ interface TerminalMessage {
 }
 
 interface SyncState {
-  isPaused: boolean;
   isAutoClose: boolean;
   canContinue: boolean;
   forceLoad: boolean;
@@ -84,9 +84,14 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     public time = 0;
     public currentTimeString = "";
 
+    // Close countdown. Null whenever no countdown is running, which is also what
+    // hides the "Keep Open" button.
+    private countdownSubscription: Subscription | null = null;
+    private countdownResolve: (() => void) | null = null;
+    public countdownSeconds = signal<number | null>(null);
+
     // Sync state management
     protected syncState = signal<SyncState>({
-        isPaused: false,
         isAutoClose: true,
         canContinue: false,
         forceLoad: false,
@@ -105,6 +110,14 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         if (this.type === 'load') return 'loaded';
         return 'created and loaded';
     }
+
+    /**
+     * A run that reported a warning gets a longer countdown than a clean one, since
+     * the whole point of the extra time is to read the message before it disappears.
+     */
+    private get closeDelayMs(): number {
+        return this.syncState().hasNonInfoMessage ? SYNC_CLOSE.WARNING_DELAY_MS : this.timerDelay;
+    }
     
     constructor() {
         const config = this.config;
@@ -113,12 +126,12 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         if (typeof config === 'string') {
             this.type = config;
             this.autoCloseOnError = false;
-            this.timerDelay = 5000;
+            this.timerDelay = SYNC_CLOSE.DEFAULT_DELAY_MS;
         } else {
             this.type = config.type;
             this.sheetName = config.sheetName;
             this.autoCloseOnError = config.autoCloseOnError ?? false;
-            this.timerDelay = config.autoCloseTimer ?? 5000;
+            this.timerDelay = config.autoCloseTimer ?? SYNC_CLOSE.DEFAULT_DELAY_MS;
         }
     }
 
@@ -328,11 +341,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         this.appendToLastMessage(`DONE (${this.currentTime() - this.time}s)`);
 
         data.messages.forEach(message => {
-            const messageLevel = message.level.toLowerCase() as MessageType;
-            if (messageLevel !== 'info') {
-                this.syncState.update(s => ({ ...s, hasNonInfoMessage: true }));
-            }
-            this.appendToTerminal(message.message, messageLevel);
+            this.appendToTerminal(message.message, message.level.toLowerCase() as MessageType);
         });
 
         await this.loadData(data);
@@ -353,12 +362,6 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             await this._sheetService.appendSpreadsheetData(data);
             this.appendToLastMessage(`APPENDED (${this.currentTime() - this.time}s)`);
         }
-
-        // Only disable auto-close if there are non-info messages AND autoCloseOnError is false
-        if (this.syncState().hasNonInfoMessage && !this.autoCloseOnError) {
-            this.syncState.update(s => ({ ...s, isAutoClose: false }));
-            this.appendToTerminal("Auto-close disabled");
-        }
     }
 
     private async loadData(data: ISheet) {
@@ -375,18 +378,31 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
         // Subscribe to logger messages during load
         const logSubscription = this._logger.onLog.subscribe((msg: { level: string; message: string }) => {
-            this.appendToTerminal(msg.message);
+            const messageLevel: MessageType = msg.level === 'error' ? 'error' : msg.level === 'warn' ? 'warning' : 'info';
+            this.appendToTerminal(msg.message, messageLevel);
         });
 
-        await this._sheetService.loadSpreadsheetData(data);
-        
+        try {
+            await this._sheetService.loadSpreadsheetData(data);
+        } catch {
+            logSubscription.unsubscribe();
+            this.processFailure('ERROR');
+            return;
+        }
+
         // Unsubscribe after load completes
         logSubscription.unsubscribe();
-        
+
         this.appendToLastMessage(`LOADED (${this.currentTime() - this.time}s)`);
     }
 
     private appendToTerminal(text: string, type: MessageType = 'info') {
+        // Tracked here rather than at each call site so every path - load, save, append -
+        // earns the longer close countdown when something worth reading is reported.
+        if (type !== 'info') {
+            this.syncState.update(s => ({ ...s, hasNonInfoMessage: true }));
+        }
+
         this.terminalMessages.update(msgs => [
             ...msgs,
             { time: DateHelper.getMinutesAndSeconds(this.currentTime()), text, type }
@@ -404,6 +420,10 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     private updateLastMessageType(type: MessageType) {
+        if (type !== 'info') {
+            this.syncState.update(s => ({ ...s, hasNonInfoMessage: true }));
+        }
+
         this.terminalMessages.update(msgs => {
             if (msgs.length === 0) return msgs;
             const updated = [...msgs];
@@ -428,7 +448,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         // Check if we should auto-close even on error
         if (this.autoCloseOnError) {
             this.syncState.update(s => ({ ...s, isAutoClose: true }));
-            this.appendToTerminal(`Error detected - Modal will auto-close in ${this.timerDelay / 1000}s`);
+            this.appendToTerminal(`Error detected - Modal will auto-close in ${this.closeDelayMs / SYNC_CLOSE.TICK_MS}s`);
         } else {
             this.syncState.update(s => ({ ...s, isAutoClose: false }));
             
@@ -467,13 +487,59 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     private async completeSync() {
-        if (this.syncState().isAutoClose) {
-            this.appendToTerminal(`Modal closing @ ${this.currentTime() + (this.timerDelay / 1000)}s`);
-            await this._timerService.delay(this.timerDelay);
-            this.dialogRef.close(true);
-        } else {
+        if (!this.syncState().isAutoClose) {
             this.stopTimer();
+            return;
         }
+
+        await this.runCloseCountdown(this.closeDelayMs);
+    }
+
+    /**
+     * Counts down to close, one second at a time, so that keepOpen() can interrupt it.
+     * The previous implementation awaited a bare setTimeout, which nothing could cancel -
+     * the only way to keep the modal open was to never start closing in the first place.
+     *
+     * Resolves either when the modal closes or when the countdown is cancelled, so the
+     * caller is never left awaiting a promise that cannot settle.
+     */
+    private runCloseCountdown(delayMs: number): Promise<void> {
+        const seconds = Math.max(1, Math.round(delayMs / SYNC_CLOSE.TICK_MS));
+        this.countdownSeconds.set(seconds);
+
+        return new Promise<void>(resolve => {
+            this.countdownResolve = resolve;
+
+            this.countdownSubscription = this._timerService
+                .countdown(delayMs, SYNC_CLOSE.TICK_MS)
+                .subscribe({
+                    next: remaining => this.countdownSeconds.set(remaining),
+                    complete: () => {
+                        this.stopCountdown();
+                        this.dialogRef.close(true);
+                    }
+                });
+        });
+    }
+
+    private stopCountdown() {
+        this.countdownSubscription?.unsubscribe();
+        this.countdownSubscription = null;
+        this.countdownSeconds.set(null);
+
+        this.countdownResolve?.();
+        this.countdownResolve = null;
+    }
+
+    /**
+     * Cancels the pending close so the messages stay on screen. Clearing isAutoClose
+     * also re-enables the Cancel button, which is disabled during an auto-closing run.
+     */
+    public keepOpen() {
+        this.stopCountdown();
+        this.stopTimer();
+        this.syncState.update(s => ({ ...s, isAutoClose: false }));
+        this.appendToTerminal('Auto-close cancelled - close when you are done reviewing');
     }
 
     private startTimer(startFrom = 0) {
@@ -511,7 +577,8 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        // Clean up timer subscription to prevent memory leaks
+        // Clean up timer subscriptions to prevent memory leaks
         this.stopTimer();
+        this.stopCountdown();
     }
 }
