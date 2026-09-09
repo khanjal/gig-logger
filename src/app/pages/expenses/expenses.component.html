@@ -8,8 +8,8 @@
           fabStyle="mini"
           variant="primary"
           [icon]="'save'"
-          [disabled]="saving()"
-          [loading]="saving()"
+          [disabled]="isSaving()"
+          [loading]="isSaving()"
           (clicked)="confirmSaveDialog()"
           title="Save Changes">
         </app-base-fab-button>

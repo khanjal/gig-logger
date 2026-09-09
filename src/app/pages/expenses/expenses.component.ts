@@ -34,6 +34,7 @@ import { updateAction } from '@utils/action.utils';
 import { DATE_FORMATS } from '@constants/date.constants';
 import { firstValueFrom } from 'rxjs';
 import { mapExpenseFormValueToDraft, mapExpenseToFormValue, normalizeExpenseDate } from '@helpers/expense-form.helper';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 import type { IExpenseFormValue } from '@interfaces/ui/expense-form-value.interface';
 
 @Component({
@@ -84,7 +85,8 @@ export class ExpensesComponent implements OnInit {
   public customCategories = signal<string[]>([]);
   public editingExpenseId = signal<number | undefined>(undefined);
   public unsavedData = signal(false);
-  public saving = signal(false);
+  private readonly _saveState = createAsyncOperationState();
+  public isSaving = this._saveState.isLoading;
   public actionEnum = ActionEnum;
   public maxRowId = signal(1);
   private pendingEditRowId?: number;
@@ -369,15 +371,23 @@ export class ExpensesComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(DataSyncModalComponent, {
-        panelClass: 'custom-modalbox',
-        data: inputValue
-    });
+    this._saveState.setLoading();
+    try {
+      const dialogRef = this.dialog.open(DataSyncModalComponent, {
+          panelClass: 'custom-modalbox',
+          data: inputValue
+      });
 
-    const result = await firstValueFrom(dialogRef.afterClosed());
-    if (result) {
-      // Show success message
-      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (result) {
+        this._saveState.setSuccess();
+        // Show success message
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
+      } else {
+        this._saveState.reset();
+      }
+    } catch {
+      this._saveState.setError();
     }
   }
 
