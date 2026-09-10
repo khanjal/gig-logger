@@ -29,6 +29,12 @@
   </script>
 
   <!-- Material Icons -->
+  <!-- The stylesheet is fetched from fonts.googleapis.com at parse time, but the font
+       file itself lives on fonts.gstatic.com and isn't requested until Angular has
+       bootstrapped and rendered an icon (~1.2s in). Preconnecting lets that DNS + TLS
+       handshake happen during bootstrap instead of after it, so a cold load is less
+       likely to outlast the font-display block period and flash ligature names. -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <script>
