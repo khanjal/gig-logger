@@ -1,0 +1,14 @@
+// Type-checks the Playwright suite, which ng lint and the app/spec tsconfigs never see
+// (Playwright itself strips types without checking them). Run: npx tsc -p e2e
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "skipLibCheck": true,
+    "lib": ["es2022", "dom"],
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts", "../playwright.config.ts"]
+}

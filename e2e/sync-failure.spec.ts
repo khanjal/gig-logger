@@ -6,7 +6,7 @@ import { API_BASE, E2E_SHEET, fulfillJson, signIn, stubBackend } from './support
 // (The client-side rejection fixed in 13d92962 is a different path, not covered here.)
 test('a failed sheet load shows an error and lets the sync modal close', async ({ page, context }) => {
   await signIn(context);
-  await stubBackend(page);
+  await stubBackend(context);
   await page.route(`${API_BASE}/sheets/all`, route => fulfillJson(route, { message: 'boom' }, 500));
 
   await page.goto('/setup');

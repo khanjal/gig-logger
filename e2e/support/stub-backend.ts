@@ -1,4 +1,4 @@
-import type { BrowserContext, Page, Route } from '@playwright/test';
+import type { BrowserContext, Route } from '@playwright/test';
 
 // Mirrors src/environments/environment.ts (gigLoggerApi) - the dev build is what ng serve runs.
 export const API_BASE = 'https://gig-api.raptorsheets.com/dev';
@@ -36,6 +36,10 @@ export async function fulfillJson(route: Route, body: unknown, status = 200): Pr
 /**
  * Signs the app in without Google: the access-token cookie is what AuthGoogleService checks
  * first, so with it present no token exchange or refresh happens.
+ *
+ * On localhost the app cannot clear or replace this cookie: SecureCookieStorageService writes
+ * with `Domain=localhost`, which Chromium rejects. A sign-out or token-refresh spec must
+ * assert on something other than the cookie.
  */
 export async function signIn(context: BrowserContext): Promise<void> {
   await context.addCookies([{ name: ACCESS_TOKEN_COOKIE, value: 'e2e-access-token', url: APP_ORIGIN }]);
@@ -46,13 +50,20 @@ export async function signIn(context: BrowserContext): Promise<void> {
 }
 
 /**
- * Stubs every request that leaves the dev server. Anything not stubbed here, or by the test
- * through page.route afterwards (later routes win), is aborted - a test can never reach a
- * real backend by accident.
+ * Stubs every request that leaves the dev server, for every page in the context. Anything not
+ * stubbed here, or by the test through page.route (page routes win over context routes), is
+ * aborted - a test can never reach a real backend by accident.
  */
-export async function stubBackend(page: Page): Promise<void> {
-  await page.route(url => !url.href.startsWith(APP_ORIGIN), route => route.abort());
-  await page.route(GOOGLE_USERINFO_URL, route => fulfillJson(route, E2E_USER));
-  await page.route(`${API_BASE}/sheets/health`, route => fulfillJson(route, { status: 'healthy' }));
-  await page.route(`${API_BASE}/files/list`, route => fulfillJson(route, [E2E_SHEET]));
+export async function stubBackend(context: BrowserContext): Promise<void> {
+  await context.route(url => !url.href.startsWith(APP_ORIGIN), route => {
+    // ApiService turns an aborted call into null, so a missing stub otherwise shows up only
+    // as a confusing locator timeout. Google and font requests are expected to be aborted.
+    if (route.request().url().startsWith(API_BASE)) {
+      console.warn(`[e2e] No stub for ${route.request().method()} ${route.request().url()} - aborted`);
+    }
+    return route.abort();
+  });
+  await context.route(GOOGLE_USERINFO_URL, route => fulfillJson(route, E2E_USER));
+  await context.route(`${API_BASE}/sheets/health`, route => fulfillJson(route, { status: 'healthy' }));
+  await context.route(`${API_BASE}/files/list`, route => fulfillJson(route, [E2E_SHEET]));
 }

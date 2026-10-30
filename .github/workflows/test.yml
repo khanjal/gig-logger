@@ -28,6 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-env
+      - name: Type-check E2E specs
+        run: npx tsc -p e2e
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
       - name: Run E2E tests
