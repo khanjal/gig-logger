@@ -89,3 +89,8 @@ amplifytools.xcconfig
 
 # Claude Code local session files
 .claude/
+
+# Playwright E2E output
+/test-results/
+/playwright-report/
+/blob-report/
