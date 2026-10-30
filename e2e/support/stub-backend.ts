@@ -2,7 +2,10 @@ import type { BrowserContext, Page, Route } from '@playwright/test';
 
 // Mirrors src/environments/environment.ts (gigLoggerApi) - the dev build is what ng serve runs.
 export const API_BASE = 'https://gig-api.raptorsheets.com/dev';
-export const APP_ORIGIN = 'http://localhost:4200';
+// Not ng serve's default 4200, so a dev server left running from another checkout is never
+// mistaken for this one. playwright.config.ts serves on this port.
+export const E2E_PORT = 4201;
+export const APP_ORIGIN = `http://localhost:${E2E_PORT}`;
 
 // Mirrors AUTH_CONSTANTS and SESSION_CONSTANTS in src/app/shared/constants.
 const ACCESS_TOKEN_COOKIE = 'ACCESS_TOKEN';
