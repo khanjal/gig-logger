@@ -86,3 +86,6 @@ amplifytools.xcconfig
 /amplify/backend/function/GigRaptorService/src/GigRaptorService/publish/
 /amplify/backend/function/GigRaptorService/src/GigRaptorService/deployment-package.zip
 /amplify/backend/function/GigRaptorService/src/deployment-package.zip
+
+# Claude Code local session files
+.claude/
