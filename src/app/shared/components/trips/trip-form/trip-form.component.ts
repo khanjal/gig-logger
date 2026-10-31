@@ -51,6 +51,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatSelect, MatSelectTrigger } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
+import { TagInputComponent } from '@inputs/tag-input/tag-input.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { TripsTableBasicComponent } from '../trips-table-basic/trips-table-basic.component';
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
@@ -83,7 +84,7 @@ const NEW_SHIFT_VALUE = 'new';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, SearchInputComponent, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, SearchInputComponent, TagInputComponent, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
   public dialogRef = inject<MatDialogRef<TripFormComponent>>(MatDialogRef, { optional: true });
@@ -128,6 +129,7 @@ export class TripFormComponent implements OnInit {
     dropoffTime: FormControl<string | null>;
     orderNumber: FormControl<string | null>;
     note: FormControl<string | null>;
+    tags: FormControl<string[] | null>;
     exclude: FormControl<string | null>;
   }>({
     shift: new FormControl<string | null>(NEW_SHIFT_VALUE),
@@ -150,6 +152,7 @@ export class TripFormComponent implements OnInit {
     dropoffTime: new FormControl<string | null>(null),
     orderNumber: new FormControl<string | null>(null),
     note: new FormControl<string | null>(null),
+    tags: new FormControl<string[]>([]),
     exclude: new FormControl<string | null>(null),
   });
 
@@ -249,6 +252,7 @@ export class TripFormComponent implements OnInit {
       pickupTime: DateHelper.removeSeconds(this.data.pickupTime),
       dropoffTime: DateHelper.removeSeconds(this.data.dropoffTime),
       note: this.data.note,
+      tags: this.data.tags ?? [],
       endUnit: this.data.endUnit,
       orderNumber: this.data.orderNumber,
       exclude: this.data.exclude ? 'true' : ''
@@ -626,7 +630,7 @@ export class TripFormComponent implements OnInit {
   }
 
   public toggleOrder() {
-    this.toggleSection('showOrder', 'Showing Order Fields', 'Hiding Order Fields');
+    this.toggleSection('showOrder', 'Showing Order & Tag Fields', 'Hiding Order & Tag Fields');
   }
 
   public togglePickupAddress() {

@@ -38,6 +38,13 @@
                       <em class="italic note-text whitespace-pre-line break-words" title="{{trip.note}}">"{{trip.note}}"</em>
                     </span>
                   }
+                  @if (trip.tags?.length) {
+                    <span class="inline-flex flex-wrap gap-1 align-middle" [class.ml-2]="trip.endUnit || trip.note">
+                      @for (tag of trip.tags; track tag) {
+                        <span class="px-2 py-0.5 rounded-full text-xs bg-primary-soft text-primary whitespace-nowrap">{{tag}}</span>
+                      }
+                    </span>
+                  }
                 </td>
               </tr>
             }

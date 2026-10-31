@@ -24,6 +24,8 @@ export class SheetSerializerHelper {
             distance: trip.distance === 0 ? null : trip.distance,
             startOdometer: trip.startOdometer === 0 ? null : trip.startOdometer,
             endOdometer: trip.endOdometer === 0 ? null : trip.endOdometer,
+            // Tags travel as comma-delimited text
+            tags: this.formatTags(trip.tags),
             // Calculated fields remain as-is (total, amountPerDistance, amountPerTime)
         } as ITripSheetRow;
     }
@@ -39,8 +41,82 @@ export class SheetSerializerHelper {
             tip: shift.tip === 0 ? null : shift.tip,
             bonus: shift.bonus === 0 ? null : shift.bonus,
             cash: shift.cash === 0 ? null : shift.cash,
+            // Tags travel as comma-delimited text
+            tags: this.formatTags(shift.tags),
             // Calculated fields remain as-is (total, totalPay, etc.)
         } as IShiftSheetRow;
+    }
+
+    /**
+     * Splits the sheet's comma-delimited tag text into the array the app works with.
+     * Trims whitespace and drops empties, so "rain, , surge," yields ['rain', 'surge'].
+     * RaptorSheets stores this column as opaque text and leaves the convention to us.
+     */
+    public static parseTags(value: unknown): string[] {
+        if (Array.isArray(value)) {
+            return this.sortTags(value.map(tag => String(tag).trim()).filter(tag => tag.length > 0));
+        }
+
+        if (typeof value !== 'string') {
+            return [];
+        }
+
+        return this.sortTags(value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0));
+    }
+
+    /**
+     * Tags on a record are a set, not a sequence - the order they were typed carries no meaning.
+     * Sorting them here, at the single point where the wire format is read and written, means the
+     * sheet cell, the trips table, the shift quick view and the edit dialog all agree without any
+     * of them sorting for themselves.
+     *
+     * Case-insensitive so "Rain" and "airport" order the way a reader expects rather than by code
+     * point, which would group every capitalised tag ahead of every lowercase one.
+     *
+     * Note this is deliberately NOT applied to autocomplete suggestions: those are ranked by how
+     * often a tag has been used, and alphabetising them would discard that ranking.
+     */
+    private static sortTags(tags: string[]): string[] {
+        return [...tags].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    }
+
+    /**
+     * Joins tags back into the sheet's comma-delimited text. Empty array yields an empty cell
+     * rather than a stray separator.
+     */
+    public static formatTags(tags: string[] | undefined | null): string {
+        if (!tags || tags.length === 0) {
+            return '';
+        }
+
+        return this.sortTags(tags.map(tag => tag.trim()).filter(tag => tag.length > 0)).join(', ');
+    }
+
+    /**
+     * Converts a trip as it arrives from the API into the app's shape. Only the tag column needs
+     * translating today; everything else already matches.
+     */
+    public static deserializeTrip(row: ITripSheetRow | ITrip): ITrip {
+        return {
+            ...row,
+            tags: this.parseTags((row as { tags?: unknown }).tags),
+        } as ITrip;
+    }
+
+    /** @see deserializeTrip */
+    public static deserializeShift(row: IShiftSheetRow | IShift): IShift {
+        return {
+            ...row,
+            tags: this.parseTags((row as { tags?: unknown }).tags),
+        } as IShift;
+    }
+
+    public static deserializeTrips(rows: (ITripSheetRow | ITrip)[]): ITrip[] {
+        return rows.map(row => this.deserializeTrip(row));
+    }
+
+    public static deserializeShifts(rows: (IShiftSheetRow | IShift)[]): IShift[] {
+        return rows.map(row => this.deserializeShift(row));
     }
 
     /**

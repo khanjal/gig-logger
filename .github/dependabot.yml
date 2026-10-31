@@ -2,6 +2,8 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    # Land updates on the integration branch; test → main is promoted by hand.
+    target-branch: "test"
     schedule:
       interval: "monthly"
       day: "monday"

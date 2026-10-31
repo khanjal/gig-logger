@@ -25,4 +25,5 @@ export interface IShift extends IAmountPer, IActionRecord {
     totalCash: number;
     note: string;
     omit: boolean;
+    tags: string[];
 }

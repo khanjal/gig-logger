@@ -1,13 +1,13 @@
 <mat-card class="section bg-surface text-secondary">
     <div>
         <mat-card-header class="flex items-center mb-4">
-            <mat-icon>{{ spreadsheet.default === "true" ? "star" : "" }}</mat-icon> 
-            <a href="https://docs.google.com/spreadsheets/d/{{ spreadsheet.id }}" target="_blank">
-                {{ spreadsheet.name | truncate:30 }}</a>
+            <mat-icon>{{ spreadsheet().default === "true" ? "star" : "" }}</mat-icon> 
+            <a href="https://docs.google.com/spreadsheets/d/{{ spreadsheet().id }}" target="_blank">
+                {{ spreadsheet().name | truncate:30 }}</a>
         </mat-card-header>
         <mat-card-content>
-            <div><span class="font-bold">Size</span>: {{ size }}</div>
-            <div><span class="font-bold">Source</span>: {{ spreadsheet.source | sheetSourceLabel }}</div>
+            <div><span class="font-bold">Size</span>: {{ size() }}</div>
+            <div><span class="font-bold">Source</span>: {{ spreadsheet().source | sheetSourceLabel }}</div>
         </mat-card-content>
     </div>
 </mat-card>

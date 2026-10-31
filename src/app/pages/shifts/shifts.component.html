@@ -9,8 +9,8 @@
               fabStyle="mini"
               variant="secondary"
               class="!w-10 !h-10"
-              [loading]="saving()"
-              [disabled]="saving()"
+              [loading]="isSaving()"
+              [disabled]="isSaving()"
               (clicked)="confirmSaveDialog()"
               matTooltip="Save Changes"
               [icon]="'save'">

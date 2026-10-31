@@ -35,6 +35,7 @@ describe('StatHelper', () => {
     action: overrides.action ?? '',
     actionTime: overrides.actionTime ?? 0,
     rowId: overrides.rowId ?? 1,
+    tags: overrides.tags ?? [],
     saved: overrides.saved ?? true,
   });
 

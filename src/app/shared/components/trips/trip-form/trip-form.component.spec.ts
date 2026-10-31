@@ -221,6 +221,13 @@ describe('TripFormComponent', () => {
     expect(component.showOrder).toBeFalse();
   });
 
+  it('starts with the order section collapsed when adding a trip', () => {
+    // Tags live in this section too. On edit it is opened automatically, and on add the single
+    // tap that reveals Apt/Unit and Order Number reveals tags with them - so tags cost no extra
+    // interaction rather than needing a fifth toggle of their own.
+    expect(component.showOrder).toBeFalse();
+  });
+
   it('togglePickupAddress should toggle flag and show snack', () => {
     component.togglePickupAddress();
     expect(component.showPickupAddress).toBeTrue();

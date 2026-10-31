@@ -242,6 +242,9 @@
           <app-base-input class="flex-1 min-w-[90px]" label="Apt/Unit/Room" type="text" placeholder="104" formControlName="endUnit"></app-base-input>
           <app-base-input class="flex-1 min-w-[90px]" label="Order Number" type="text" placeholder="FC229" formControlName="orderNumber"></app-base-input>
         </div>
+        <div class="flex gap-1 mb-3">
+          <app-tag-input class="flex-1 min-w-[90px]" formControlName="tags"></app-tag-input>
+        </div>
       }
       @if (showOrder) {
         <div>

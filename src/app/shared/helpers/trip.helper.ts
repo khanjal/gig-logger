@@ -99,6 +99,9 @@ export class TripHelper {
         trip.place = formValue.place ?? '';
         trip.type = formValue.type ?? '';
         trip.note = formValue.note ?? '';
+        // Fall back to whatever the trip already carries rather than [] - a caller that does
+        // not surface tags in its form should not silently erase them from the sheet.
+        trip.tags = formValue.tags ?? trip.tags ?? [];
         trip.orderNumber = formValue.orderNumber?.toLocaleUpperCase() ?? '';
         trip.exclude = formValue.exclude ? true : false;
         trip.saved = false;
