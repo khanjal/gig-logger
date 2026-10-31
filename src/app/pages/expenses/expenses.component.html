@@ -8,8 +8,8 @@
           fabStyle="mini"
           variant="primary"
           [icon]="'save'"
-          [disabled]="saving()"
-          [loading]="saving()"
+          [disabled]="isSaving()"
+          [loading]="isSaving()"
           (clicked)="confirmSaveDialog()"
           title="Save Changes">
         </app-base-fab-button>
@@ -169,7 +169,7 @@
                         <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
                         <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
                         <td class="py-0.5 px-1 sm:py-1.5 sm:px-2 align-middle">
-                          <button appBaseButton appBaseButtonVariant="icon" [matMenuTriggerFor]="expenseMenu" aria-label="Actions">
+                          <button appBaseButton variant="icon" [matMenuTriggerFor]="expenseMenu" aria-label="Actions">
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #expenseMenu="matMenu">
