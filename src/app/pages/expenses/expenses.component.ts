@@ -14,7 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
-import { BaseFabButtonComponent } from '@components/base';
+import { BaseButtonDirective, BaseFabButtonComponent } from '@components/base';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -54,6 +54,7 @@ import type { IExpenseFormValue } from '@interfaces/ui/expense-form-value.interf
     MatMenuModule,
     BaseDatepickerComponent,
     BaseFabButtonComponent,
+    BaseButtonDirective,
     BaseRectButtonComponent,
     BaseInputComponent
   ],

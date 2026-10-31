@@ -73,7 +73,8 @@ describe('ExpensesComponent', () => {
         { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } },
         CurrencyPipe,
-        DatePipe
+        DatePipe,
+        provideNativeDateAdapter()
       ]
     }).compileComponents();
 
@@ -189,6 +190,20 @@ describe('ExpensesComponent', () => {
       expect(component.monthTotals()['2024-01']).toBeCloseTo(55.75, 2);
       expect(component.monthTotals()['2024-02']).toBeCloseTo(15.00, 2);
       expect(component.yearTotals()['2024']).toBeCloseTo(70.75, 2);
+    });
+  });
+
+  describe('row actions', () => {
+    it('applies the base icon-button styling to the actions menu button', async () => {
+      await component.ngOnInit();
+      expensesStream$.next([makeExpense({ id: 1 })]);
+      component.showAddForm.set(false);
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const actions = (fixture.nativeElement as HTMLElement).querySelector('#expense-row-1 button[aria-label="Actions"]');
+      expect(actions).not.toBeNull();
+      expect(actions?.classList).toContain('btn-icon');
     });
   });
 
