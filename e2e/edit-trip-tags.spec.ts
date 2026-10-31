@@ -7,6 +7,7 @@ import { SHIFT_KEY, sheetEntity, shiftRow, tripRow } from './support/sheet-fixtu
 const SYNC_MODAL_TIMEOUT_MS = 30_000;
 // Two sync-modal runs back to back can outlast Playwright's 30s default for a whole test.
 const TEST_TIMEOUT_MS = 90_000;
+const SHEET_NOTE = 'from the sheet';
 const EDITED_NOTE = 'edited in the app';
 
 // What the backend answers a successful save with. ApiMessageHelper.processSheetSaveResponse
@@ -22,7 +23,7 @@ test('tags typed in the sheet survive editing the trip in the app', async ({ pag
   await signIn(context);
   await stubBackend(context);
   await page.route(`${API_BASE}/sheets/all`, route => fulfillJson(route, {
-    sheetEntity: sheetEntity({ shifts: [shiftRow()], trips: [tripRow({ tags: 'rain,airport' })] }),
+    sheetEntity: sheetEntity({ shifts: [shiftRow()], trips: [tripRow({ note: SHEET_NOTE, tags: 'rain,airport' })] }),
   }));
 
   const savedBodies: { sheets: { trips: Record<string, unknown>[] } }[] = [];
@@ -45,7 +46,12 @@ test('tags typed in the sheet survive editing the trip in the app', async ({ pag
   // Edit something unrelated to tags.
   await page.goto('/trips');
   await page.locator('app-trips-quick-view').getByRole('button', { name: /\bEdit$/ }).click();
-  await page.getByLabel('Note', { exact: true }).fill(EDITED_NOTE);
+  // /trips already shows an (add) trip form, and the edit form ignores a load once it is dirty,
+  // so wait until the edit form holds the sheet's trip before typing into it.
+  await expect(page).toHaveURL(/\/trips\/edit\/2$/);
+  const note = page.getByLabel('Note', { exact: true });
+  await expect(note).toHaveValue(SHEET_NOTE);
+  await note.fill(EDITED_NOTE);
   await page.getByRole('button', { name: /\bUpdate$/ }).click();
 
   // Save to the spreadsheet, and let the save finish.
