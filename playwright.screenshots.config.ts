@@ -21,6 +21,8 @@ export default defineConfig({
   },
   projects: SCREENSHOT_FORM_FACTORS.map(formFactor => ({
     name: formFactor,
+    // Test titles start with the form factor, so each project runs only its own screens.
+    grep: new RegExp(`screenshots ${formFactor} `),
     use: { viewport: SCREENSHOT_SIZES[formFactor] },
   })),
   webServer: {

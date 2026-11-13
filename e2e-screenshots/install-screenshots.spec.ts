@@ -16,6 +16,11 @@ const ICON_FONT_URL = 'https://fonts.gstatic.com/e2e/material-icons.woff2';
 const ICON_FONT_DIR = join(__dirname, '..', 'node_modules', 'material-icons', 'iconfont');
 const THEME_STORAGE_KEY = 'rg-theme-preference';
 const STATS_RANGE_DAYS = 30;
+// Every capture runs at this instant, so regenerating on another day gives identical images and a
+// run cannot straddle midnight. Local time, matching how the app formats dates.
+const FIXED_NOW = new Date(2026, 10, 13, 15, 0, 0);
+const ORDER_WAIT_MINUTES = 15;
+const STICKY_TOOLBAR_OFFSET = '72px';
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 // Rows are numbered from 2; row 1 is the sheet's header.
 const FIRST_ROW_ID = 2;
@@ -82,7 +87,7 @@ function expandExtraShifts(): ISampleShift[] {
   return EXTRA_SHIFTS.map(([daysAgo, number, service, start, rows]) => {
     let clock = parseClock(start);
     const trips = rows.map(([place, name, pay, tip, bonus, distance, minutes], index) => {
-      clock += 15; // wait for the order
+      clock += ORDER_WAIT_MINUTES;
       const pickup = formatClock(clock);
       clock += minutes;
       const trip: ISampleTrip = {
@@ -100,7 +105,7 @@ const round = (n: number) => Math.round(n * 100) / 100;
 
 // Mirrors DateHelper.getDays / toISO, as e2e/support/sheet-fixture.ts does for today.
 function dateFor(daysAgo: number): { date: string; serial: number } {
-  const day = new Date(Date.now() - daysAgo * MS_PER_DAY);
+  const day = new Date(FIXED_NOW.getTime() - daysAgo * MS_PER_DAY);
   return {
     date: day.toLocaleDateString('sv-SE'),
     serial: Math.floor((day.getTime() - new Date('1900-01-01').getTime()) / MS_PER_DAY) + 2,
@@ -130,7 +135,8 @@ function buildSheet(): Record<string, unknown> {
     const distance = round(sample.trips.reduce((sum, t) => sum + t.distance, 0));
     const bonus = round(sample.trips.reduce((sum, t) => sum + (t.bonus ?? 0), 0));
     const total = round(pay + tip + bonus);
-    const hours = (parseClock(sample.finish) - parseClock(sample.start)) / 60;
+    // The sheet's $/hr is per active time (time on trips), which keeps the app's trend icon neutral or up.
+    const hours = sample.trips.reduce((sum, t) => sum + Number(t.duration.slice(3, 5)), 0) / 60;
     const day = daily.get(date) ?? { serial, daysAgo: sample.daysAgo, trips: 0, distance: 0, pay: 0, tip: 0, bonus: 0, total: 0, hours: 0 };
     daily.set(date, {
       ...day, trips: day.trips + sample.trips.length, distance: round(day.distance + distance),
@@ -158,12 +164,13 @@ function buildSheet(): Record<string, unknown> {
   const dailyRows = [...daily.entries()].map(([date, d], index) => ({
     rowId: FIRST_ROW_ID + index, saved: true, action: '', actionTime: 0,
     date, day: d.serial,
-    weekday: new Date(Date.now() - d.daysAgo * MS_PER_DAY).toLocaleDateString('en-US', { weekday: 'short' }),
+    weekday: new Date(FIXED_NOW.getTime() - d.daysAgo * MS_PER_DAY).toLocaleDateString('en-US', { weekday: 'short' }),
     week: '', month: '',
     trips: d.trips, distance: d.distance, time: '', pay: d.pay, tip: d.tip, bonus: d.bonus, cash: 0, total: d.total,
     amountPerTrip: round(d.total / d.trips), amountPerDistance: round(d.total / d.distance), amountPerTime: round(d.total / d.hours),
   }));
-  return { ...sheetEntity({ shifts, trips }), sheets: { ...(sheetEntity({ shifts, trips }) as { sheets: object }).sheets, daily: dailyRows } };
+  const entity = sheetEntity({ shifts, trips }) as { sheets: object };
+  return { ...entity, sheets: { ...entity.sheets, daily: dailyRows } };
 }
 
 /**
@@ -200,6 +207,7 @@ async function settle(page: Page): Promise<void> {
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('mat-progress-spinner, mat-spinner, mat-progress-bar')).toHaveCount(0);
   await expect(page.getByText('Loading...')).toBeHidden();
+  await expect(page.locator('.loading-indicator')).toHaveCSS('opacity', '0'); // the header's top loading bar, after its fade-out
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
 }
 
@@ -216,10 +224,10 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
     // The list sits below the add form; bring it to the top of the frame.
     const heading = page.getByText(/Today's Trips \(4\)/);
     await expect(heading).toBeVisible();
-    await heading.evaluate(el => {
-      el.style.scrollMarginTop = '72px'; // clear the sticky toolbar
+    await heading.evaluate((el, offset) => {
+      el.style.scrollMarginTop = offset; // clear the sticky toolbar
       el.scrollIntoView({ block: 'start', behavior: 'instant' });
-    });
+    }, STICKY_TOOLBAR_OFFSET);
   },
   'edit-trip': async page => {
     await page.goto(`/trips/edit/${TODAY_TRIP_ROW_ID}`);
@@ -240,7 +248,7 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
   'stats': async page => {
     await page.goto('/stats');
     // Pick the last 30 days through the date-range inputs so the picker shows a range.
-    const format = (daysAgo: number) => new Date(Date.now() - daysAgo * MS_PER_DAY).toLocaleDateString('en-US');
+    const format = (daysAgo: number) => new Date(FIXED_NOW.getTime() - daysAgo * MS_PER_DAY).toLocaleDateString('en-US');
     await page.getByPlaceholder('Start date').fill(format(STATS_RANGE_DAYS));
     await page.getByPlaceholder('End date').fill(format(0));
     await page.getByPlaceholder('End date').press('Tab');
@@ -252,10 +260,9 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
 };
 
 test.describe('install-preview screenshots', () => {
-  test.beforeEach(async ({ page, context }, testInfo) => {
-    // Titles start with the form factor; skip before the (slow) sheet load for the other project.
-    test.skip(!testInfo.title.startsWith(`${testInfo.project.name} `), 'other form factor');
+  test.beforeEach(async ({ page, context }) => {
     test.setTimeout(TEST_TIMEOUT_MS);
+    await page.clock.setFixedTime(FIXED_NOW);
     await signIn(context);
     await context.addInitScript(key => localStorage.setItem(key, 'light'), THEME_STORAGE_KEY);
     await stubBackend(context);
