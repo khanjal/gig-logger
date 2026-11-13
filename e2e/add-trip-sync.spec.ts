@@ -2,12 +2,15 @@ import { expect, test } from '@playwright/test';
 import type { BrowserContext, Page } from '@playwright/test';
 import { API_BASE, E2E_SHEET, fulfillJson, signIn, stubBackend } from './support/stub-backend';
 import { SHIFT_KEY, sheetEntity, shiftRow, tripRow } from './support/sheet-fixture';
+import { ROUTES } from './support/routes';
 import { readTable } from './support/app-db';
 
 const SYNC_MODAL_TIMEOUT_MS = 30_000;
 const TEST_TIMEOUT_MS = 90_000;
+const SEEDED_TRIPS = [tripRow()];
+// The next free row after the seeded ones.
+const NEXT_ROW_ID = (SEEDED_TRIPS[0]['rowId'] as number) + SEEDED_TRIPS.length;
 const SAVE_SUCCESS = { messages: [{ message: 'Saved', level: 'INFO', type: 'SAVE_DATA', time: 0 }] };
-const SEEDED_NEXT_ROW_ID = 3;
 const NEW_PLACE = 'Burger Barn';
 const NEW_PAY = 7.25;
 
@@ -19,7 +22,7 @@ async function stubSheet(page: Page, context: BrowserContext): Promise<SavedBody
   await signIn(context);
   await stubBackend(context);
   await page.route(`${API_BASE}/sheets/all`, route => fulfillJson(route, {
-    sheetEntity: sheetEntity({ shifts: [shiftRow()], trips: [tripRow()] }),
+    sheetEntity: sheetEntity({ shifts: [shiftRow()], trips: SEEDED_TRIPS }),
   }));
   const savedBodies: SavedBody[] = [];
   await page.route(`${API_BASE}/sheets`, async route => {
@@ -53,7 +56,7 @@ test('Next Stop adds an unsaved trip that syncs to the sheet', async ({ page, co
   const savedBodies = await stubSheet(page, context);
   await loadSheet(page);
 
-  await page.goto('/trips');
+  await page.goto(ROUTES.trips);
   const heading = page.locator('#todaysTrips');
   await expect(heading).toContainText("Today's Trips (1)");
 
@@ -61,21 +64,19 @@ test('Next Stop adds an unsaved trip that syncs to the sheet', async ({ page, co
   await page.getByRole('menuitem', { name: /Next Stop/ }).click();
 
   await expect(heading).toContainText("Today's Trips (2)");
-  const stored = await readTable<StoredTrip>(page, 'trips');
-  expect(stored).toHaveLength(2);
-  expect(stored.filter(t => !t.saved)).toHaveLength(1);
+  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).map(t => t.saved).sort()).toEqual([false, true]);
 
   await saveToSpreadsheet(page);
 
-  expect(savedBodies).toHaveLength(1);
+  await expect.poll(() => savedBodies.length).toBe(1);
   // Only the unsaved trip goes out, on the sheet's existing shift.
   const { trips } = savedBodies[0].sheets;
   expect(trips).toHaveLength(1);
   expect(trips[0]['key']).toBe(SHIFT_KEY);
-  expect(trips[0]['rowId']).toBe(SEEDED_NEXT_ROW_ID);
+  expect(trips[0]['rowId']).toBe(NEXT_ROW_ID);
 
   // Once saved, nothing is left to push.
-  expect((await readTable<StoredTrip>(page, 'trips')).every(t => t.saved)).toBe(true);
+  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).every(t => t.saved)).toBe(true);
   await expect(page.getByRole('button', { name: /Save Changes to Spreadsheet/ })).toBeHidden();
 });
 
@@ -84,7 +85,7 @@ test('Store adds a trip from the form, the header count matches IndexedDB, and i
   const savedBodies = await stubSheet(page, context);
   await loadSheet(page);
 
-  await page.goto('/trips');
+  await page.goto(ROUTES.trips);
   const heading = page.locator('#todaysTrips');
   await expect(heading).toContainText("Today's Trips (1)");
 
@@ -95,20 +96,19 @@ test('Store adds a trip from the form, the header count matches IndexedDB, and i
   await form.getByRole('button', { name: /\bStore$/ }).click();
 
   await expect(heading).toContainText("Today's Trips (2)");
-  const stored = await readTable<StoredTrip>(page, 'trips');
-  expect(stored).toHaveLength(2);
-  const added = stored.find(t => !t.saved);
+  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).length).toBe(2);
+  const added = (await readTable<StoredTrip>(page, 'trips')).find(t => !t.saved);
   expect(added?.['place']).toBe(NEW_PLACE);
   expect(added?.['key']).toBe(SHIFT_KEY);
   expect(added?.['pay']).toBe(NEW_PAY);
 
   await saveToSpreadsheet(page);
 
-  expect(savedBodies).toHaveLength(1);
+  await expect.poll(() => savedBodies.length).toBe(1);
   const { trips } = savedBodies[0].sheets;
   expect(trips).toHaveLength(1);
   expect(trips[0]['place']).toBe(NEW_PLACE);
   expect(trips[0]['pay']).toBe(NEW_PAY);
   expect(trips[0]['key']).toBe(SHIFT_KEY);
-  expect((await readTable<StoredTrip>(page, 'trips')).every(t => t.saved)).toBe(true);
+  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).every(t => t.saved)).toBe(true);
 });

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { API_BASE, fulfillJson, signIn, stubBackend } from './support/stub-backend';
+import { ROUTES, urlOf } from './support/routes';
 import { sheetEntity, shiftRow, tripRow } from './support/sheet-fixture';
 
 const SYNC_MODAL_TIMEOUT_MS = 30_000;
@@ -14,15 +15,15 @@ test('first-time setup shows the setup card and guards the sheet-gated pages', a
   await signIn(context);
   await stubBackend(context);
 
-  await page.goto('/setup');
+  await page.goto(ROUTES.setup);
   await expect(page.getByText(SETUP_CARD_TITLE)).toBeVisible();
   await expect(page.getByRole('button', { name: /Create New/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Link Sheet/ })).toBeVisible();
   await expect(page.getByText(CURRENT_SHEETS_TITLE)).toBeHidden();
 
-  for (const path of ['/trips', '/shifts', '/stats']) {
+  for (const path of [ROUTES.trips, ROUTES.shifts, ROUTES.stats]) {
     await page.goto(path);
-    await expect(page).toHaveURL(/\/setup$/);
+    await expect(page).toHaveURL(urlOf(ROUTES.setup));
     await expect(page.getByText(SETUP_CARD_TITLE)).toBeVisible();
   }
 });
@@ -38,10 +39,10 @@ test('Create New makes the file and sheets, loads them, and unlocks the app', as
     }
     await fulfillJson(route, NEW_SHEET);
   });
-  const sheetCreates: { sheetId: string | undefined }[] = [];
+  const sheetCreates: { sheetId: string | undefined; body: string | null }[] = [];
   await page.route(`${API_BASE}/sheets`, async route => {
     if (route.request().method() === 'POST') {
-      sheetCreates.push({ sheetId: route.request().headers()['sheet-id'] });
+      sheetCreates.push({ sheetId: route.request().headers()['sheet-id'], body: route.request().postData() });
     }
     await fulfillJson(route, {});
   });
@@ -49,7 +50,7 @@ test('Create New makes the file and sheets, loads them, and unlocks the app', as
     sheetEntity: { ...sheetEntity({ shifts: [shiftRow()], trips: [tripRow()] }), properties: NEW_SHEET },
   }));
 
-  await page.goto('/setup');
+  await page.goto(ROUTES.setup);
   await page.getByRole('button', { name: /Create New/ }).click();
   await page.getByLabel('Sheet Name').fill(NEW_SHEET_NAME);
   await page.getByRole('dialog').getByRole('button', { name: /Create$/ }).click();
@@ -58,16 +59,17 @@ test('Create New makes the file and sheets, loads them, and unlocks the app', as
   await expect(syncModal).toBeVisible();
   await expect(syncModal).toBeHidden({ timeout: SYNC_MODAL_TIMEOUT_MS });
 
-  expect(fileBodies).toEqual([expect.objectContaining({ name: NEW_SHEET_NAME })]);
-  expect(sheetCreates).toEqual([{ sheetId: NEW_SHEET.id }]);
+  await expect.poll(() => fileBodies).toEqual([expect.objectContaining({ name: NEW_SHEET_NAME })]);
+  // createSheet posts no body; the new file's id travels in the Sheet-Id header.
+  await expect.poll(() => sheetCreates).toEqual([{ sheetId: NEW_SHEET.id, body: null }]);
 
   // The setup card gives way to the linked sheet, and the guarded pages open.
   await expect(page.getByText(CURRENT_SHEETS_TITLE)).toBeVisible();
   await expect(page.getByText(SETUP_CARD_TITLE)).toBeHidden();
   await expect(page.getByText(NEW_SHEET_NAME).first()).toBeVisible();
 
-  await page.goto('/trips');
-  await expect(page).toHaveURL(/\/trips$/);
+  await page.goto(ROUTES.trips);
+  await expect(page).toHaveURL(urlOf(ROUTES.trips));
   await expect(page.locator('#todaysTrips')).toContainText("Today's Trips (1)");
 });
 
@@ -77,18 +79,19 @@ test('a failed file creation links nothing and keeps the setup card', async ({ p
   await stubBackend(context);
   await page.route(`${API_BASE}/files/create`, route => fulfillJson(route, { message: 'boom' }, 500));
 
-  await page.goto('/setup');
+  await page.goto(ROUTES.setup);
   await page.getByRole('button', { name: /Create New/ }).click();
   await page.getByLabel('Sheet Name').fill(NEW_SHEET_NAME);
   await page.getByRole('dialog').getByRole('button', { name: /Create$/ }).click();
 
   const syncModal = page.locator('app-data-sync-modal');
   await expect(syncModal).toBeVisible();
+  await expect(syncModal.locator('.text-error', { hasText: 'Creating spreadsheet file... ERROR' })).toBeVisible();
   await syncModal.getByRole('button', { name: /Close/ }).click();
   await expect(syncModal).toBeHidden();
 
   await expect(page.getByText(SETUP_CARD_TITLE)).toBeVisible();
   await expect(page.getByText(CURRENT_SHEETS_TITLE)).toBeHidden();
-  await page.goto('/trips');
-  await expect(page).toHaveURL(/\/setup$/);
+  await page.goto(ROUTES.trips);
+  await expect(page).toHaveURL(urlOf(ROUTES.setup));
 });
