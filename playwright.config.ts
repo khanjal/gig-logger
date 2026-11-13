@@ -22,7 +22,7 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
   ],
   webServer: {
-    // The empty proxy config sidesteps #490 (proxy.conf.json breaks ng serve).
+    // The empty proxy config keeps the run offline: nothing listens on the /api proxy target (localhost:3000).
     command: `npm start -- --port ${E2E_PORT} --proxy-config src/proxy.empty.json`,
     url: APP_ORIGIN,
     reuseExistingServer: !isCI,
