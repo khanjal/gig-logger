@@ -14,7 +14,10 @@ const SAVE_SUCCESS = { messages: [{ message: 'Saved', level: 'INFO', type: 'SAVE
 const NEW_PLACE = 'Burger Barn';
 const NEW_PAY = 7.25;
 
-interface SavedBody { sheets: { trips: Record<string, unknown>[]; shifts: Record<string, unknown>[] } }
+interface SavedBody {
+  sheetId: string | undefined;
+  sheets: { trips: Record<string, unknown>[]; shifts: Record<string, unknown>[] };
+}
 type StoredTrip = Record<string, unknown> & { saved: boolean };
 
 /** Signs in, stubs the backend and the sheet load, and records every PUT save body. */
@@ -27,7 +30,7 @@ async function stubSheet(page: Page, context: BrowserContext): Promise<SavedBody
   const savedBodies: SavedBody[] = [];
   await page.route(`${API_BASE}/sheets`, async route => {
     if (route.request().method() === 'PUT') {
-      savedBodies.push(route.request().postDataJSON());
+      savedBodies.push({ ...route.request().postDataJSON(), sheetId: route.request().headers()['sheet-id'] });
     }
     await fulfillJson(route, { sheetEntity: SAVE_SUCCESS });
   });
@@ -68,7 +71,9 @@ test('Next Stop adds an unsaved trip that syncs to the sheet', async ({ page, co
 
   await saveToSpreadsheet(page);
 
-  await expect.poll(() => savedBodies.length).toBe(1);
+  // The SAVED line only shows once the save is answered, so a duplicate PUT would be recorded by now.
+  expect(savedBodies).toHaveLength(1);
+  expect(savedBodies[0].sheetId).toBe(E2E_SHEET.id);
   // Only the unsaved trip goes out, on the sheet's existing shift.
   const { trips } = savedBodies[0].sheets;
   expect(trips).toHaveLength(1);
@@ -76,7 +81,7 @@ test('Next Stop adds an unsaved trip that syncs to the sheet', async ({ page, co
   expect(trips[0]['rowId']).toBe(NEXT_ROW_ID);
 
   // Once saved, nothing is left to push.
-  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).every(t => t.saved)).toBe(true);
+  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).map(t => t.saved)).toEqual([true, true]);
   await expect(page.getByRole('button', { name: /Save Changes to Spreadsheet/ })).toBeHidden();
 });
 
@@ -104,11 +109,13 @@ test('Store adds a trip from the form, the header count matches IndexedDB, and i
 
   await saveToSpreadsheet(page);
 
-  await expect.poll(() => savedBodies.length).toBe(1);
+  // The SAVED line only shows once the save is answered, so a duplicate PUT would be recorded by now.
+  expect(savedBodies).toHaveLength(1);
+  expect(savedBodies[0].sheetId).toBe(E2E_SHEET.id);
   const { trips } = savedBodies[0].sheets;
   expect(trips).toHaveLength(1);
   expect(trips[0]['place']).toBe(NEW_PLACE);
   expect(trips[0]['pay']).toBe(NEW_PAY);
   expect(trips[0]['key']).toBe(SHIFT_KEY);
-  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).every(t => t.saved)).toBe(true);
+  await expect.poll(async () => (await readTable<StoredTrip>(page, 'trips')).map(t => t.saved)).toEqual([true, true]);
 });

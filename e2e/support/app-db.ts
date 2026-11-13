@@ -10,9 +10,15 @@ export async function readTable<T = Record<string, unknown>>(page: Page, table: 
     open.onerror = () => reject(open.error);
     open.onsuccess = () => {
       const db = open.result;
-      const request = db.transaction(tableName, 'readonly').objectStore(tableName).getAll();
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => { db.close(); resolve(request.result); };
+      try {
+        const request = db.transaction(tableName, 'readonly').objectStore(tableName).getAll();
+        request.onerror = () => { db.close(); reject(request.error); };
+        request.onsuccess = () => { db.close(); resolve(request.result); };
+      } catch (error) {
+        // A missing object store throws here; reject rather than hang until the test times out.
+        db.close();
+        reject(error);
+      }
     };
   }), [SPREADSHEET_DB, table]) as Promise<T[]>;
 }

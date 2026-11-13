@@ -4,6 +4,7 @@ import { ROUTES, urlOf } from './support/routes';
 import { sheetEntity, shiftRow, tripRow } from './support/sheet-fixture';
 
 const SYNC_MODAL_TIMEOUT_MS = 30_000;
+const TEST_TIMEOUT_MS = 90_000;
 const NEW_SHEET_NAME = 'My First Sheet';
 const NEW_SHEET = { id: 'e2e-created-sheet-id', name: NEW_SHEET_NAME };
 const SETUP_CARD_TITLE = 'Set Up Your Spreadsheet';
@@ -29,6 +30,7 @@ test('first-time setup shows the setup card and guards the sheet-gated pages', a
 });
 
 test('Create New makes the file and sheets, loads them, and unlocks the app', async ({ page, context }) => {
+  test.setTimeout(TEST_TIMEOUT_MS);
   await signIn(context);
   await stubBackend(context);
 
@@ -59,9 +61,9 @@ test('Create New makes the file and sheets, loads them, and unlocks the app', as
   await expect(syncModal).toBeVisible();
   await expect(syncModal).toBeHidden({ timeout: SYNC_MODAL_TIMEOUT_MS });
 
-  await expect.poll(() => fileBodies).toEqual([expect.objectContaining({ name: NEW_SHEET_NAME })]);
+  expect(fileBodies).toEqual([expect.objectContaining({ name: NEW_SHEET_NAME })]);
   // createSheet posts no body; the new file's id travels in the Sheet-Id header.
-  await expect.poll(() => sheetCreates).toEqual([{ sheetId: NEW_SHEET.id, body: null }]);
+  expect(sheetCreates).toEqual([{ sheetId: NEW_SHEET.id, body: null }]);
 
   // The setup card gives way to the linked sheet, and the guarded pages open.
   await expect(page.getByText(CURRENT_SHEETS_TITLE)).toBeVisible();
