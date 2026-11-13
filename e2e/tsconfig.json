@@ -10,5 +10,5 @@
     "lib": ["es2022", "dom"],
     "types": ["node"]
   },
-  "include": ["./**/*.ts", "../playwright.config.ts"]
+  "include": ["./**/*.ts", "../e2e-screenshots/**/*.ts", "../playwright.config.ts", "../playwright.screenshots.config.ts"]
 }
