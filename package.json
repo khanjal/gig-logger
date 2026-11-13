@@ -34,7 +34,7 @@
       "minimatch": "^3.1.5"
     },
     "minimatch": "^10",
-    "http-proxy-middleware": "^3.0.7",
+    "http-proxy-middleware": "^2.0.11",
     "undici": "^7.28.0"
   },
   "dependencies": {
