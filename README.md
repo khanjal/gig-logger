@@ -72,6 +72,14 @@ Run frontend unit tests:
 npm test
 ```
 
+### PWA install screenshots
+The install-preview images listed under `screenshots` in `src/manifest.json` (`src/assets/screenshots/narrow` and `wide`) are generated, not hand-captured. After a UI change, regenerate them with:
+```bash
+npx playwright install chromium   # first time only
+npm run screenshots
+```
+This starts the dev server on port 4201 (or reuses one already there), loads stubbed sample data (no real sheet, backend or Google call) and writes each PNG at the exact size the manifest declares. Review the images, then commit them. The script lives in `e2e-screenshots/` and is not part of `npm run e2e`. To add a screen, add the entry to the manifest and a matching capture in `e2e-screenshots/install-screenshots.spec.ts`.
+
 ## Service (Lambda)
 
 ### Setup
