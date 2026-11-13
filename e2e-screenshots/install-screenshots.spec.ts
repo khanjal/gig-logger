@@ -20,6 +20,10 @@ const STATS_RANGE_DAYS = 30;
 // run cannot straddle midnight. Local time, matching how the app formats dates.
 const FIXED_NOW = new Date(2026, 10, 13, 15, 0, 0);
 const ORDER_WAIT_MINUTES = 15;
+// A point in the empty left gutter, below the toolbar, to park the mouse on.
+const EDIT_ATTEMPT_TIMEOUT_MS = 3_000;
+const EDIT_RETRY_TIMEOUT_MS = 60_000;
+const NEUTRAL_MOUSE_Y = 400;
 const STICKY_TOOLBAR_OFFSET = '72px';
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 // Rows are numbered from 2; row 1 is the sheet's header.
@@ -119,6 +123,8 @@ function allShifts(): ISampleShift[] {
 
 // Row ids of today's shift (the last one) and of its second trip (Green Bowl), for the edit screens.
 const TODAY_SHIFT_ROW_ID = FIRST_ROW_ID + allShifts().length - 1;
+// The list is newest first, so today's second trip (Green Bowl) is the third card.
+const TODAY_EDIT_CARD_INDEX = 2;
 const TODAY_TRIP_ROW_ID = FIRST_ROW_ID + allShifts().slice(0, -1).reduce((sum, shift) => sum + shift.trips.length, 0) + 1;
 
 function buildSheet(): Record<string, unknown> {
@@ -230,10 +236,17 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
     }, STICKY_TOOLBAR_OFFSET);
   },
   'edit-trip': async page => {
-    await page.goto(`/trips/edit/${TODAY_TRIP_ROW_ID}`);
-    await expect(page).toHaveURL(/\/trips\/edit\//);
+    // The edit form fills its Shift/Batch/Group select only when the form's shift options have
+    // loaded before the trip data arrives; the app races those two, so an attempt that leaves the
+    // select empty is retried from the list rather than captured.
+    await expect(async () => {
+      await page.goto('/trips');
+      await page.locator('app-trips-quick-view').nth(TODAY_EDIT_CARD_INDEX).getByRole('button', { name: 'Edit', exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`/trips/edit/${TODAY_TRIP_ROW_ID}$`));
+      await expect(page.getByLabel('Place')).toHaveValue('Green Bowl');
+      await expect(page.locator('mat-select[name="shift"]')).toContainText('DoorDash #1', { timeout: EDIT_ATTEMPT_TIMEOUT_MS });
+    }).toPass({ timeout: EDIT_RETRY_TIMEOUT_MS });
     await expect(page.getByLabel('Note', { exact: true })).toBeVisible();
-    await expect(page.getByLabel('Place')).toHaveValue('Green Bowl');
   },
   'shifts': async page => {
     await page.goto('/shifts');
@@ -252,6 +265,9 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
     await page.getByPlaceholder('Start date').fill(format(STATS_RANGE_DAYS));
     await page.getByPlaceholder('End date').fill(format(0));
     await page.getByPlaceholder('End date').press('Tab');
+    // Tab leaves focus on the calendar toggle; clear focus and hover so the field is captured at rest.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    await page.mouse.move(0, NEUTRAL_MOUSE_Y);
     await expect(page.locator('app-stats-table').first()).toContainText('DoorDash');
     // Every stat card must hold a real value; a dash means the seed data is too thin.
     await expect(page.locator('app-stats-summary')).toContainText('Busiest Day');
@@ -262,13 +278,15 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
 test.describe('install-preview screenshots', () => {
   test.beforeEach(async ({ page, context }) => {
     test.setTimeout(TEST_TIMEOUT_MS);
-    await page.clock.setFixedTime(FIXED_NOW);
     await signIn(context);
     await context.addInitScript(key => localStorage.setItem(key, 'light'), THEME_STORAGE_KEY);
     await stubBackend(context);
     await page.route(`${API_BASE}/sheets/all`, route => fulfillJson(route, { sheetEntity: buildSheet() }));
     await serveIconFont(page);
     await linkSheet(page);
+    // After the sheet is stored: with the clock pinned during the sync the local database ends up
+    // empty, and the edit forms then cannot find a trip's shift.
+    await page.clock.setFixedTime(FIXED_NOW);
   });
 
   for (const entry of SCREENSHOT_ENTRIES) {
