@@ -15,15 +15,14 @@ const ICON_CSS_URL = 'https://fonts.googleapis.com/icon?family=Material+Icons';
 const ICON_FONT_URL = 'https://fonts.gstatic.com/e2e/material-icons.woff2';
 const ICON_FONT_DIR = join(__dirname, '..', 'node_modules', 'material-icons', 'iconfont');
 const THEME_STORAGE_KEY = 'rg-theme-preference';
+const STATS_RANGE_DAYS = 30;
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 // Rows are numbered from 2; row 1 is the sheet's header.
 const FIRST_ROW_ID = 2;
-const TODAY_SHIFT_ROW_ID = FIRST_ROW_ID;
-const TODAY_TRIP_ROW_ID = FIRST_ROW_ID + 1;
 
 interface ISampleTrip {
   place: string; name: string; type: string; pickup: string; dropoff: string; duration: string;
-  pay: number; tip: number; distance: number; startAddress: string; endAddress: string;
+  pay: number; tip: number; bonus?: number; distance: number; startAddress: string; endAddress: string;
 }
 interface ISampleShift {
   daysAgo: number; number: number; service: string; start: string; finish: string; trips: ISampleTrip[];
@@ -56,6 +55,47 @@ const SAMPLE_SHIFTS: ISampleShift[] = [
   },
 ];
 
+// [place, customer, pay, tip, bonus, distance, minutes] - compact rows for the older shifts, which
+// give the stats page several weekdays, a few $0 tips, some bonuses and varied distances.
+type SampleRow = [string, string, number, number, number, number, number];
+const EXTRA_SHIFTS: [daysAgo: number, number: number, service: string, start: string, rows: SampleRow[]][] = [
+  [3, 1, 'DoorDash', '6:00 PM', [['Burger Barn', 'Avery', 5.5, 0, 2, 1.8, 18], ['Sushi Place', 'Blake', 8, 9, 0, 6.4, 34], ['Noodle House', 'Cameron', 4.25, 2, 0, 2.2, 20], ['Taco Spot', 'Devon', 4.75, 3.5, 1.5, 3.0, 22]]],
+  [4, 1, 'Uber Eats', '11:30 AM', [['Green Bowl', 'Emery', 6, 5, 0, 4.1, 26], ['Pizza Corner', 'Finley', 5, 0, 0, 2.6, 19], ['Burger Barn', 'Harper', 5.75, 4, 3, 7.9, 41]]],
+  [6, 1, 'DoorDash', '4:30 PM', [['Taco Spot', 'Indy', 4.5, 3, 0, 1.4, 15], ['Sushi Place', 'Jules', 9.25, 7.5, 0, 8.8, 44], ['Green Bowl', 'Kai', 5.25, 0, 0, 3.3, 24], ['Pizza Corner', 'Logan', 6.5, 6, 2.5, 5.2, 31], ['Noodle House', 'Max', 4.5, 2.5, 0, 2.0, 17]]],
+  [8, 1, 'Uber Eats', '5:15 PM', [['Burger Barn', 'Nico', 6.25, 8, 0, 4.7, 29], ['Taco Spot', 'Oakley', 4.5, 3, 0, 2.1, 18], ['Sushi Place', 'Parker', 7.75, 10, 4, 9.6, 46]]],
+  [9, 1, 'DoorDash', '12:00 PM', [['Green Bowl', 'Quinn', 5.5, 4, 0, 3.7, 25], ['Pizza Corner', 'Reese', 5, 0, 0, 2.9, 21], ['Noodle House', 'Sage', 4.75, 3, 0, 2.4, 19]]],
+  [11, 1, 'DoorDash', '6:30 PM', [['Burger Barn', 'Tatum', 5.25, 5.5, 2, 3.9, 27], ['Taco Spot', 'Uma', 4.5, 2, 0, 1.6, 16], ['Sushi Place', 'Val', 8.5, 6, 0, 7.3, 38], ['Green Bowl', 'Wren', 5.5, 3.5, 0, 3.4, 23]]],
+];
+
+const TIME_FORMAT: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+
+function parseClock(clock: string): number {
+  const [, hours, minutes, meridiem] = /(\d+):(\d+) (AM|PM)/.exec(clock)!;
+  return (Number(hours) % 12 + (meridiem === 'PM' ? 12 : 0)) * 60 + Number(minutes);
+}
+
+function formatClock(minutes: number): string {
+  return new Date(2000, 0, 1, 0, minutes).toLocaleTimeString('en-US', TIME_FORMAT);
+}
+
+function expandExtraShifts(): ISampleShift[] {
+  return EXTRA_SHIFTS.map(([daysAgo, number, service, start, rows]) => {
+    let clock = parseClock(start);
+    const trips = rows.map(([place, name, pay, tip, bonus, distance, minutes], index) => {
+      clock += 15; // wait for the order
+      const pickup = formatClock(clock);
+      clock += minutes;
+      const trip: ISampleTrip = {
+        place, name, type: 'Pickup', pickup, dropoff: formatClock(clock),
+        duration: `00:${String(minutes).padStart(2, '0')}:00`, pay, tip, bonus, distance,
+        startAddress: `${100 + index * 37} Main St`, endAddress: `${20 + index * 53} ${['Oak Ave', 'Elm Dr', 'Lake Rd', 'Cedar Ct', 'Birch Ln'][index % 5]}`,
+      };
+      return trip;
+    });
+    return { daysAgo, number, service, start, finish: formatClock(clock + 10), trips };
+  });
+}
+
 const round = (n: number) => Math.round(n * 100) / 100;
 
 // Mirrors DateHelper.getDays / toISO, as e2e/support/sheet-fixture.ts does for today.
@@ -67,24 +107,42 @@ function dateFor(daysAgo: number): { date: string; serial: number } {
   };
 }
 
+// Oldest first, so the newest shift gets the highest row id and tops the app's lists.
+function allShifts(): ISampleShift[] {
+  return [...SAMPLE_SHIFTS, ...expandExtraShifts()].sort((a, b) => b.daysAgo - a.daysAgo);
+}
+
+// Row ids of today's shift (the last one) and of its second trip (Green Bowl), for the edit screens.
+const TODAY_SHIFT_ROW_ID = FIRST_ROW_ID + allShifts().length - 1;
+const TODAY_TRIP_ROW_ID = FIRST_ROW_ID + allShifts().slice(0, -1).reduce((sum, shift) => sum + shift.trips.length, 0) + 1;
+
 function buildSheet(): Record<string, unknown> {
   const shifts: Record<string, unknown>[] = [];
   const trips: Record<string, unknown>[] = [];
   let rowId = FIRST_ROW_ID;
   let tripRowId = FIRST_ROW_ID;
-  for (const sample of SAMPLE_SHIFTS) {
+  const daily = new Map<string, { serial: number; daysAgo: number; trips: number; distance: number; pay: number; tip: number; bonus: number; total: number; hours: number }>();
+  for (const sample of allShifts()) {
     const { date, serial } = dateFor(sample.daysAgo);
     const key = `${serial}-${sample.number}-${sample.service}`;
     const pay = round(sample.trips.reduce((sum, t) => sum + t.pay, 0));
     const tip = round(sample.trips.reduce((sum, t) => sum + t.tip, 0));
     const distance = round(sample.trips.reduce((sum, t) => sum + t.distance, 0));
-    const total = round(pay + tip);
+    const bonus = round(sample.trips.reduce((sum, t) => sum + (t.bonus ?? 0), 0));
+    const total = round(pay + tip + bonus);
+    const hours = (parseClock(sample.finish) - parseClock(sample.start)) / 60;
+    const day = daily.get(date) ?? { serial, daysAgo: sample.daysAgo, trips: 0, distance: 0, pay: 0, tip: 0, bonus: 0, total: 0, hours: 0 };
+    daily.set(date, {
+      ...day, trips: day.trips + sample.trips.length, distance: round(day.distance + distance),
+      pay: round(day.pay + pay), tip: round(day.tip + tip), bonus: round(day.bonus + bonus),
+      total: round(day.total + total), hours: day.hours + hours,
+    });
     shifts.push(shiftRow({
       rowId: rowId++, date, key, number: sample.number, service: sample.service,
       start: sample.start, finish: sample.finish,
-      trips: sample.trips.length, distance, pay, tip, total,
-      totalTrips: sample.trips.length, totalDistance: distance, totalPay: pay, totalTips: tip, grandTotal: total,
-      amountPerTrip: round(total / sample.trips.length),
+      trips: sample.trips.length, distance, pay, tip, bonus, total,
+      totalTrips: sample.trips.length, totalDistance: distance, totalPay: pay, totalTips: tip, totalBonus: bonus, grandTotal: total,
+      amountPerTrip: round(total / sample.trips.length), amountPerTime: round(total / hours),
     }));
     for (const t of sample.trips) {
       trips.push(tripRow({
@@ -92,12 +150,20 @@ function buildSheet(): Record<string, unknown> {
         type: t.type, place: t.place, name: t.name,
         pickupTime: t.pickup, dropoffTime: t.dropoff, duration: t.duration,
         startAddress: t.startAddress, endAddress: t.endAddress,
-        pay: t.pay, tip: t.tip, total: round(t.pay + t.tip), distance: t.distance,
-        amountPerDistance: round((t.pay + t.tip) / t.distance),
+        pay: t.pay, tip: t.tip, bonus: t.bonus ?? 0, total: round(t.pay + t.tip + (t.bonus ?? 0)), distance: t.distance,
+        amountPerDistance: round((t.pay + t.tip + (t.bonus ?? 0)) / t.distance),
       }));
     }
   }
-  return sheetEntity({ shifts, trips });
+  const dailyRows = [...daily.entries()].map(([date, d], index) => ({
+    rowId: FIRST_ROW_ID + index, saved: true, action: '', actionTime: 0,
+    date, day: d.serial,
+    weekday: new Date(Date.now() - d.daysAgo * MS_PER_DAY).toLocaleDateString('en-US', { weekday: 'short' }),
+    week: '', month: '',
+    trips: d.trips, distance: d.distance, time: '', pay: d.pay, tip: d.tip, bonus: d.bonus, cash: 0, total: d.total,
+    amountPerTrip: round(d.total / d.trips), amountPerDistance: round(d.total / d.distance), amountPerTime: round(d.total / d.hours),
+  }));
+  return { ...sheetEntity({ shifts, trips }), sheets: { ...(sheetEntity({ shifts, trips }) as { sheets: object }).sheets, daily: dailyRows } };
 }
 
 /**
@@ -173,7 +239,15 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
   },
   'stats': async page => {
     await page.goto('/stats');
+    // Pick the last 30 days through the date-range inputs so the picker shows a range.
+    const format = (daysAgo: number) => new Date(Date.now() - daysAgo * MS_PER_DAY).toLocaleDateString('en-US');
+    await page.getByPlaceholder('Start date').fill(format(STATS_RANGE_DAYS));
+    await page.getByPlaceholder('End date').fill(format(0));
+    await page.getByPlaceholder('End date').press('Tab');
     await expect(page.locator('app-stats-table').first()).toContainText('DoorDash');
+    // Every stat card must hold a real value; a dash means the seed data is too thin.
+    await expect(page.locator('app-stats-summary')).toContainText('Busiest Day');
+    await expect(page.locator('app-stats-summary')).not.toContainText('—');
   },
 };
 
