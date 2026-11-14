@@ -22,6 +22,11 @@ const DAY_SERIAL = Math.floor((NOW.getTime() - new Date('1900-01-01').getTime())
 /** Mirrors ShiftHelper.createNewShift's key, so the trip and its shift link up. */
 export const SHIFT_KEY = `${DAY_SERIAL}-${SHIFT_NUMBER}-${SERVICE}`;
 
+/** The same shift number on the day before, for a second service whose shift is not the newest. */
+export const OTHER_SERVICE = 'Uber';
+export const OTHER_SHIFT_KEY = `${DAY_SERIAL - 1}-${SHIFT_NUMBER}-${OTHER_SERVICE}`;
+export const YESTERDAY = new Date(NOW.getTime() - MS_PER_DAY).toLocaleDateString('sv-SE');
+
 /** A shift row as the API sends it - tags are the sheet's raw comma-delimited text. */
 export function shiftRow(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {

@@ -304,35 +304,46 @@ export class TripFormComponent implements OnInit {
     return tripShift;
   }
 
+  /**
+   * Add-mode defaults. Every await here is a window in which the edit trip's data can arrive
+   * (the page hands it over while this load is still reading), so each step stops once the form
+   * holds a trip - the edit load owns the shift, service and region from then on (#505).
+   */
   private async setDefaultShift() {
     await this.loadShiftOptions();
+    if (this.isHoldingTrip()) return;
 
-    if (!this.data?.id) {
-      this.resetSelectedShiftState();
+    this.resetSelectedShiftState();
 
-      const today = DateHelper.toISO();
-      const todaysTrips = await this._tripService.query('date', today);
-      sort(todaysTrips, '-id');
-      const lastTrip = todaysTrips[0];
-      let lastUsedShift: IShift | undefined = undefined;
-      if (lastTrip) {
-        lastUsedShift = this.shifts.find(x => x.key === lastTrip.key);
-      }
-      if (lastUsedShift) {
-        this.selectedShift = lastUsedShift;
-        this.selectedShiftOption.set(this.toShiftSummaryOption(lastUsedShift));
-        this.tripForm.controls.shift.setValue(lastUsedShift.key, { emitEvent: false });
-      }
-
-      const places = await this._placeService.list();
-      if (places.length === 1) {
-        this.tripForm.controls.place.setValue(places[0].place);
-        await this.selectPlace();
-      }
+    const today = DateHelper.toISO();
+    const todaysTrips = await this._tripService.query('date', today);
+    if (this.isHoldingTrip()) return;
+    sort(todaysTrips, '-id');
+    const lastTrip = todaysTrips[0];
+    let lastUsedShift: IShift | undefined = undefined;
+    if (lastTrip) {
+      lastUsedShift = this.shifts.find(x => x.key === lastTrip.key);
+    }
+    if (lastUsedShift) {
+      this.selectedShift = lastUsedShift;
+      this.selectedShiftOption.set(this.toShiftSummaryOption(lastUsedShift));
+      this.tripForm.controls.shift.setValue(lastUsedShift.key, { emitEvent: false });
     }
 
-    const formShift = this.tripForm.value.shift;
-    await this.onShiftSelected(formShift);
+    const places = await this._placeService.list();
+    if (this.isHoldingTrip()) return;
+    if (places.length === 1) {
+      this.tripForm.controls.place.setValue(places[0].place);
+      await this.selectPlace();
+      if (this.isHoldingTrip()) return;
+    }
+
+    await this.applyShiftSelection(this.tripForm.value.shift, () => this.isHoldingTrip());
+  }
+
+  /** True once the form has been given a saved trip to edit. */
+  private isHoldingTrip(): boolean {
+    return !!this.data?.id;
   }
 
   public async addTrip() {
@@ -429,6 +440,11 @@ export class TripFormComponent implements OnInit {
   }
 
   public async onShiftSelected(shiftKey: string | null | undefined) {
+    await this.applyShiftSelection(shiftKey, () => false);
+  }
+
+  /** `isSuperseded` is checked after the async read, so a default that lost a race is dropped. */
+  private async applyShiftSelection(shiftKey: string | null | undefined, isSuperseded: () => boolean) {
     if (shiftKey && shiftKey !== NEW_SHIFT_VALUE) {
       const value = this.shifts.find(shift => shift.key === shiftKey);
       if (!value) {
@@ -447,10 +463,16 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
+    if (isSuperseded()) return;
+    // Reset before the read, not after: the form runs setDefaultShift several times at once (its own
+    // load plus the page's reloads), and a later run may already have preselected today's last shift
+    // while this run is still reading; resetting after the read would undo that choice. A trip that
+    // arrives during the read is handled by the check right after it.
     this.resetSelectedShiftState();
     this.tripForm.controls.service.setValidators([Validators.required]);
 
     const shifts = (await this._shiftService.list()).reverse();
+    if (isSuperseded()) return;
     const shift = shifts[0];
 
     if (!shift) {
