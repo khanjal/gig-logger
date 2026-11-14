@@ -464,8 +464,10 @@ export class TripFormComponent implements OnInit {
     }
 
     if (isSuperseded()) return;
-    // Reset before the read, as other loads running at the same time rely on it having happened
-    // by now; a trip that arrives during the read is handled by the check right after it.
+    // Reset before the read, not after: the form runs setDefaultShift several times at once (its own
+    // load plus the page's reloads), and a later run may already have preselected today's last shift
+    // while this run is still reading; resetting after the read would undo that choice. A trip that
+    // arrives during the read is handled by the check right after it.
     this.resetSelectedShiftState();
     this.tripForm.controls.service.setValidators([Validators.required]);
 

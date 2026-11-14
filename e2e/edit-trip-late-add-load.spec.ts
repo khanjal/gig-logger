@@ -19,6 +19,7 @@ const HELD_READ_DELAY_MS = 2_500;
 const FORM_LOAD_CALL_MARKER = '.load()';
 const SHIFTS_STORE = 'shifts';
 const HELD_READS_KEY = '__e2eHeldReads';
+const RELEASED_READS_KEY = '__e2eReleasedReads';
 
 async function loadSheet(page: Page): Promise<void> {
   await page.goto('/setup');
@@ -50,9 +51,10 @@ test('edit trip keeps its own shift and region when a late add-mode default arri
 
   // Once the form's own load has started, hold back the first full read of the shifts table that
   // follows (only the add-mode "newest shift" lookup reads it whole), so the edit data arrives first.
-  await page.addInitScript(({ delayMs, marker, store, key }) => {
+  await page.addInitScript(({ delayMs, marker, store, key, releasedKey }) => {
     const counters = window as unknown as Record<string, number>;
     counters[key] = 0;
+    counters[releasedKey] = 0;
     let armed = false;
     const nativeSetTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) => {
@@ -73,21 +75,24 @@ test('edit trip keeps its own shift and region when a late add-mode default arri
           counters[key]++;
           const original = handler;
           handler = function (this: IDBRequest, event: Event) {
-            nativeSetTimeout(() => original.call(this, event), delayMs);
+            nativeSetTimeout(() => {
+              original.call(this, event);
+              // Counted a macrotask later, once the app has run what the released read triggers.
+              nativeSetTimeout(() => { counters[releasedKey]++; }, 0);
+            }, delayMs);
           };
         }
         descriptor.set!.call(this, handler);
       },
     });
-  }, { delayMs: HELD_READ_DELAY_MS, marker: FORM_LOAD_CALL_MARKER, store: SHIFTS_STORE, key: HELD_READS_KEY });
+  }, { delayMs: HELD_READ_DELAY_MS, marker: FORM_LOAD_CALL_MARKER, store: SHIFTS_STORE, key: HELD_READS_KEY, releasedKey: RELEASED_READS_KEY });
 
   await page.goto(EDIT_TRIP_PATH);
   await expect(page.getByLabel('Place')).toHaveValue(tripRow()['place'] as string, { timeout: FIELD_TIMEOUT_MS });
   await expect(page.locator('mat-select[name="shift"]')).toContainText(TRIP_SHIFT_LABEL, { timeout: FIELD_TIMEOUT_MS });
-  // Wait for the held read to have been released and applied, then check nothing was clobbered.
-  await expect.poll(() => page.evaluate(key => (window as unknown as Record<string, number>)[key], HELD_READS_KEY),
+  // The held read has to have been released and applied before the final checks mean anything.
+  await expect.poll(() => page.evaluate(key => (window as unknown as Record<string, number>)[key], RELEASED_READS_KEY),
     { timeout: FIELD_TIMEOUT_MS }).toBeGreaterThan(0);
-  await page.waitForTimeout(HELD_READ_DELAY_MS + 500);
   await expect(page.locator('mat-select[name="shift"]')).toContainText(TRIP_SHIFT_LABEL);
   await expect(page.getByLabel('Region/Zone')).toHaveValue(TRIP_REGION);
 });
