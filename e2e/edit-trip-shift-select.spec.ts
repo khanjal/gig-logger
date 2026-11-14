@@ -9,8 +9,9 @@ const SELECT_TIMEOUT_MS = 10_000;
 const SHIFT_LABEL = 'DoorDash #1';
 const EDIT_TRIP_ROUTE = /\/trips\/edit\/2$/;
 // The trip form defers its own hydration with setTimeout(0) while the page looks the trip up in
-// the local database; on a slow device the lookup wins (#503, #474). Holding every zero-delay
-// timer back makes that order the one the test always sees, with no throttling or sleeps.
+// the local database; on a slow device the lookup wins (#503, #474). Holding back only that one
+// callback (recognised by the load() call it makes) makes that order the one the test always sees,
+// with no throttling or sleeps, and leaves Material's own timers alone.
 const DEFERRED_TIMER_DELAY_MS = 1_500;
 
 async function loadSheet(page: Page): Promise<void> {
@@ -37,7 +38,7 @@ test('edit trip form shows the trip shift when opened directly when the trip arr
   await page.addInitScript(delayMs => {
     const nativeSetTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) =>
-      nativeSetTimeout(handler, timeout === 0 ? delayMs : timeout, ...args)) as typeof window.setTimeout;
+      nativeSetTimeout(handler, timeout === 0 && String(handler).includes('.load()') ? delayMs : timeout, ...args)) as typeof window.setTimeout;
   }, DEFERRED_TIMER_DELAY_MS);
   await page.goto('/trips/edit/2');
   await expect(page).toHaveURL(EDIT_TRIP_ROUTE);

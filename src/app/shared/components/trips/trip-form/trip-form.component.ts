@@ -266,8 +266,7 @@ export class TripFormComponent implements OnInit {
     this.showOrder = true;
   
     // Handle dependent logic
-    await this.loadShiftOptions();
-    this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
+    this.selectedShift = await this.loadShiftOptions();
     this.selectedShiftOption.set(this.selectedShift ? this.toShiftSummaryOption(this.selectedShift) : undefined);
     this.tripForm.controls.shift.setValue(this.selectedShift?.key ?? null, { emitEvent: false });
     await this.selectPlace();
@@ -287,22 +286,22 @@ export class TripFormComponent implements OnInit {
   /**
    * Fills the shift select's options. Both the add and edit loads call this, so the options exist
    * whichever of the two runs (the page can hand the form its trip before the form's own load).
+   * Returns the shift the form's trip belongs to, when it has one.
    */
-  private async loadShiftOptions(): Promise<void> {
+  private async loadShiftOptions(): Promise<IShift | undefined> {
     this.shifts = await this._shiftService.getPreviousWeekShifts();
     if (this.shifts.length > 0) {
       sort(this.shifts, '-key');
     }
 
-    if (this.data?.key) {
-      const tripShift = await this._shiftService.queryShiftByKey(this.data.key);
-      if (tripShift && !this.shifts.some(s => s.key === tripShift.key)) {
-        this.shifts.push(tripShift);
-        sort(this.shifts, '-key');
-      }
+    const tripShift = this.data?.key ? await this._shiftService.queryShiftByKey(this.data.key) : undefined;
+    if (tripShift && !this.shifts.some(s => s.key === tripShift.key)) {
+      this.shifts.push(tripShift);
+      sort(this.shifts, '-key');
     }
 
     this.shiftOptions.set(this.shifts.map(shift => this.toShiftSummaryOption(shift)));
+    return tripShift;
   }
 
   private async setDefaultShift() {
