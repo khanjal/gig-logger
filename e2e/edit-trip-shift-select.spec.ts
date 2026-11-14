@@ -39,7 +39,7 @@ test('edit trip form shows the trip shift when opened directly when the trip arr
   }));
   await loadSheet(page);
 
-  await page.addInitScript(([delayMs, marker, counterKey]) => {
+  await page.addInitScript(({ delayMs, marker, counterKey }) => {
     const counters = window as unknown as Record<string, number>;
     counters[counterKey] = 0;
     const nativeSetTimeout = window.setTimeout.bind(window);
@@ -48,9 +48,9 @@ test('edit trip form shows the trip shift when opened directly when the trip arr
       if (holdBack) {
         counters[counterKey]++;
       }
-      return nativeSetTimeout(handler, holdBack ? Number(delayMs) : timeout, ...args);
+      return nativeSetTimeout(handler, holdBack ? delayMs : timeout, ...args);
     }) as typeof window.setTimeout;
-  }, [DEFERRED_TIMER_DELAY_MS, FORM_LOAD_CALL_MARKER, DELAYED_TIMERS_KEY]);
+  }, { delayMs: DEFERRED_TIMER_DELAY_MS, marker: FORM_LOAD_CALL_MARKER, counterKey: DELAYED_TIMERS_KEY });
   await page.goto(EDIT_TRIP_PATH);
   await expect(page).toHaveURL(new RegExp(`${EDIT_TRIP_PATH}$`));
   await expect(page.getByLabel('Place')).toHaveValue(tripRow()['place'] as string, { timeout: SELECT_TIMEOUT_MS });
