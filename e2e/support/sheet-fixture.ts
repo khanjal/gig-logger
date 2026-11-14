@@ -5,7 +5,7 @@ import { E2E_SHEET } from './stub-backend';
 // loader fails on the missing one.
 
 // The first data row; row 1 is the header on the real spreadsheet.
-const FIRST_ROW_ID = 2;
+export const FIRST_ROW_ID = 2;
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const SERVICE = 'DoorDash';
 const SHIFT_NUMBER = 1;
