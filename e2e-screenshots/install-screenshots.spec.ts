@@ -21,8 +21,6 @@ const STATS_RANGE_DAYS = 30;
 const FIXED_NOW = new Date(2026, 10, 13, 15, 0, 0);
 const ORDER_WAIT_MINUTES = 15;
 // A point in the empty left gutter, below the toolbar, to park the mouse on.
-const EDIT_ATTEMPT_TIMEOUT_MS = 3_000;
-const EDIT_RETRY_TIMEOUT_MS = 60_000;
 const NEUTRAL_MOUSE_Y = 400;
 const STICKY_TOOLBAR_OFFSET = '72px';
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -123,8 +121,6 @@ function allShifts(): ISampleShift[] {
 
 // Row ids of today's shift (the last one) and of its second trip (Green Bowl), for the edit screens.
 const TODAY_SHIFT_ROW_ID = FIRST_ROW_ID + allShifts().length - 1;
-// The list is newest first, so today's second trip (Green Bowl) is the third card.
-const TODAY_EDIT_CARD_INDEX = 2;
 const TODAY_TRIP_ROW_ID = FIRST_ROW_ID + allShifts().slice(0, -1).reduce((sum, shift) => sum + shift.trips.length, 0) + 1;
 
 function buildSheet(): Record<string, unknown> {
@@ -236,16 +232,9 @@ const SCREENS: Record<string, (page: Page) => Promise<void>> = {
     }, STICKY_TOOLBAR_OFFSET);
   },
   'edit-trip': async page => {
-    // The edit form fills its Shift/Batch/Group select only when the form's shift options have
-    // loaded before the trip data arrives; the app races those two, so an attempt that leaves the
-    // select empty is retried from the list rather than captured.
-    await expect(async () => {
-      await page.goto('/trips');
-      await page.locator('app-trips-quick-view').nth(TODAY_EDIT_CARD_INDEX).getByRole('button', { name: 'Edit', exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`/trips/edit/${TODAY_TRIP_ROW_ID}$`));
-      await expect(page.getByLabel('Place')).toHaveValue('Green Bowl');
-      await expect(page.locator('mat-select[name="shift"]')).toContainText('DoorDash #1', { timeout: EDIT_ATTEMPT_TIMEOUT_MS });
-    }).toPass({ timeout: EDIT_RETRY_TIMEOUT_MS });
+    await page.goto(`/trips/edit/${TODAY_TRIP_ROW_ID}`);
+    await expect(page.getByLabel('Place')).toHaveValue('Green Bowl');
+    await expect(page.locator('mat-select[name="shift"]')).toContainText('DoorDash #1');
     await expect(page.getByLabel('Note', { exact: true })).toBeVisible();
   },
   'shifts': async page => {
