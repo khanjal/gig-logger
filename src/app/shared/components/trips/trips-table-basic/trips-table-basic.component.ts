@@ -29,6 +29,6 @@ export class TripsTableBasicComponent implements OnInit {
   }
 
   public hasSecondaryData = (trip: ITrip): boolean => {
-    return !!(trip.endUnit || trip.note);
+    return !!(trip.endUnit || trip.note || trip.tags?.length);
   };
 }

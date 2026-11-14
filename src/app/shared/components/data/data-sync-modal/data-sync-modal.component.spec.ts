@@ -8,8 +8,9 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { TimerService } from '@services/timer.service';
 import { LoggerService } from '@services/logger.service';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
-import { Subject } from 'rxjs';
+import { EMPTY, Subject, of } from 'rxjs';
 import { DataSyncModalComponent } from './data-sync-modal.component';
+import { SYNC_CLOSE } from '@constants/sync.constants';
 import type { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
 import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import type { ISheet } from '@interfaces/sheets/sheet.interface';
@@ -49,13 +50,16 @@ describe('DataSyncModalComponent', () => {
     ]);
     unsavedDataSpy.collectUnsavedItems.and.resolveTo({ unsavedTrips: [], unsavedShifts: [], unsavedExpenses: [] });
     unsavedDataSpy.commitSavedItems.and.resolveTo();
-    timerSpy = jasmine.createSpyObj('TimerService', ['delay']);
+    timerSpy = jasmine.createSpyObj('TimerService', ['delay', 'countdown']);
     loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'debug'], {
       onLog: new Subject<{ level: string; message: string }>()
     });
     dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
 
     timerSpy.delay.and.resolveTo();
+    // Completes without emitting, so the close countdown finishes immediately
+    // instead of holding these tests for real seconds.
+    timerSpy.countdown.and.returnValue(EMPTY);
 
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, DataSyncModalComponent],
@@ -286,6 +290,57 @@ describe('DataSyncModalComponent', () => {
     expect(component.type).toBe('load');
   });
 
+  it('load flow should reach an ERROR state (not hang) when loadSpreadsheetData rejects', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'load' });
+
+    const defaultSheet: ISpreadsheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 };
+    sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    sheetSpy.getSpreadsheetData.and.resolveTo({
+      properties: { id: 'sheet-1', name: 'Default' },
+      messages: []
+    } as unknown as ISheet);
+    sheetSpy.getSpreadsheets.and.resolveTo([defaultSheet]);
+    sheetSpy.loadSpreadsheetData.and.rejectWith(new Error('loadData failed'));
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    // A rejection here previously escaped as an unhandled promise rejection instead of
+    // resolving into an ERROR terminal state; awaiting to completion is itself part of the assertion.
+    await component.ngOnInit();
+
+    expect(dialogRefSpy.close).not.toHaveBeenCalledWith(true);
+    expect(component.terminalMessages().some(m => m.type === 'error')).toBeTrue();
+  });
+
+  it('load flow should render logger error messages with error styling, not info', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'load' });
+
+    const defaultSheet: ISpreadsheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 };
+    sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    sheetSpy.getSpreadsheetData.and.resolveTo({
+      properties: { id: 'sheet-1', name: 'Default' },
+      messages: []
+    } as unknown as ISheet);
+    sheetSpy.getSpreadsheets.and.resolveTo([defaultSheet]);
+
+    // Mirrors DataLoaderService.handleError: log the failure to onLog, then throw.
+    sheetSpy.loadSpreadsheetData.and.callFake(async () => {
+      (loggerSpy.onLog as Subject<{ level: string; message: string }>).next({ level: 'error', message: 'loadData failed' });
+      throw new Error('loadData failed');
+    });
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    const forwarded = component.terminalMessages().find(m => m.text.startsWith('loadData failed'));
+    expect(forwarded?.type).toBe('error');
+  });
+
   it('should close dialog on cancel', () => {
     fixture = TestBed.createComponent(DataSyncModalComponent);
     component = fixture.componentInstance;
@@ -293,5 +348,86 @@ describe('DataSyncModalComponent', () => {
     component.cancelSync();
 
     expect(dialogRefSpy.close).toHaveBeenCalledWith(false);
+  });
+
+  describe('close countdown', () => {
+    // Drives a create-demo run to completion; the countdown mock decides how it ends.
+    async function runCleanSync(): Promise<void> {
+      workflowSpy.createFile.and.resolveTo({ id: 'demo', name: 'Demo' } as ISheetProperties);
+      workflowSpy.createSheet.and.resolveTo();
+      workflowSpy.insertDemoData.and.resolveTo();
+      sheetSpy.getSpreadsheets.and.returnValues(
+        Promise.resolve([{ id: 'old', name: 'Old', default: 'true', size: 0 }] as ISpreadsheet[]),
+        Promise.resolve([{ id: 'demo', name: 'Demo', default: 'true', size: 0 }] as ISpreadsheet[])
+      );
+      sheetSpy.update.and.resolveTo();
+      sheetSpy.add.and.resolveTo();
+      sheetSpy.warmUpLambda.and.resolveTo({});
+      sheetSpy.getSpreadsheetData.and.resolveTo({
+        properties: { id: 'demo', name: 'Demo' },
+        messages: warningMessages
+      } as unknown as ISheet);
+      sheetSpy.loadSpreadsheetData.and.resolveTo();
+
+      fixture = TestBed.createComponent(DataSyncModalComponent);
+      component = fixture.componentInstance;
+
+      await component.ngOnInit();
+    }
+
+    let warningMessages: { level: string; message: string }[];
+
+    beforeEach(() => {
+      warningMessages = [];
+    });
+
+    it('uses the standard delay when the run reported nothing but info', async () => {
+      await runCleanSync();
+
+      expect(timerSpy.countdown).toHaveBeenCalledWith(SYNC_CLOSE.DEFAULT_DELAY_MS, SYNC_CLOSE.TICK_MS);
+    });
+
+    it('extends the delay when the run reported a warning', async () => {
+      warningMessages = [{ level: 'WARNING', message: 'Sheet Sheet1 does not match any known sheet name' }];
+
+      await runCleanSync();
+
+      expect(timerSpy.countdown).toHaveBeenCalledWith(SYNC_CLOSE.WARNING_DELAY_MS, SYNC_CLOSE.TICK_MS);
+    });
+
+    it('still auto-closes after a warning rather than waiting for the user', async () => {
+      warningMessages = [{ level: 'WARNING', message: 'Sheet Sheet1 does not match any known sheet name' }];
+
+      await runCleanSync();
+
+      expect(dialogRefSpy.close).toHaveBeenCalledWith(true);
+    });
+
+    it('exposes the remaining seconds while counting down', async () => {
+      timerSpy.countdown.and.returnValue(of(3, 2, 1));
+
+      await runCleanSync();
+
+      // of() completes, so the countdown ends and clears itself.
+      expect(component.countdownSeconds()).toBeNull();
+    });
+
+    it('keepOpen stops the countdown and cancels the close', async () => {
+      const ticks = new Subject<number>();
+      timerSpy.countdown.and.returnValue(ticks.asObservable());
+
+      // Not awaited: the countdown never completes, so ngOnInit stays pending
+      // until keepOpen() resolves it - which is the behaviour under test.
+      const run = runCleanSync();
+      await Promise.resolve();
+      ticks.next(4);
+
+      component.keepOpen();
+      await run;
+
+      expect(component.countdownSeconds()).toBeNull();
+      expect(dialogRefSpy.close).not.toHaveBeenCalled();
+      expect(component.terminalMessages().some(m => m.text.includes('Auto-close cancelled'))).toBeTrue();
+    });
   });
 });

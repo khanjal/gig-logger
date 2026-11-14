@@ -69,3 +69,93 @@ describe('SheetSerializerHelper', () => {
     expect(arr[1].tip).toBeNull();
   });
 });
+
+describe('SheetSerializerHelper - Tags', () => {
+  // The sheet stores tags as one comma-delimited text cell (RaptorSheets treats it as opaque and
+  // leaves the convention to us); the app models them as an array. These pin the conversion in
+  // both directions, including the messy input a person actually types.
+  describe('parseTags', () => {
+    it('splits a comma-delimited cell', () => {
+      expect(SheetSerializerHelper.parseTags('rain, surge, airport')).toEqual(['airport', 'rain', 'surge']);
+    });
+
+    it('trims whitespace and drops empty entries', () => {
+      expect(SheetSerializerHelper.parseTags(' rain ,, surge , ')).toEqual(['rain', 'surge']);
+    });
+
+    it('returns an empty array for an empty or missing cell', () => {
+      expect(SheetSerializerHelper.parseTags('')).toEqual([]);
+      expect(SheetSerializerHelper.parseTags(undefined)).toEqual([]);
+      expect(SheetSerializerHelper.parseTags(null)).toEqual([]);
+    });
+
+    it('passes an array through, still cleaning it', () => {
+      // Re-loading already-parsed data must not mangle it.
+      expect(SheetSerializerHelper.parseTags([' rain ', '', 'surge'])).toEqual(['rain', 'surge']);
+    });
+  });
+
+  describe('formatTags', () => {
+    it('joins tags for the sheet', () => {
+      expect(SheetSerializerHelper.formatTags(['rain', 'surge'])).toBe('rain, surge');
+    });
+
+    it('writes an empty cell rather than a stray separator', () => {
+      expect(SheetSerializerHelper.formatTags([])).toBe('');
+      expect(SheetSerializerHelper.formatTags(undefined)).toBe('');
+      expect(SheetSerializerHelper.formatTags(null)).toBe('');
+    });
+  });
+
+  describe('ordering', () => {
+    // Tags on a record are a set - the order they were typed carries no meaning - so sorting at
+    // this single boundary makes the sheet cell, the trips table, the shift quick view and the
+    // edit dialog all agree without any of them sorting for themselves.
+    it('sorts tags read from the sheet', () => {
+      expect(SheetSerializerHelper.parseTags('surge, airport, rain')).toEqual(['airport', 'rain', 'surge']);
+    });
+
+    it('sorts tags written back to the sheet', () => {
+      expect(SheetSerializerHelper.formatTags(['surge', 'airport', 'rain'])).toBe('airport, rain, surge');
+    });
+
+    it('sorts case-insensitively', () => {
+      // Ordering by code point would group every capitalised tag ahead of every lowercase one.
+      expect(SheetSerializerHelper.parseTags('Surge, airport, Rain')).toEqual(['airport', 'Rain', 'Surge']);
+    });
+
+    it('does not mutate the array it was given', () => {
+      const original = ['surge', 'airport'];
+
+      SheetSerializerHelper.formatTags(original);
+
+      expect(original).toEqual(['surge', 'airport']);
+    });
+  });
+
+  describe('round trip', () => {
+    it('survives sheet -> app -> sheet unchanged', () => {
+      const fromSheet = { id: 1, pay: 5, tags: 'rain, surge' } as unknown as ITrip;
+
+      const app = SheetSerializerHelper.deserializeTrip(fromSheet);
+      expect(app.tags).toEqual(['rain', 'surge']);
+
+      const backToSheet = SheetSerializerHelper.serializeTrip(app);
+      expect(backToSheet.tags).toBe('rain, surge');
+    });
+
+    it('leaves a trip with no tags as an empty cell, not "undefined"', () => {
+      const app = SheetSerializerHelper.deserializeTrip({ id: 1, pay: 5 } as unknown as ITrip);
+      expect(app.tags).toEqual([]);
+      expect(SheetSerializerHelper.serializeTrip(app).tags).toBe('');
+    });
+
+    it('survives the same round trip for a shift', () => {
+      const fromSheet = { id: 1, pay: 5, tags: 'weekend, double' } as unknown as IShift;
+
+      const app = SheetSerializerHelper.deserializeShift(fromSheet);
+      expect(app.tags).toEqual(['double', 'weekend']);
+      expect(SheetSerializerHelper.serializeShift(app).tags).toBe('double, weekend');
+    });
+  });
+});

@@ -128,6 +128,14 @@
         </span>
       </div>
     }
+    <!-- Tags -->
+    @if (shift.tags?.length) {
+      <div class="mb-4 flex flex-wrap gap-2">
+        @for (tag of shift.tags; track tag) {
+          <span class="inline-block px-3 py-1 rounded-full bg-primary-soft text-sm text-primary font-medium max-w-full truncate" title="{{tag}}">{{tag}}</span>
+        }
+      </div>
+    }
     <!-- Quick Stats Row (remove finish time and duration badges) -->
     @if (shift.amountPerTime || (shift.grandTotal && shift.totalDistance)) {
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">

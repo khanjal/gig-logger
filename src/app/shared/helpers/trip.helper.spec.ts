@@ -20,6 +20,7 @@ describe('TripHelper', () => {
       action: '',
       actionTime: 0,
       rowId: 1,
+      tags: [],
       saved: false,
       trips: 5,
       distance: 100,
@@ -355,5 +356,66 @@ describe('TripHelper', () => {
       // But region comes from form
       expect(result.region).toBe('midtown');
     });
+
+    describe('tags', () => {
+      // Tags are now a modelled field driven by the form. The form is the source of truth when
+      // it supplies them, but a caller whose form omits tags must not wipe what the sheet holds.
+      const tagFormValue: TripFormValue = {
+        service: 'uber',
+        region: 'downtown',
+        startAddress: '123 Main St',
+        endAddress: '456 Oak Ave',
+        endUnit: '',
+        distance: 5,
+        pay: 10,
+        tip: 0,
+        bonus: 0,
+        cash: 0,
+        startOdometer: 0,
+        endOdometer: 0,
+        place: 'hub',
+        name: 'Jane',
+        type: 'Pickup',
+        note: '',
+        orderNumber: '',
+        pickupTime: '09:00',
+        dropoffTime: '09:15',
+        exclude: null,
+      };
+
+      it('takes tags from the form when editing', async () => {
+        const existing = { id: 7, rowId: 7, tags: ['rain'] } as unknown as ITrip;
+
+        const result = await TripHelper.createFromFormValue(
+          { ...tagFormValue, tags: ['rain', 'surge'] }, mockShift, existing);
+
+        expect(result.tags).toEqual(['rain', 'surge']);
+      });
+
+      it('clears tags when the form clears them', async () => {
+        const existing = { id: 7, rowId: 7, tags: ['rain'] } as unknown as ITrip;
+
+        const result = await TripHelper.createFromFormValue(
+          { ...tagFormValue, tags: [] }, mockShift, existing);
+
+        expect(result.tags).toEqual([]);
+      });
+
+      it('keeps existing tags when the form does not supply them', async () => {
+        // Guards a caller whose form has no tag field: omitting them must not erase the sheet's.
+        const existing = { id: 7, rowId: 7, tags: ['rain', 'surge'] } as unknown as ITrip;
+
+        const result = await TripHelper.createFromFormValue(tagFormValue, mockShift, existing);
+
+        expect(result.tags).toEqual(['rain', 'surge']);
+      });
+
+      it('starts a new trip with no tags', async () => {
+        const result = await TripHelper.createFromFormValue(tagFormValue, mockShift, undefined, 100);
+
+        expect(result.tags).toEqual([]);
+      });
+    });
+
   });
 });

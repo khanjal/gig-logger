@@ -1,5 +1,4 @@
-import type { OnInit } from '@angular/core';
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { NumberHelper } from '@helpers/number.helper';
 import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
@@ -14,10 +13,14 @@ import { SheetSourceLabelPipe } from '@pipes/sheet-source-label.pipe';
     standalone: true,
     imports: [MatCard, MatCardHeader, MatIcon, MatCardContent, TruncatePipe, SheetSourceLabelPipe]
 })
-export class SheetQuickViewComponent implements OnInit {
-  @Input() public spreadsheet!: ISpreadsheet;
-  public size: string | undefined;
-  public ngOnInit() {
-    this.size = NumberHelper.getDataSize(this.spreadsheet.size);
-  }
+export class SheetQuickViewComponent {
+  public readonly spreadsheet = input.required<ISpreadsheet>();
+
+  /**
+   * Derived rather than computed once in ngOnInit. The setup page lists these with
+   * `@for (... track spreadsheet.id)`, so a refreshed list reuses this component instance and only
+   * updates the input - ngOnInit never runs again. Size was left showing whatever it read the first
+   * time, which is 0 for a sheet linked before its data had been fetched.
+   */
+  public readonly size = computed(() => NumberHelper.getDataSize(this.spreadsheet().size));
 }

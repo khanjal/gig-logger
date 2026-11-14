@@ -1,0 +1,59 @@
+<h2 mat-dialog-title class="tags-dialog__title">Tags</h2>
+
+<mat-dialog-content class="tags-dialog__content">
+  <!-- Input and Add on one row: on a phone the keyboard covers most of the screen, so the action
+       has to be reachable without scrolling or dismissing it. -->
+  <div class="flex items-start gap-2">
+    <mat-form-field class="flex-1 min-w-0 rg-field-shell" appearance="fill">
+      <mat-label>Add a tag</mat-label>
+      <input
+        matInput
+        [placeholder]="placeholder"
+        [formControl]="inputControl"
+        [matAutocomplete]="auto"
+        (input)="onInput(inputControl.value ?? '')"
+        (keydown.enter)="add(inputControl.value); $event.preventDefault()" />
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+        @for (suggestion of suggestions(); track suggestion) {
+          <mat-option [value]="suggestion">{{ suggestion }}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <app-base-rect-button
+      class="tags-dialog__add"
+      [label]="'Add'"
+      [variant]="'primary'"
+      [disabled]="!(inputControl.value ?? '').trim()"
+      (clicked)="add(inputControl.value)">
+    </app-base-rect-button>
+  </div>
+
+  <!-- A list, not chips: a chip's × is a ~16px target, which is well under what a thumb can hit
+       reliably. Each row is full width with a proper button on the end. -->
+  <div class="tags-dialog__tags">
+    @if (tags().length > 0) {
+      <ul class="tags-dialog__list">
+        @for (tag of tags(); track tag) {
+          <li class="tags-dialog__row">
+            <span class="tags-dialog__label">{{ tag }}</span>
+            <button
+              type="button"
+              class="tags-dialog__remove"
+              [attr.aria-label]="'Remove ' + tag"
+              (click)="remove(tag)">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="tags-dialog__empty">No tags yet.</p>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="tags-dialog__actions">
+  <app-base-rect-button [label]="'Cancel'" [variant]="'outlined'" (clicked)="onCancel()"></app-base-rect-button>
+  <app-base-rect-button [label]="'Done'" [variant]="'primary'" (clicked)="onDone()"></app-base-rect-button>
+</mat-dialog-actions>

@@ -1,0 +1,22 @@
+<div class="app-tag-input rg-field-shell rounded p-3">
+  <div class="text-xs text-tertiary mb-2">{{ fieldName }}</div>
+
+  @if (tags().length > 0) {
+    <div class="flex flex-wrap gap-1 mb-3">
+      @for (tag of tags(); track tag) {
+        <span class="tag-chip px-2 py-0.5 rounded-full text-xs whitespace-nowrap">{{ tag }}</span>
+      }
+    </div>
+  } @else {
+    <div class="text-sm text-tertiary mb-3">None</div>
+  }
+
+  <app-base-rect-button
+    [label]="'Manage Tags'"
+    [icon]="'label'"
+    [variant]="'outlined'"
+    [fullWidth]="true"
+    [disabled]="disabled()"
+    (clicked)="openDialog()">
+  </app-base-rect-button>
+</div>

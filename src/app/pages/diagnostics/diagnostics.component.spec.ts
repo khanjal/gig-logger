@@ -116,7 +116,7 @@ describe('DiagnosticsComponent', () => {
     expect(component.isLoading()).toBeFalse();
     expect(component.hasError()).toBeFalse();
     expect(component.dataDiagnostics().length).toBe(12);
-    expect(component.getTotalIssues()).toBe(0);
+    expect(component.totalIssues()).toBe(0);
   });
 
   it('runDiagnostics should surface an error state and log when a check fails', async () => {
@@ -139,6 +139,8 @@ describe('DiagnosticsComponent', () => {
 
     expect(component.getCountBySeverity('warning')).toBe(5);
     expect(component.getCountBySeverity('info')).toBe(1);
+    expect(component.getCountBySeverity('error')).toBe(0);
+    expect(component.totalIssues()).toBe(6);
   });
 
   it('getSeverityIcon and getSeverityColor should map severities', () => {
