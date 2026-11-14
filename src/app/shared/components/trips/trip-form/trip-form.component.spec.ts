@@ -226,6 +226,27 @@ describe('TripFormComponent', () => {
     expect(component.tripForm.controls.shift.value).toBe('trip-shift');
   });
 
+  it('keeps the trip service, region and shift when the add-mode default resolves after the edit load (#505)', async () => {
+    const tripShift = { key: 'trip-shift', service: 'Uber', region: 'Uptown', number: 1 } as unknown as IShift;
+    const newestShift = { key: 'newest-shift', service: 'DoorDash', region: 'Downtown', number: 1 } as unknown as IShift;
+    shiftService.queryShiftByKey.and.returnValue(Promise.resolve(tripShift));
+    shiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([newestShift]));
+    let releaseList: (shifts: IShift[]) => void = () => undefined;
+    shiftService.list.and.returnValue(new Promise<IShift[]>(resolve => { releaseList = resolve; }));
+    component.data = {} as ITrip;
+
+    const addLoad = asPrivate(component).setDefaultShift();
+    component.data = { id: 5, rowId: 5, key: 'trip-shift', service: 'Uber', region: 'Uptown' } as unknown as ITrip;
+    await component.load();
+    releaseList([tripShift, newestShift]);
+    await addLoad;
+
+    expect(component.tripForm.controls.service.value).toBe('Uber');
+    expect(component.tripForm.controls.region.value).toBe('Uptown');
+    expect(component.tripForm.controls.shift.value).toBe('trip-shift');
+    expect(component.selectedShiftOption()?.shiftKey).toBe('trip-shift');
+  });
+
   it('toggleAdvancedPay should toggle flag and show snack', () => {
     component.toggleAdvancedPay();
     expect(component.showAdvancedPay).toBeTrue();
