@@ -197,6 +197,20 @@ describe('TripFormComponent', () => {
     expect(component.isNewShift()).toBeTrue();
   });
 
+  it('edit load fills the shift options even when the add-mode load never ran first', async () => {
+    const tripShift = { key: 'trip-shift', service: 'DoorDash', region: 'Downtown', number: 1 } as unknown as IShift;
+    shiftService.queryShiftByKey.and.returnValue(Promise.resolve(tripShift));
+    shiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([]));
+    component.shiftOptions.set([]);
+    component.data = { id: 5, rowId: 5, key: 'trip-shift', service: 'DoorDash', region: 'Downtown' } as unknown as ITrip;
+
+    await component.load();
+
+    expect(component.shiftOptions().map(option => option.shiftKey)).toEqual(['trip-shift']);
+    expect(component.tripForm.controls.shift.value).toBe('trip-shift');
+    expect(component.selectedShiftOption()?.shiftKey).toBe('trip-shift');
+  });
+
   it('toggleAdvancedPay should toggle flag and show snack', () => {
     component.toggleAdvancedPay();
     expect(component.showAdvancedPay).toBeTrue();
