@@ -12,6 +12,11 @@ on:
       - '.github/workflows/lambda-lint.yml'
       - '.github/actions/setup-dotnet-env/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Only pull-request runs are cancelled by a newer push; runs on main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
