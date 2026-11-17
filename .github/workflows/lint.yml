@@ -6,8 +6,9 @@ on:
   pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  # Only pull-request runs are cancelled by a newer push; runs on main always finish.
+  # Pull-request runs share a group per PR, so a newer push cancels the older run.
+  # Every other run (push to main) gets its own group, so it is never cancelled or replaced.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
