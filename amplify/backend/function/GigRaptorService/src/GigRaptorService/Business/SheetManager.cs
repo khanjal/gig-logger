@@ -122,7 +122,12 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetResponse> CreateSheet()
     {
-        var sheetEntity = await _googleSheetManager.CreateAllSheets();
+        // removeDefaultSheet is safe here because of who calls this: the client only hits this
+        // endpoint from createFileAndLink, immediately after creating the spreadsheet itself, so
+        // "Sheet1" is Google's untouched default rather than anything a user put there. Nothing
+        // verifies the tab is empty - the guarantee is the provenance, so if this endpoint ever
+        // gains a caller that runs against a pre-existing spreadsheet, drop the argument.
+        var sheetEntity = await _googleSheetManager.CreateAllSheets(removeDefaultSheet: true);
         return SheetResponse.FromSheetEntity(sheetEntity);
     }
 

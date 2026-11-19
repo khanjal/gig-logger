@@ -383,34 +383,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get icon for a category
-   */
-  public getCategoryIcon(category: SearchCategory): string {
-    return this.searchService.getCategoryIcon(category);
-  }
-
-  /**
-   * Get color class for a category
-   */
-  public getCategoryColor(category: SearchCategory): string {
-    return this.searchService.getCategoryColor(category);
-  }
-
-  /**
-   * Get border color class for a category.
-   */
-  public getCategoryBorderClass(category: SearchCategory): string {
-    return this.searchService.getCategoryBorderClass(category);
-  }
-
-  /**
-   * Get categories as array for template iteration
-   */
-  public getCategoriesArray(): SearchCategory[] {
-    return this.categories;
-  }
-
-  /**
    * Toggle group expansion
    */
   public toggleGroup(monthKey: string): void {
@@ -621,45 +593,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get total unique results count (not grouped)
-   */
-  public getTotalResultsCount(): number {
-    return this.searchResults().length;
-  }
-
-  /**
-   * Get total trips across all results
-   */
-  public getTotalTripsCount(): number {
-    const uniqueTripIds = new Set<number>();
-    this.searchResults().forEach(result => {
-      result.trips.forEach(trip => {
-        if (typeof trip.id === 'number' && !trip.exclude) uniqueTripIds.add(trip.id);
-      });
-    });
-    return uniqueTripIds.size;
-  }
-
-  /**
-   * Get total earnings across all results
-   */
-  public getTotalEarnings(): number {
-    const uniqueTrips = new Map<number, ITrip>();
-    this.searchResults().forEach(result => {
-      result.trips.forEach(trip => {
-        if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
-          uniqueTrips.set(trip.id, trip);
-        }
-      });
-    });
-    let total = 0;
-    uniqueTrips.forEach(trip => {
-      total += trip.total || 0;
-    });
-    return total;
-  }
-
-  /**
    * Expand all groups
    */
   public expandAll(): void {
@@ -685,91 +618,4 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getGroupAvgPerTrip(group: ISearchResultGroup): string {
-    if (!group || !group.results) return '-';
-    // Collect unique, non-excluded trips
-    const uniqueTrips = new Map<number, ITrip>();
-    group.results.forEach(result => {
-      result.trips.forEach(trip => {
-        if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
-          uniqueTrips.set(trip.id, trip);
-        }
-      });
-    });
-    const tripsArr = Array.from(uniqueTrips.values());
-    if (tripsArr.length === 0) return '-';
-    const total = tripsArr.reduce((sum, trip) => sum + (trip.total || 0), 0);
-    return this.currencyPipe.transform(total / tripsArr.length) || '-';
-  }
-
-  public getGroupAvgRate(group: ISearchResultGroup): string {
-    if (!group || !group.results) return '-';
-    // Collect unique, non-excluded trips
-    const uniqueTrips = new Map<number, ITrip>();
-    group.results.forEach(result => {
-      result.trips.forEach(trip => {
-        if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
-          uniqueTrips.set(trip.id, trip);
-        }
-      });
-    });
-    const tripsArr = Array.from(uniqueTrips.values());
-    if (tripsArr.length === 0) return '-';
-    // Only count trips with amountPerTime
-    const withRate = tripsArr.filter(trip => typeof trip.amountPerTime === 'number');
-    if (withRate.length === 0) return '-';
-    const avg = withRate.reduce((sum, trip) => sum + trip.amountPerTime, 0) / withRate.length;
-    return `$${avg.toFixed(2)}`;
-  }
-
-  public getResultAvgPerTrip(result: ISearchResult): string {
-    if (!result || !result.trips) return '-';
-    const trips = result.trips.filter(trip => typeof trip.id === 'number' && !trip.exclude);
-    if (trips.length === 0) return '-';
-    const total = trips.reduce((sum, trip) => sum + (trip.total || 0), 0);
-    return this.currencyPipe.transform(total / trips.length) || '-';
-  }
-
-  public getResultAvgRate(result: ISearchResult): string {
-    if (!result || !result.trips) return '-';
-    const trips = result.trips.filter(trip => typeof trip.amountPerTime === 'number' && !trip.exclude);
-    if (trips.length === 0) return '-';
-    const avg = trips.reduce((sum, trip) => sum + trip.amountPerTime, 0) / trips.length;
-    return `$${avg.toFixed(2)}`;
-  }
-
-  /**
-   * Check if a sub-result's trips are the same as the month group's trips
-   * Used to hide redundant sub-results
-   */
-  public isResultSameAsGroup(result: ISearchResult, group: ISearchResultGroup): boolean {
-    if (!result || !group) return false;
-    
-    // Get unique trip IDs from the result (excluding excluded trips)
-    const resultTripIds = new Set<number>();
-    result.trips.forEach(trip => {
-      if (typeof trip.id === 'number' && !trip.exclude) {
-        resultTripIds.add(trip.id);
-      }
-    });
-    
-    // Get unique trip IDs from the entire group (excluding excluded trips)
-    const groupTripIds = new Set<number>();
-    group.results.forEach(r => {
-      r.trips.forEach(trip => {
-        if (typeof trip.id === 'number' && !trip.exclude) {
-          groupTripIds.add(trip.id);
-        }
-      });
-    });
-    
-    // Check if both sets have the same size and contain the same IDs
-    if (resultTripIds.size !== groupTripIds.size) return false;
-    
-    for (const id of resultTripIds) {
-      if (!groupTripIds.has(id)) return false;
-    }
-    
-    return true;
-  }
 }

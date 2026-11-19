@@ -8,7 +8,11 @@ import { ExpensesService } from '@services/sheets/expenses.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import type { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthGoogleService } from '@services/auth-google.service';
 import type { IShift } from '@interfaces/entities/shift.interface';
 import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
@@ -40,6 +44,8 @@ describe('ShiftsComponent', () => {
   let expenseSpy: jasmine.SpyObj<ExpensesService>;
   let unsavedSpy: jasmine.SpyObj<UnsavedDataService>;
   let sheetSpy: jasmine.SpyObj<SpreadsheetService>;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
+  let authSpy: jasmine.SpyObj<AuthGoogleService>;
   let shifts$: BehaviorSubject<IShift[]>;
   let trips$: BehaviorSubject<unknown[]>;
   let expenses$: BehaviorSubject<unknown[]>;
@@ -55,11 +61,14 @@ describe('ShiftsComponent', () => {
     expenseSpy = jasmine.createSpyObj('ExpensesService', [], { expenses$: expenses$.asObservable() });
     unsavedSpy = jasmine.createSpyObj('UnsavedDataService', [], { unsavedData$: unsaved$.asObservable() });
     sheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets']);
+    dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    authSpy = jasmine.createSpyObj('AuthGoogleService', ['isAuthenticated', 'canSync', 'login', 'logout', 'getToken'], { profile$: of(null) });
 
     shiftSpy.query.and.resolveTo([]);
     shiftSpy.getMaxRowId.and.resolveTo(1);
     shiftSpy.getLastShift.and.resolveTo(undefined);
     sheetSpy.querySpreadsheets.and.resolveTo([]);
+    authSpy.canSync.and.resolveTo(false);
 
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, ShiftsComponent],
@@ -70,9 +79,11 @@ describe('ShiftsComponent', () => {
         { provide: ExpensesService, useValue: expenseSpy },
         { provide: UnsavedDataService, useValue: unsavedSpy },
         { provide: SpreadsheetService, useValue: sheetSpy },
+        { provide: AuthGoogleService, useValue: authSpy },
         { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})), snapshot: { paramMap: convertToParamMap({}) } } }
       ]
     })
+    .overrideProvider(MatDialog, { useValue: dialogSpy })
     .compileComponents();
 
     fixture = TestBed.createComponent(ShiftsComponent);
@@ -123,5 +134,49 @@ describe('ShiftsComponent', () => {
     expect(component.noMoreData()).toBeFalse();
     expect(component.showAddForm()).toBeFalse();
     expect(loadSpy).toHaveBeenCalled();
+  });
+
+  describe('saveSheetDialog', () => {
+    it('shows login snackbar and skips the sync dialog when canSync is false', async () => {
+      authSpy.canSync.and.resolveTo(false);
+      const snackBar = TestBed.inject(MatSnackBar);
+      const snackBarSpy = spyOn(snackBar, 'open');
+
+      await component.saveSheetDialog('save');
+
+      expect(snackBarSpy).toHaveBeenCalled();
+      expect(dialogSpy.open).not.toHaveBeenCalled();
+      expect(component.isSaving()).toBeFalse();
+    });
+
+    it('reports isSaving while the sync dialog is open, then clears it on success', async () => {
+      authSpy.canSync.and.resolveTo(true);
+      const afterClosed$ = new Subject<boolean>();
+      dialogSpy.open.and.returnValue({ afterClosed: () => afterClosed$.asObservable() } as unknown as MatDialogRef<unknown>);
+
+      const pending = component.saveSheetDialog('save');
+      // Let the pending canSync() promise settle so setLoading() has run.
+      for (let i = 0; i < 10 && !component.isSaving(); i++) {
+        await Promise.resolve();
+      }
+      expect(component.isSaving()).toBeTrue();
+
+      afterClosed$.next(true);
+      afterClosed$.complete();
+      await pending;
+      expect(component.isSaving()).toBeFalse();
+    });
+
+    it('clears isSaving without a success message when the sync dialog is cancelled', async () => {
+      authSpy.canSync.and.resolveTo(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>);
+      const snackBar = TestBed.inject(MatSnackBar);
+      const snackBarSpy = spyOn(snackBar, 'open');
+
+      await component.saveSheetDialog('save');
+
+      expect(snackBarSpy).not.toHaveBeenCalled();
+      expect(component.isSaving()).toBeFalse();
+    });
   });
 });

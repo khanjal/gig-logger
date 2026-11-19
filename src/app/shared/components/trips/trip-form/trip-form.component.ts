@@ -51,6 +51,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatSelect, MatSelectTrigger } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
+import { TagInputComponent } from '@inputs/tag-input/tag-input.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { TripsTableBasicComponent } from '../trips-table-basic/trips-table-basic.component';
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
@@ -83,7 +84,7 @@ const NEW_SHIFT_VALUE = 'new';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, SearchInputComponent, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, SearchInputComponent, TagInputComponent, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
   public dialogRef = inject<MatDialogRef<TripFormComponent>>(MatDialogRef, { optional: true });
@@ -128,6 +129,7 @@ export class TripFormComponent implements OnInit {
     dropoffTime: FormControl<string | null>;
     orderNumber: FormControl<string | null>;
     note: FormControl<string | null>;
+    tags: FormControl<string[] | null>;
     exclude: FormControl<string | null>;
   }>({
     shift: new FormControl<string | null>(NEW_SHIFT_VALUE),
@@ -150,6 +152,7 @@ export class TripFormComponent implements OnInit {
     dropoffTime: new FormControl<string | null>(null),
     orderNumber: new FormControl<string | null>(null),
     note: new FormControl<string | null>(null),
+    tags: new FormControl<string[]>([]),
     exclude: new FormControl<string | null>(null),
   });
 
@@ -249,6 +252,7 @@ export class TripFormComponent implements OnInit {
       pickupTime: DateHelper.removeSeconds(this.data.pickupTime),
       dropoffTime: DateHelper.removeSeconds(this.data.dropoffTime),
       note: this.data.note,
+      tags: this.data.tags ?? [],
       endUnit: this.data.endUnit,
       orderNumber: this.data.orderNumber,
       exclude: this.data.exclude ? 'true' : ''
@@ -262,7 +266,7 @@ export class TripFormComponent implements OnInit {
     this.showOrder = true;
   
     // Handle dependent logic
-    this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
+    this.selectedShift = await this.loadShiftOptions();
     this.selectedShiftOption.set(this.selectedShift ? this.toShiftSummaryOption(this.selectedShift) : undefined);
     this.tripForm.controls.shift.setValue(this.selectedShift?.key ?? null, { emitEvent: false });
     await this.selectPlace();
@@ -279,48 +283,67 @@ export class TripFormComponent implements OnInit {
       }
     });
   }
-  private async setDefaultShift() {
+  /**
+   * Fills the shift select's options. Both the add and edit loads call this, so the options exist
+   * whichever of the two runs (the page can hand the form its trip before the form's own load).
+   * Returns the shift the form's trip belongs to, when it has one.
+   */
+  private async loadShiftOptions(): Promise<IShift | undefined> {
     this.shifts = await this._shiftService.getPreviousWeekShifts();
     if (this.shifts.length > 0) {
       sort(this.shifts, '-key');
     }
 
-    if (this.data?.key) {
-      const tripShift = await this._shiftService.queryShiftByKey(this.data.key);
-      if (tripShift && !this.shifts.some(s => s.key === tripShift.key)) {
-        this.shifts.push(tripShift);
-        sort(this.shifts, '-key');
-      }
+    const tripShift = this.data?.key ? await this._shiftService.queryShiftByKey(this.data.key) : undefined;
+    if (tripShift && !this.shifts.some(s => s.key === tripShift.key)) {
+      this.shifts.push(tripShift);
+      sort(this.shifts, '-key');
     }
 
     this.shiftOptions.set(this.shifts.map(shift => this.toShiftSummaryOption(shift)));
+    return tripShift;
+  }
 
-    if (!this.data?.id) {
-      this.resetSelectedShiftState();
+  /**
+   * Add-mode defaults. Every await here is a window in which the edit trip's data can arrive
+   * (the page hands it over while this load is still reading), so each step stops once the form
+   * holds a trip - the edit load owns the shift, service and region from then on (#505).
+   */
+  private async setDefaultShift() {
+    await this.loadShiftOptions();
+    if (this.isHoldingTrip()) return;
 
-      const today = DateHelper.toISO();
-      const todaysTrips = await this._tripService.query('date', today);
-      sort(todaysTrips, '-id');
-      const lastTrip = todaysTrips[0];
-      let lastUsedShift: IShift | undefined = undefined;
-      if (lastTrip) {
-        lastUsedShift = this.shifts.find(x => x.key === lastTrip.key);
-      }
-      if (lastUsedShift) {
-        this.selectedShift = lastUsedShift;
-        this.selectedShiftOption.set(this.toShiftSummaryOption(lastUsedShift));
-        this.tripForm.controls.shift.setValue(lastUsedShift.key, { emitEvent: false });
-      }
+    this.resetSelectedShiftState();
 
-      const places = await this._placeService.list();
-      if (places.length === 1) {
-        this.tripForm.controls.place.setValue(places[0].place);
-        await this.selectPlace();
-      }
+    const today = DateHelper.toISO();
+    const todaysTrips = await this._tripService.query('date', today);
+    if (this.isHoldingTrip()) return;
+    sort(todaysTrips, '-id');
+    const lastTrip = todaysTrips[0];
+    let lastUsedShift: IShift | undefined = undefined;
+    if (lastTrip) {
+      lastUsedShift = this.shifts.find(x => x.key === lastTrip.key);
+    }
+    if (lastUsedShift) {
+      this.selectedShift = lastUsedShift;
+      this.selectedShiftOption.set(this.toShiftSummaryOption(lastUsedShift));
+      this.tripForm.controls.shift.setValue(lastUsedShift.key, { emitEvent: false });
     }
 
-    const formShift = this.tripForm.value.shift;
-    await this.onShiftSelected(formShift);
+    const places = await this._placeService.list();
+    if (this.isHoldingTrip()) return;
+    if (places.length === 1) {
+      this.tripForm.controls.place.setValue(places[0].place);
+      await this.selectPlace();
+      if (this.isHoldingTrip()) return;
+    }
+
+    await this.applyShiftSelection(this.tripForm.value.shift, () => this.isHoldingTrip());
+  }
+
+  /** True once the form has been given a saved trip to edit. */
+  private isHoldingTrip(): boolean {
+    return !!this.data?.id;
   }
 
   public async addTrip() {
@@ -417,6 +440,11 @@ export class TripFormComponent implements OnInit {
   }
 
   public async onShiftSelected(shiftKey: string | null | undefined) {
+    await this.applyShiftSelection(shiftKey, () => false);
+  }
+
+  /** `isSuperseded` is checked after the async read, so a default that lost a race is dropped. */
+  private async applyShiftSelection(shiftKey: string | null | undefined, isSuperseded: () => boolean) {
     if (shiftKey && shiftKey !== NEW_SHIFT_VALUE) {
       const value = this.shifts.find(shift => shift.key === shiftKey);
       if (!value) {
@@ -435,10 +463,16 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
+    if (isSuperseded()) return;
+    // Reset before the read, not after: the form runs setDefaultShift several times at once (its own
+    // load plus the page's reloads), and a later run may already have preselected today's last shift
+    // while this run is still reading; resetting after the read would undo that choice. A trip that
+    // arrives during the read is handled by the check right after it.
     this.resetSelectedShiftState();
     this.tripForm.controls.service.setValidators([Validators.required]);
 
     const shifts = (await this._shiftService.list()).reverse();
+    if (isSuperseded()) return;
     const shift = shifts[0];
 
     if (!shift) {
@@ -626,7 +660,7 @@ export class TripFormComponent implements OnInit {
   }
 
   public toggleOrder() {
-    this.toggleSection('showOrder', 'Showing Order Fields', 'Hiding Order Fields');
+    this.toggleSection('showOrder', 'Showing Order & Tag Fields', 'Hiding Order & Tag Fields');
   }
 
   public togglePickupAddress() {

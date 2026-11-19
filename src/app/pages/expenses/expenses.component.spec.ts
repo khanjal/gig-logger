@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActionEnum } from '@enums/action.enum';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 import type { IExpense } from '@interfaces/entities/expense.interface';
 import type { UserProfile } from '@interfaces/auth/user-profile.interface';
 import type { MatDialogRef } from '@angular/material/dialog';
@@ -73,7 +73,8 @@ describe('ExpensesComponent', () => {
         { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } },
         CurrencyPipe,
-        DatePipe
+        DatePipe,
+        provideNativeDateAdapter()
       ]
     }).compileComponents();
 
@@ -189,6 +190,20 @@ describe('ExpensesComponent', () => {
       expect(component.monthTotals()['2024-01']).toBeCloseTo(55.75, 2);
       expect(component.monthTotals()['2024-02']).toBeCloseTo(15.00, 2);
       expect(component.yearTotals()['2024']).toBeCloseTo(70.75, 2);
+    });
+  });
+
+  describe('row actions', () => {
+    it('applies the base icon-button styling to the actions menu button', async () => {
+      await component.ngOnInit();
+      expensesStream$.next([makeExpense({ id: 1 })]);
+      component.showAddForm.set(false);
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const actions = (fixture.nativeElement as HTMLElement).querySelector('#expense-row-1 button[aria-label="Actions"]');
+      expect(actions).not.toBeNull();
+      expect(actions?.classList).toContain('btn-icon');
     });
   });
 
@@ -504,6 +519,7 @@ describe('ExpensesComponent', () => {
 
       expect(snackBarSpy.open).toHaveBeenCalled();
       expect(dialogSpy.open).not.toHaveBeenCalled();
+      expect(component.isSaving()).toBeFalse();
     });
 
     it('shows success snackbar after successful sync', async () => {
@@ -513,6 +529,7 @@ describe('ExpensesComponent', () => {
       await component.saveSheetDialog('save');
 
       expect(snackBarSpy.open).toHaveBeenCalled();
+      expect(component.isSaving()).toBeFalse();
     });
 
     it('does not show success snackbar when sync dialog is cancelled', async () => {
@@ -522,6 +539,25 @@ describe('ExpensesComponent', () => {
       await component.saveSheetDialog('save');
 
       expect(snackBarSpy.open).not.toHaveBeenCalled();
+      expect(component.isSaving()).toBeFalse();
+    });
+
+    it('reports isSaving while the sync dialog is open', async () => {
+      authGoogleServiceMock.canSync = () => Promise.resolve(true);
+      const afterClosed$ = new Subject<boolean>();
+      dialogSpy.open.and.returnValue({ afterClosed: () => afterClosed$.asObservable() } as unknown as MatDialogRef<unknown>);
+
+      const pending = component.saveSheetDialog('save');
+      // Let the pending canSync() promise settle so setLoading() has run.
+      for (let i = 0; i < 10 && !component.isSaving(); i++) {
+        await Promise.resolve();
+      }
+      expect(component.isSaving()).toBeTrue();
+
+      afterClosed$.next(true);
+      afterClosed$.complete();
+      await pending;
+      expect(component.isSaving()).toBeFalse();
     });
   });
 

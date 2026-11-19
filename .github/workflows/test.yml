@@ -5,6 +5,12 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  # Pull-request runs share a group per PR, so a newer push cancels the older run.
+  # Every other run (push to main) gets its own group, so it is never cancelled or replaced.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -21,3 +27,23 @@ jobs:
           flags: frontend
           name: frontend-coverage
           fail_ci_if_error: false
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-env
+      - name: Type-check E2E specs
+        run: npx tsc -p e2e
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E tests
+        run: npm run e2e
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

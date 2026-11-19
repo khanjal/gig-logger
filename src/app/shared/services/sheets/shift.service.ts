@@ -5,6 +5,7 @@ import type { IShift } from '@interfaces/entities/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { Injectable } from '@angular/core';
 import { SyncableCrudService } from '@services/syncable-crud.service';
+import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 
 @Injectable({
     providedIn: 'root'
@@ -15,6 +16,15 @@ export class ShiftService extends SyncableCrudService<IShift> {
     }
 
     public shifts$ = from(liveQuery(() => spreadsheetDB.shifts.toArray()));
+
+    /**
+     * The sheet stores tags as comma-delimited text; the app works with an array. Translate on the
+     * way in, so nothing downstream has to know the wire format.
+     */
+    public override async load(items: IShift[]): Promise<void> {
+        await super.load(SheetSerializerHelper.deserializeShifts(items));
+    }
+
 
     public async getUnsavedShifts(): Promise<IShift[]> {
         return await this.getUnsaved();

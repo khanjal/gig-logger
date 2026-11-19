@@ -26,6 +26,7 @@ import { ShiftHelper } from '@helpers/shift.helper';
 import { firstValueFrom } from 'rxjs';
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 
 @Component({
     selector: 'app-shifts',
@@ -51,7 +52,8 @@ export class ShiftsComponent implements OnInit {
   public shifts = signal<IShift[]>([]);
   public duplicateShiftKeys = signal<Set<string>>(new Set());
   public actionEnum = ActionEnum;
-  public saving = signal(false);
+  private readonly _saveState = createAsyncOperationState();
+  public isSaving = this._saveState.isLoading;
   public unsavedShifts: IShift[] = [];
   public unsavedData = signal(false);
   public pageSize = 20; // Number of shifts to load per request
@@ -177,15 +179,23 @@ export class ShiftsComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(DataSyncModalComponent, {
-        panelClass: 'custom-modalbox',
-        data: inputValue
-    });
+    this._saveState.setLoading();
+    try {
+      const dialogRef = this.dialog.open(DataSyncModalComponent, {
+          panelClass: 'custom-modalbox',
+          data: inputValue
+      });
 
-    const result = await firstValueFrom(dialogRef.afterClosed());
-    if (result) {
-        // Show success message
-        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (result) {
+          this._saveState.setSuccess();
+          // Show success message
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
+      } else {
+          this._saveState.reset();
+      }
+    } catch {
+      this._saveState.setError();
     }
   }
 

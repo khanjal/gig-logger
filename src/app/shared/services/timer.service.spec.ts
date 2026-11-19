@@ -98,6 +98,57 @@ describe('TimerService', () => {
     });
   });
 
+  describe('countdown', () => {
+    it('should emit remaining ticks down to zero, then complete', async () => {
+      const emitted: number[] = [];
+
+      await new Promise<void>(resolve => {
+        service.countdown(30, 10).subscribe({
+          next: value => emitted.push(value),
+          complete: () => resolve()
+        });
+      });
+
+      expect(emitted).toEqual([2, 1, 0]);
+    });
+
+    it('should emit at least one tick when the total is shorter than a tick', async () => {
+      const emitted: number[] = [];
+
+      await new Promise<void>(resolve => {
+        service.countdown(2, 10).subscribe({
+          next: value => emitted.push(value),
+          complete: () => resolve()
+        });
+      });
+
+      expect(emitted).toEqual([0]);
+    });
+
+    it('should stop emitting once unsubscribed', async () => {
+      const emitted: number[] = [];
+
+      const subscription = service.countdown(100, 10).subscribe(value => emitted.push(value));
+      await service.delay(25);
+      subscription.unsubscribe();
+      const countAtUnsubscribe = emitted.length;
+      await service.delay(40);
+
+      expect(emitted.length).toBe(countAtUnsubscribe);
+    });
+
+    it('should not complete when cancelled part way through', async () => {
+      let completed = false;
+
+      const subscription = service.countdown(100, 10).subscribe({ complete: () => { completed = true; } });
+      await service.delay(25);
+      subscription.unsubscribe();
+      await service.delay(40);
+
+      expect(completed).toBeFalse();
+    });
+  });
+
   describe('Integration Scenarios', () => {
     it('should be useful for timeout patterns', async () => {
       let timedOut = false;

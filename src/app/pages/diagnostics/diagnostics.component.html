@@ -62,7 +62,7 @@
   }
 
   <!-- All Clear State -->
-  @if (!isLoading() && dataDiagnostics().length > 0 && getTotalIssues() === 0) {
+  @if (!isLoading() && dataDiagnostics().length > 0 && totalIssues() === 0) {
     <div class="text-center py-12 bg-success-soft rounded-lg border border-success">
       <mat-icon class="text-success !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
       <h2 class="text-xl font-semibold text-success mb-2">All Clear!</h2>
@@ -71,7 +71,7 @@
   }
 
   <!-- Diagnostic Items as Expansion Panels -->
-  @if (!isLoading() && getTotalIssues() > 0) {
+  @if (!isLoading() && totalIssues() > 0) {
     <mat-accordion class="diagnostics-accordion">
       @for (item of dataDiagnostics(); track trackByDiagnostic($index, item)) {
         <mat-expansion-panel [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">

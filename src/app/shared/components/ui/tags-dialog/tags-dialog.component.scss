@@ -1,0 +1,98 @@
+// Surface colours, rounded corners and mobile sizing all come from the shared `custom-modalbox`
+// panel class applied when the dialog is opened - the same one every other dialog here uses.
+// Nothing in this file should set a background: doing that inside an unthemed container is what
+// left white corners in dark mode.
+:host {
+  display: block;
+  width: 100%;
+}
+
+// The title inherits Material's own colour otherwise, which is near-black in either theme.
+.tags-dialog__title {
+  color: var(--color-text-primary);
+}
+
+// Fills whatever width the dialog was opened at, rather than setting one of its own - two places
+// deciding the width is how it ended up fighting itself.
+.tags-dialog__content {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+// Reserve room for a couple of rows so adding the first tag does not shove the buttons down the
+// screen, then scroll rather than growing - the dialog used to resize under the user's thumb.
+.tags-dialog__tags {
+  margin-top: 0.75rem;
+  min-height: 5rem;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.tags-dialog__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tags-dialog__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  // 44px is the usual floor for a reliable touch target; a chip's × is closer to 16.
+  min-height: 2.75rem;
+  padding: 0 0.25rem 0 0.75rem;
+  border-bottom: 1px solid var(--color-border-light);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.tags-dialog__label {
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tags-dialog__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // Square and thumb-sized, rather than sized to the icon inside it.
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  border-radius: 0.5rem;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-error);
+    background: var(--color-surface-secondary);
+  }
+}
+
+.tags-dialog__empty {
+  color: var(--color-text-tertiary);
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}
+
+.tags-dialog__add {
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+// Cancel and Done sat flush: Material's action spacing targets its own button directives, which
+// these custom components do not carry.
+.tags-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}

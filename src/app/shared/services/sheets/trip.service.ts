@@ -3,6 +3,7 @@ import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { DateHelper } from '@helpers/date.helper';
 import { TripHelper } from '@helpers/trip.helper';
+import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
 import { SyncableCrudService } from '@services/syncable-crud.service';
@@ -18,6 +19,15 @@ export class TripService extends SyncableCrudService<ITrip> {
     }
 
     public trips$ = from(liveQuery(() => spreadsheetDB.trips.toArray()));
+
+    /**
+     * The sheet stores tags as comma-delimited text; the app works with an array. Translate on the
+     * way in, so nothing downstream has to know the wire format.
+     */
+    public override async load(items: ITrip[]): Promise<void> {
+        await super.load(SheetSerializerHelper.deserializeTrips(items));
+    }
+
     
     public async addNext(trip: ITrip) {
         const nextTrip = {} as ITrip;

@@ -23,7 +23,6 @@ interface DataSyncConfig {
 type MessageType = 'info' | 'warning' | 'error';
 
 interface SyncState {
-  isPaused: boolean;
   isAutoClose: boolean;
   canContinue: boolean;
   forceLoad: boolean;

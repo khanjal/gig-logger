@@ -1,5 +1,5 @@
 import type { OnInit} from '@angular/core';
-import { Component, signal, inject } from '@angular/core';
+import { Component, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -74,6 +74,17 @@ export class DiagnosticsComponent implements OnInit {
   public selectedValue: (IDiagnosticRecord | undefined)[] = [];
   public selectedAddress: Record<number, string> = {};
   public selectedShiftToDelete: Record<number, number | undefined> = {};
+
+  public readonly totalIssues = computed(() =>
+    this.dataDiagnostics().reduce((sum, item) => sum + item.count, 0)
+  );
+  private readonly countsBySeverity = computed(() => {
+    const counts: Record<'info' | 'warning' | 'error', number> = { info: 0, warning: 0, error: 0 };
+    this.dataDiagnostics().forEach(item => {
+      counts[item.severity] += item.count;
+    });
+    return counts;
+  });
 
   public trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
     return item.name ?? index;
@@ -335,13 +346,7 @@ export class DiagnosticsComponent implements OnInit {
   }
 
   public getCountBySeverity(severity: 'info' | 'warning' | 'error'): number {
-    return this.dataDiagnostics()
-      .filter(item => item.severity === severity)
-      .reduce((sum, item) => sum + item.count, 0);
-  }
-
-  public getTotalIssues(): number {
-    return this.dataDiagnostics().reduce((sum, item) => sum + item.count, 0);
+    return this.countsBySeverity()[severity];
   }
 
   public async mergeDuplicates(group: IDiagnosticRecord[], selectedItem: IDiagnosticRecord, itemType: DiagnosticEntityType) {

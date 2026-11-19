@@ -5,7 +5,9 @@ import type { ITrip } from '@interfaces/entities/trip.interface';
  * Numeric input fields are nullable to allow empty cells on the sheet.
  */
 export interface ITripSheetRow extends Omit<ITrip,
-  'pay' | 'tip' | 'bonus' | 'cash' | 'distance' | 'startOdometer' | 'endOdometer'> {
+  'pay' | 'tip' | 'bonus' | 'cash' | 'distance' | 'startOdometer' | 'endOdometer' | 'tags'> {
+  /** Comma-delimited on the sheet; RaptorSheets stores it as opaque text. */
+  tags: string;
   pay: number | null;
   tip: number | null;
   bonus: number | null;
