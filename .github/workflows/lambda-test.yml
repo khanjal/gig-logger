@@ -6,11 +6,13 @@ on:
       - 'amplify/backend/function/GigRaptorService/**'
       - '.github/workflows/lambda-test.yml'
       - '.github/actions/setup-dotnet-env/**'
+      - 'global.json'
   pull_request:
     paths:
       - 'amplify/backend/function/GigRaptorService/**'
       - '.github/workflows/lambda-test.yml'
       - '.github/actions/setup-dotnet-env/**'
+      - 'global.json'
 
 concurrency:
   # Pull-request runs share a group per PR, so a newer push cancels the older run.
